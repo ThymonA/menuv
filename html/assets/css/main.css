@@ -1,0 +1,355 @@
+/*
+----------------------- [ MenuV ] -----------------------
+-- GitHub: https://github.com/ThymonA/menuv/
+-- License: GNU General Public License v3.0
+--          https://choosealicense.com/licenses/gpl-3.0/
+-- Author: Thymon Arens <contact@arens.io>
+-- Name: MenuV
+-- Version: 1.0.0
+-- Description: FiveM menu libarary for creating menu's
+----------------------- [ MenuV ] -----------------------
+*/
+@import url('https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+html,
+body {
+    overflow: hidden;
+    font-family: 'Epilogue', sans-serif;
+    color: white;
+    background-color: transparent;
+}
+
+* .hide,
+html .hide,
+body .hide,
+div .hide,
+.menuv.hide {
+    display: none !important;
+    opacity: 0;
+}
+
+.menuv {
+    background-color: rgba(0, 0, 0, 0.65);
+    max-width: 20em;
+    max-height: 35em;
+    margin-top: 1em;
+    margin-left: 1em;
+    font-size: 0.85em;
+}
+
+.menuv.size-100 {
+    zoom: 1;
+}
+.menuv.size-110 {
+    zoom: 1.1;
+}
+.menuv.size-125 {
+    zoom: 1.25;
+}
+.menuv.size-150 {
+    zoom: 1.50;
+}
+.menuv.size-175 {
+    zoom: 1.75;
+}
+.menuv.size-200 {
+    zoom: 2;
+}
+
+.menuv .menuv-header {
+    height: 3.5em;
+    max-height: 3.5em;
+    line-height: 3.5em;
+    width: 100%;
+    text-align: center;
+    letter-spacing: 0.25em;
+    font-size: 1.5em;
+    font-weight: 700;
+    background-color: black;
+    overflow: hidden;
+}
+
+.menuv .menuv-header strong {
+    position: relative;
+    z-index: 1;
+    color: white;
+}
+
+.menuv .menuv-header .menuv-bg-icon {
+    position: absolute;
+    max-height: 3.5em;
+    max-width: 3.5em;
+    overflow: hidden;
+    left: 10.5em;
+    top: 0.6em;
+}
+
+.menuv .menuv-header .menuv-bg-icon i,
+.menuv .menuv-header .menuv-bg-icon svg {
+    font-size: 5em;
+    opacity: 0.5;
+    color: blue;
+}
+
+.menuv .menuv-subheader {
+    background-color: blue;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.9em;
+    line-height: 2.5em;
+    text-transform: uppercase;
+    padding-left: 1em;
+    height: 2.5em;
+    max-height: 2.5em;
+}
+
+.menuv .menuv-items {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+}
+
+.menuv .menuv-items .menuv-item {
+    padding: 0.25em 0.50em;
+    font-size: 0.9em;
+    max-height: 2em;
+    height: 2em;
+    line-height: 1.85em;
+}
+
+.menuv .menuv-items .menuv-item i,
+.menuv .menuv-items .menuv-item svg {
+    float: right;
+    margin-top: 0.125em;
+    font-size: 1.2em;
+}
+
+.menuv .menuv-items .menuv-item.active {
+    color: black;
+    background-color: rgba(255, 255, 255, 1);
+    font-weight: 700;
+    border-left: 0.5em solid blue;
+    border-right: 0.5em solid blue;
+    border-radius: 0.25em;
+    width: 23.25em;
+    max-width: 23.25em;
+    margin-left: -0.5em;
+}
+
+.menuv .menuv-items .menuv-item.active i,
+.menuv .menuv-items .menuv-item.active svg {
+    color: black;
+}
+
+.menuv .menuv-items span.menuv-icon {
+    margin-left: 2.5px;
+    margin-right: 5px;
+    border-right: 1px solid white;
+    padding-right: 7.5px;
+}
+
+.menuv .menuv-items .menuv-item.active span.menuv-icon {
+    border-right: 1px solid black;
+}
+
+.menuv .menuv-items span.menuv-options {
+    float: right;
+    font-size: 0.9em;
+    line-height: 1.85em;
+    text-transform: uppercase;
+}
+
+.menuv .menuv-items .menuv-item.active span.menuv-options {
+    font-weight: 700;
+}
+
+.menuv .menuv-items span.menuv-options i,
+.menuv .menuv-items span.menuv-options svg {
+    float: unset;
+    font-size: unset;
+}
+
+.menuv .menuv-items span.menuv-options i:first-child,
+.menuv .menuv-items span.menuv-options svg:first-child {
+    margin-right: 0.25em;
+}
+
+.menuv .menuv-items span.menuv-options i:last-child,
+.menuv .menuv-items span.menuv-options svg:last-child {
+    margin-left: 0.25em;
+}
+
+.menuv .menuv-items span.menuv-options span.menuv-btn {
+    background-color: white;
+    color: black;
+    padding: 0.25em 0.5em;
+    margin: 0.125em;
+    font-weight: bold;
+    font-weight: 500;
+    border-radius: 0.125em;
+}
+
+.menuv .menuv-items .menuv-item.active span.menuv-options span.menuv-btn {
+    background-color: black;
+    color: white;
+}
+
+.menuv .menuv-items span.menuv-options span.menuv-btn.active {
+    background-color: blue;
+    color: white;
+    font-weight: 700;
+}
+
+.menuv .menuv-items .menuv-item.active span.menuv-options span.menuv-btn.active {
+    background-color: blue;
+    color: white;
+}
+
+.menuv .menuv-items input[type="range"] {
+    float: right;
+    -webkit-appearance: none;
+    max-width: 6.5em;
+    margin-top: 0.55em;
+}
+
+.menuv .menuv-items input[type="range"]:focus {
+    outline: none;
+}
+
+.menuv .menuv-items input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 5px;
+    cursor: pointer;
+    box-shadow: 0px 0px 0px #000000;
+    background: blue;
+    border-radius: 0;
+    border: 0px solid #000000;
+}
+
+.menuv .menuv-items .menuv-item.active input[type="range"]::-webkit-slider-runnable-track {
+    background: black;
+}
+
+.menuv .menuv-items input[type="range"]::-webkit-slider-thumb {
+    box-shadow: 0px 0px 0px #000000;
+    height: 18px;
+    width: 5px;
+    border-radius: 0;
+    border: 1px solid white;
+    background: rgba(255, 255, 255, 1);
+    cursor: pointer;
+    -webkit-appearance: none;
+    margin-top: -7px;
+}
+
+.menuv .menuv-items .menuv-item.active input[type="range"]::-webkit-slider-thumb {
+    background: blue;
+    border: 1px solid rgba(0, 0, 255, 0.25);
+}
+
+.menuv .menuv-items input[type="range"]:focus::-webkit-slider-runnable-track {
+    background: blue;
+}
+
+.menuv .menuv-items .menuv-item.active input[type="range"]:focus::-webkit-slider-runnable-track {
+    background: black;
+}
+
+.menuv .menuv-items .menuv-desc {
+    display: none;
+    opacity: 0;
+    background-color: rgba(0, 0, 0, 0.65);
+    color: white;
+    position: absolute;
+    width: 100%;
+    max-width: 17.5em;
+    margin-left: 17.5em;
+    margin-top: -0.25em;
+    font-weight: 400;
+    font-size: 0.9em;
+    padding: 0.75em 1em;
+    line-height: 1.25em;
+    border-left: 0.375em solid blue;
+}
+
+.menuv .menuv-items .menuv-item.active .menuv-desc {
+    display: initial;
+    opacity: 1;
+}
+
+.menuv .menuv-items .menuv-desc strong {
+    color: white;
+}
+
+.menuv .menuv-items .menuv-desc table {
+    margin-left: -0.75em;
+    width: calc(100% + 0.75em);
+}
+
+.menuv .menuv-items .menuv-desc table th {
+    color: white;
+    padding: 2px 5px;
+}
+
+.menuv .menuv-items .menuv-desc table td {
+    padding: 2px 5px;
+}
+
+.menuv .menuv-items .menuv-label {
+    float: right;
+    font-size: 1.125em;
+    font-weight: 800;
+}
+
+.menuv .menuv-pagination {
+    padding: 0.5em;
+    max-width: 20em;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    border-top: 2px solid white;
+    margin-top: 1em;
+}
+
+.menuv .menuv-pagination .menu-pagination-option {
+    display: inline-block;
+    height: 1.5em;
+    width: 3em;
+    background-color: white;
+    color: black;
+    text-align: center;
+    border-radius: 2.5px;
+    margin-left: 0.25em;
+    margin-right: 0.25em;
+    font-size: 0.8em;
+}
+
+.menuv .menuv-pagination .menu-pagination-option.active {
+    background-color: red;
+    color: white;
+}
+
+.menuv .menuv-pagination .menu-pagination-ellipsis {
+    display: inline-block;
+    height: 1.5em;
+    width: 1.5em;
+    background-color: transparent;
+    color: white;
+    text-align: center;
+}
+
+.menuv .menuv-description {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.65);
+    width: 100%;
+    max-width: 20em;
+    padding: 0.5em 1em;
+    margin-top: 0.5em;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.menuv .menuv-description strong {
+    color: white;
+    font-size: 0.8em;
+    font-weight: 400;
+}
