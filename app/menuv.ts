@@ -20,7 +20,7 @@ export interface Option {
 
 export interface Item {
     index: number;
-    type: string;
+    type: 'button' | 'menu' | 'checkbox' | 'confirm' | 'range' | 'slider' | 'label' | 'unknown';
     uuid: string;
     icon: string;
     label: string;
@@ -51,6 +51,7 @@ export default VUE.extend({
     },
     data() {
         return {
+            menu: false,
             show: false,
             title: 'MenuV',
             subtitle: '',
@@ -73,7 +74,7 @@ export default VUE.extend({
             
             if (!data || !data.action) { return; }
 
-            const typeRef = data.action as 'OPEN_MENU' | 'CLOSE_MENU' | 'UPDATE_TITLE' | 'UPDATE_SUBTITLE' | 'KEY_PRESSED'
+            const typeRef = data.action as 'UPDATE_STATUS' | 'OPEN_MENU' | 'CLOSE_MENU' | 'UPDATE_TITLE' | 'UPDATE_SUBTITLE' | 'KEY_PRESSED'
         
             if (this[typeRef]) {
                 this[typeRef](data);
@@ -89,10 +90,14 @@ export default VUE.extend({
         subtitle() {},
         color() {},
         options() {},
-        index() {}
+        index() {},
+        items() {}
     },
     computed: {},
     methods: {
+        UPDATE_STATUS({ status }: { status: boolean }) {
+            if (this.menu) { this.show = status; }
+        },
         OPEN_MENU({ menu }: { menu: Menu }) {
             this.RESET_MENU();
 
@@ -101,6 +106,7 @@ export default VUE.extend({
             this.color = menu.color || this.color;
             this.items = menu.items || [];
             this.show = true;
+            this.menu = true;
         },
         CLOSE_MENU() {
             this.RESET_MENU();      
@@ -128,6 +134,7 @@ export default VUE.extend({
             }
         },
         RESET_MENU() {
+            this.menu = false;
             this.show = false;
             this.title = 'MenuV';
             this.subtitle = '';
@@ -215,6 +222,8 @@ export default VUE.extend({
             return false;
         },
         KEY_PRESSED({ key }: { key: string }) {
+            if (!this.menu) { return; }
+
             const k = key as 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'ENTER' | 'CLOSE'
 
             if (typeof k == 'undefined' || k == null) {
@@ -242,10 +251,72 @@ export default VUE.extend({
             }
         },
         KEY_LEFT: function() {
+            if (this.items.length <= this.index) { return; }
 
+            const item = this.items[this.index];
+
+            if (item.type == 'button' || item.type == 'menu' || item.type == 'label' || item.type == 'unknown') { return; }
+
+            switch(item.type) {
+                case 'confirm':
+                case 'checkbox':
+                    const boolean_value = item.value as boolean;
+
+                    this.items[this.index].value = !boolean_value;
+
+                    break;
+                case 'range':
+                    let range_value = item.value as number;
+
+                    if ((range_value - 1) <= item.min) { this.items[this.index].value = item.min; }
+                    else if ((range_value - 1) >= item.max) { this.items[this.index].value = item.max; }
+                    else { this.items[this.index].value--; }
+
+                    break;
+                case 'slider':
+                    const slider_value = item.value as number;
+                    const slider_values = item.values || [];
+
+                    if (slider_values.length <= 0) { return; }
+                    if ((slider_value - 1) < 0 || (slider_value - 1) >= slider_values.length) { this.items[this.index].value = (slider_values.length - 1); }
+                    else { this.items[this.index].value--; }
+
+                    break;
+            }
         },
         KEY_RIGHT: function() {
+            if (this.items.length <= this.index) { return; }
 
+            const item = this.items[this.index];
+
+            if (item.type == 'button' || item.type == 'menu' || item.type == 'label' || item.type == 'unknown') { return; }
+
+            switch(item.type) {
+                case 'confirm':
+                case 'checkbox':
+                    const boolean_value = item.value as boolean;
+
+                    this.items[this.index].value = !boolean_value;
+
+                    break;
+                case 'range':
+                    let range_value = item.value as number;
+
+                    if ((range_value + 1) <= item.min) { this.items[this.index].value = item.min; }
+                    else if ((range_value + 1) >= item.max) { this.items[this.index].value = item.max; }
+                    else { this.items[this.index].value++; }
+
+                    break;
+                case 'slider':
+                    const slider_value = item.value as number;
+                    const slider_values = item.values || [];
+
+                    if (slider_values.length <= 0) { return; }
+                    if ((slider_value + 1) < 0 || (slider_value + 1) >= slider_values.length) { this.items[this.index].value = 0; }
+                    else { this.items[this.index].value++; }
+
+                    break;
+            }
         },
         KEY_ENTER: function() {
 

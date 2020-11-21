@@ -25,6 +25,8 @@ local REGISTER_KEY_MAPPING = assert(RegisterKeyMapping)
 local REGISTER_COMMAND = assert(RegisterCommand)
 local CREATE_THREAD = assert(Citizen.CreateThread)
 local WAIT = assert(Citizen.Wait)
+local IS_SCREEN_FADED_OUT = assert(IsScreenFadedOut)
+local IS_PAUSE_MENU_ACTIVE = assert(IsPauseMenuActive)
 
 --- VARIABLES OF MENUV
 local MENUV_TABLE = {
@@ -36,6 +38,8 @@ local MENUV_TABLE = {
     PARENT_MENUS = {},
     ---@type boolean
     LOADED = false,
+    ---@type number
+    THREAD_TIME = 500,
     ---@type table<string, string>
     TRANSLATIONS = {},
     ---@type string
@@ -129,6 +133,7 @@ function MENUV_MAIN:OPEN(menu, cb)
             self.CURRENT_MENU:RemoveOnEvent('update', self.CURRENT_UPDATE_UUID)
         end
 
+        self.THREAD_TIME = 250
         self.CURRENT_MENU = menu
         self.CURRENT_UPDATE_UUID = self.CURRENT_MENU:On('update', function(m, k, v)
             k = U:Ensure(k, 'unknown')
@@ -219,8 +224,32 @@ MENUV_MAIN:REGISTER_KEY('DOWN', MENUV_MAIN:T('keybind_key_down'), 'KEYBOARD', 'D
 MENUV_MAIN:REGISTER_KEY('LEFT', MENUV_MAIN:T('keybind_key_left'), 'KEYBOARD', 'LEFT')
 MENUV_MAIN:REGISTER_KEY('RIGHT', MENUV_MAIN:T('keybind_key_right'), 'KEYBOARD', 'RIGHT')
 MENUV_MAIN:REGISTER_KEY('ENTER', MENUV_MAIN:T('keybind_key_enter'), 'KEYBOARD', 'RETURN')
-MENUV_MAIN:REGISTER_KEY('CLOSE', MENUV_MAIN:T('keybind_key_close'), 'KEYBOARD', 'ESCAPE')
+MENUV_MAIN:REGISTER_KEY('CLOSE', MENUV_MAIN:T('keybind_key_close'), 'KEYBOARD', 'BACK')
 
 --- Mark this resource as loaded
 _G.MENUV_LOADED = true
 _ENV.MENUV_LOADED = true
+
+--- Hide menu when required
+CREATE_THREAD(function()
+    local LAST_STATE = false
+
+    while true do
+        WAIT(MENUV_MAIN.THREAD_TIME)
+
+        if (MENUV_MAIN.CURRENT_MENU ~= nil) then
+            local newState = IS_SCREEN_FADED_OUT() or IS_PAUSE_MENU_ACTIVE()
+
+            if (newState ~= LAST_STATE) then
+                SEND_NUI_MESSAGE({
+                    action = 'UPDATE_STATUS',
+                    status = not newState
+                })
+            end
+
+            LAST_STATE = newState
+        else
+            LAST_STATE = false
+        end
+    end
+end)

@@ -10,7 +10,7 @@
 ----------------------- [ MenuV ] -----------------------
 -->
 <template>
-  <div id="menuv" class="menuv size-110" :class="{'hide': !show}" :data-uuid="uuid">
+  <div id="menuv" class="menuv size-110" :class="{'hide': !show || !menu}" :data-uuid="uuid">
     <v-style>
       .menuv .menuv-header .menuv-bg-icon i,
       .menuv .menuv-header .menuv-bg-icon svg {
@@ -65,8 +65,7 @@
         <span class="menuv-icon">{{ENSURE(item.icon, '▶️')}}</span>
         {{item.label}}
         <i class="fas fa-arrow-right" v-if="item.type == 'menu'"></i>
-        <i class="fas fa-check" v-if="item.type == 'checkbox' && item.value"></i>
-        <i class="far fa-square" v-if="item.type == 'checkbox' && !item.value"></i>
+        <i v-if="item.type == 'checkbox'" :class="{'fas fa-check': item.value, 'far fa-square': !item.value}"></i>
         <input type="range" :min="item.min" :max="item.max" :value="(item.value)" v-if="item.type == 'range'">
         <span class="menuv-options" v-if="item.type == 'confirm'">
           <span class="menuv-btn" :class="{'active': item.value}">YES</span>
