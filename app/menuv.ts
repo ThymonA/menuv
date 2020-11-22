@@ -33,6 +33,7 @@ export interface Item {
 }
 
 export interface Menu {
+    uuid: string;
     title: string;
     subtitle: string;
     color: {
@@ -51,6 +52,7 @@ export default VUE.extend({
     },
     data() {
         return {
+            uuid: '',
             menu: false,
             show: false,
             title: 'MenuV',
@@ -90,8 +92,33 @@ export default VUE.extend({
         subtitle() {},
         color() {},
         options() {},
-        index() {},
-        items() {}
+        index(newValue, oldValue) {
+            const prevItem = this.items[oldValue];
+            const currentItem = this.items[newValue];
+
+            this.POST('http://menuv/switch', { prev: prevItem.uuid, next: currentItem.uuid });
+        },
+        items: {
+            deep: true,
+            handler(newValue: Item[], oldValue: Item[]) {
+                if (this.index >= newValue.length || this.index < 0) { return; }
+
+                let sameItem = null;
+                const currentItem = newValue[this.index];
+
+                if (currentItem == null) { return; }
+
+                for (var i = 0; i < oldValue.length; i++) {
+                    if (currentItem.uuid == oldValue[i].uuid && currentItem.type == oldValue[i].type) {
+                        sameItem = oldValue[i];
+                    }
+                }
+
+                if (sameItem == null) { return; }
+                
+                this.POST('http://menuv/update', { uuid: currentItem.uuid, prev: sameItem.value, now: currentItem.value });
+            }
+        }
     },
     computed: {},
     methods: {
@@ -101,6 +128,7 @@ export default VUE.extend({
         OPEN_MENU({ menu }: { menu: Menu }) {
             this.RESET_MENU();
 
+            this.uuid = this.ENSURE(menu.uuid, '00000000-0000-0000-0000-000000000000');
             this.title = this.ENSURE(menu.title, this.title);
             this.subtitle = this.ENSURE(menu.subtitle, this.subtitle);
             this.color = menu.color || this.color;
@@ -136,6 +164,7 @@ export default VUE.extend({
         RESET_MENU() {
             this.menu = false;
             this.show = false;
+            this.uuid = '00000000-0000-0000-0000-000000000000';
             this.title = 'MenuV';
             this.subtitle = '';
             this.color.r = 0;
@@ -319,10 +348,46 @@ export default VUE.extend({
             }
         },
         KEY_ENTER: function() {
+            if (this.items.length <= this.index) { return; }0
 
+            const item = this.items[this.index];
+
+            switch(item.type) {
+                case 'button':
+                case 'menu':
+                    this.POST('http://menuv/submit', { uuid: item.uuid, value: null });
+                    break;
+                case 'confirm':
+                    this.POST('http://menuv/submit', { uuid: item.uuid, value: item.value as boolean });
+                    break;
+                case 'range':
+                    let range_value = item.value as number;
+
+                    if (range_value <= item.min) { range_value = item.min; }
+                    else if (range_value >= item.max) { range_value = item.max; }
+                    
+                    this.POST('http://menuv/submit', { uuid: item.uuid, value: range_value });
+                    break;
+                case 'checkbox':
+                    const boolean_value = item.value as boolean;
+
+                    this.items[this.index].value = !boolean_value;
+
+                    this.POST('http://menuv/submit', { uuid: item.uuid, value: this.items[this.index].value });
+                    break;
+                case 'slider':
+                    let slider_value = item.value as number;
+                    const slider_values = item.values || [];
+
+                    if (slider_values.length <= 0 || slider_value < 0 || slider_value >= slider_values.length) { return; }
+                   
+                    this.POST('http://menuv/submit', { uuid: item.uuid, value: slider_value });
+                    break;
+            }
         },
         KEY_CLOSE: function() {
-
+            this.POST('http://menuv/close', { uuid: this.uuid });
+            this.CLOSE_MENU();
         },
         POST: function(url: string, data: object|[]) {
             var request = new XMLHttpRequest();

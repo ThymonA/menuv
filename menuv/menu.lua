@@ -190,6 +190,10 @@ function CreateMenu(info)
 
             local item = CreateMenuItem(info)
 
+            if (info.Type == 'menu') then
+                item:On('select', function() item.Value() end)
+            end
+
             insert(t.Items, item)
 
             return t.Items[#t.Items] or item
@@ -387,7 +391,7 @@ function CreateMenu(info)
 
             info.Type = 'confirm'
             info.Value = U:Ensure(info.Value or info.value, false)
-            info.Events = { OnConfirm = {}, OnDeny = {} }
+            info.Events = { OnConfirm = {}, OnDeny = {}, OnChange = {} }
             info.PrimaryEvent = 'OnConfirm'
             info.NewIndex = function(t, k, v)
                 if (k == 'Value') then
@@ -454,6 +458,7 @@ function CreateMenu(info)
         ---@return table
         ToTable = function(t)
             local tempTable = {
+                uuid = U:Ensure(t.UUID, '00000000-0000-0000-0000-000000000000'),
                 title = U:Ensure(t.Title, 'MenuV'),
                 subtitle = U:Ensure(t.Subtitle, ''),
                 color = {
@@ -536,6 +541,8 @@ function CreateMenu(info)
     item.Events.OnClose = {}
     item.Events.OnSelect = {}
     item.Events.OnUpdate = {}
+    item.Events.OnSwitch = {}
+    item.Events.OnChange = {}
 
     local mt = {
         __index = function(t, k)

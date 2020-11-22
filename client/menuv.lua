@@ -11,6 +11,7 @@ local assert = assert
 ---@type Utilities
 local U = assert(Utilities)
 local INSERT = assert(table.insert)
+local REMOVE = assert(table.remove)
 local DECODE = assert(json.decode)
 local LOWER = assert(string.lower)
 local UPPER = assert(string.upper)
@@ -40,6 +41,8 @@ local MENUV_TABLE = {
     LOADED = false,
     ---@type number
     THREAD_TIME = 500,
+    ---@type boolean
+    THREAD_ACTIVE = false,
     ---@type table<string, string>
     TRANSLATIONS = {},
     ---@type string
@@ -134,6 +137,7 @@ function MENUV_MAIN:OPEN(menu, cb)
         end
 
         self.THREAD_TIME = 250
+        self:MAIN_THREAD()
         self.CURRENT_MENU = menu
         self.CURRENT_UPDATE_UUID = self.CURRENT_MENU:On('update', function(m, k, v)
             k = U:Ensure(k, 'unknown')
@@ -196,10 +200,173 @@ function MENUV_MAIN:T(translation)
     return U:Ensure(self.TRANSLATIONS[translation], 'MISSING TRANSLATION')
 end
 
+--- Create a thread for showing / hiding menu when required
+function MENUV_MAIN:MAIN_THREAD()
+    if (self.THREAD_ACTIVE) then return end
+
+    self.THREAD_ACTIVE = true
+
+    CREATE_THREAD(function()
+        local LAST_STATE = false
+
+        while true do
+            WAIT(MENUV_MAIN.THREAD_TIME)
+
+            if (MENUV_MAIN.CURRENT_MENU ~= nil) then
+                local newState = IS_SCREEN_FADED_OUT() or IS_PAUSE_MENU_ACTIVE()
+
+                if (newState ~= LAST_STATE) then
+                    SEND_NUI_MESSAGE({
+                        action = 'UPDATE_STATUS',
+                        status = not newState
+                    })
+                end
+
+                LAST_STATE = newState
+            else
+                MENUV_MAIN.THREAD_TIME = 500
+                MENUV_MAIN.THREAD_ACTIVE = false
+                return
+            end
+        end
+    end)
+end
+
 --- Set `LOADED` as `true` when `MenuV` is loaded
 REGISTER_NUI_CALLBACK('loaded', function(_, cb)
     MENUV_MAIN.LOADED = true
     cb('ok')
+end)
+
+--- This event will be triggered when `ENTER` key is used
+REGISTER_NUI_CALLBACK('submit', function(info, cb)
+    local uuid = U:Ensure(info.uuid, '00000000-0000-0000-0000-000000000000')
+
+    cb('ok')
+
+    if (MENUV_MAIN.CURRENT_MENU == nil) then return end
+
+    --- @param option Item
+    for key, option in pairs(MENUV_MAIN.CURRENT_MENU.Items) do
+        if (option.UUID == uuid) then
+            if (option.__type == 'confirm' or option.__type == 'checkbox') then
+                option.Value = U:Ensure(info.value, false)
+            elseif (option.__type == 'range') then
+                option.Value = U:Ensure(info.value, option.Min)
+            elseif (option.__type == 'slider') then
+                option.Value = (U:Ensure(info.value, 0) + 1)
+            end
+
+            MENUV_MAIN.CURRENT_MENU:Trigger('select', option)
+
+            if (option.__type == 'button' or option.__type == 'menu') then
+                MENUV_MAIN.CURRENT_MENU.Items[key]:Trigger('select')
+            elseif (option.__type == 'range') then
+                MENUV_MAIN.CURRENT_MENU.Items[key]:Trigger('select', option.Value)
+            elseif (option.__type == 'slider') then
+                local selectedOption = MENUV_MAIN.CURRENT_MENU.Items[key].Values[option.Value] or nil
+
+                if (selectedOption == nil) then return end
+
+                MENUV_MAIN.CURRENT_MENU.Items[key]:Trigger('select', selectedOption.Value)
+            end
+            return
+        end
+    end
+end)
+
+--- This event will be triggered when `CLOSE` key is used
+REGISTER_NUI_CALLBACK('close', function(info, cb)
+    local uuid = U:Ensure(info.uuid, '00000000-0000-0000-0000-000000000000')
+
+    if (MENUV_MAIN.CURRENT_MENU == nil or MENUV_MAIN.CURRENT_MENU.UUID ~= uuid) then
+        cb('ok')
+        return
+    end
+
+    MENUV_MAIN.CURRENT_MENU:RemoveOnEvent('update', MENUV_MAIN.CURRENT_UPDATE_UUID)
+    MENUV_MAIN.CURRENT_MENU = nil
+
+    if (#MENUV_MAIN.PARENT_MENUS <= 0) then
+        MENUV_MAIN.THREAD_TIME = 500
+        cb('ok')
+        return
+    end
+
+    local last_menu = MENUV_MAIN.PARENT_MENUS[#MENUV_MAIN.PARENT_MENUS] or nil
+
+    REMOVE(MENUV_MAIN.PARENT_MENUS, #MENUV_MAIN.PARENT_MENUS)
+
+    if (last_menu ~= nil) then
+        MENUV_MAIN:OPEN(last_menu, function()
+            cb('ok')
+        end)
+    else
+        cb('ok')
+    end
+end)
+
+REGISTER_NUI_CALLBACK('switch', function(info, cb)
+    local prev_uuid = U:Ensure(info.prev, '00000000-0000-0000-0000-000000000000')
+    local next_uuid = U:Ensure(info.next, '00000000-0000-0000-0000-000000000000')
+    local prev_item = nil
+    local next_item = nil
+
+    cb('ok')
+
+    if (MENUV_MAIN.CURRENT_MENU == nil) then return end
+
+    for key, option in pairs(MENUV_MAIN.CURRENT_MENU.Items) do
+        if (option.UUID == prev_uuid) then
+            prev_item = option
+
+            MENUV_MAIN.CURRENT_MENU.Items[key]:Trigger('leave')
+        end
+
+        if (option.UUID == next_uuid) then
+            next_item = option
+
+            MENUV_MAIN.CURRENT_MENU.Items[key]:Trigger('enter')
+        end
+    end
+
+    if (prev_item ~= nil and next_item ~= nil) then
+        MENUV_MAIN.CURRENT_MENU:Trigger('switch', next_item, prev_item)
+    end
+end)
+
+REGISTER_NUI_CALLBACK('update', function(info, cb)
+    local uuid = U:Ensure(info.uuid, '00000000-0000-0000-0000-000000000000')
+
+    cb('ok')
+
+    if (MENUV_MAIN.CURRENT_MENU == nil) then return end
+
+    --- @param option Item
+    for key, option in pairs(MENUV_MAIN.CURRENT_MENU.Items) do
+        if (option.UUID == uuid) then
+            local newValue, oldValue = nil, nil
+
+            if (option.__type == 'confirm' or option.__type == 'checkbox') then
+                newValue = U:Ensure(info.now, false)
+                oldValue = U:Ensure(info.prev, false)
+            elseif (option.__type == 'range') then
+                newValue = U:Ensure(info.now, option.Min)
+                oldValue = U:Ensure(info.prev, option.Min)
+            elseif (option.__type == 'slider') then
+                newValue = (U:Ensure(info.now, 0) + 1)
+                oldValue = (U:Ensure(info.prev, 0) + 1)
+            end
+
+            if (U:Any(option.__type, { 'button', 'menu', 'label' }, 'value')) then
+                return
+            end
+
+            MENUV_MAIN.CURRENT_MENU:Trigger('update', option, newValue, oldValue)
+            MENUV_MAIN.CURRENT_MENU.Items[key]:Trigger('change', newValue, oldValue)
+            return
+        end
+    end
 end)
 
 --- Make `MENUV_MAIN` global accessible
@@ -229,27 +396,3 @@ MENUV_MAIN:REGISTER_KEY('CLOSE', MENUV_MAIN:T('keybind_key_close'), 'KEYBOARD', 
 --- Mark this resource as loaded
 _G.MENUV_LOADED = true
 _ENV.MENUV_LOADED = true
-
---- Hide menu when required
-CREATE_THREAD(function()
-    local LAST_STATE = false
-
-    while true do
-        WAIT(MENUV_MAIN.THREAD_TIME)
-
-        if (MENUV_MAIN.CURRENT_MENU ~= nil) then
-            local newState = IS_SCREEN_FADED_OUT() or IS_PAUSE_MENU_ACTIVE()
-
-            if (newState ~= LAST_STATE) then
-                SEND_NUI_MESSAGE({
-                    action = 'UPDATE_STATUS',
-                    status = not newState
-                })
-            end
-
-            LAST_STATE = newState
-        else
-            LAST_STATE = false
-        end
-    end
-end)

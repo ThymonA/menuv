@@ -172,7 +172,7 @@ function CreateMenuItem(info)
         end
     }
 
-    item.Events.OnEvent = {}
+    item.Events.OnEnter = {}
     item.Events.OnLeave = {}
     item.Events.OnUpdate = {}
 

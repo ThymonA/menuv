@@ -10,15 +10,15 @@
 local assert = assert
 ---@type MenuV
 local MenuV = assert(MenuV)
----@type Utilities
-local U = assert(Utilities)
 
 --- MenuV Menu
 ---@type Menu
 local menu = MenuV:CreateMenu('MenuV', 'Welcome to MenuV', 'topleft', 0, 0, 255)
+local menu2 = MenuV:CreateMenu('Demo 2', 'Open this demo menu in MenuV', 'topleft', 255, 0, 0)
 
-local button = menu:AddButton({ icon = '😃', label = 'Test', value = menu, description = 'YEA :D' })
-local confirm = menu:AddConfirm({ icon = '🔥', label = 'Confirm', value = 'yes' })
+local menu_button = menu:AddButton({ icon = '😃', label = 'Open Demo 2 Menu', value = menu2, description = 'YEA :D from first menu' })
+local menu2_button = menu2:AddButton({ icon = '😃', label = 'Open First Menu', value = menu, description = 'YEA :D from second menu' })
+local confirm = menu:AddConfirm({ icon = '🔥', label = 'Confirm', value = 'no' })
 local range = menu:AddRange({ icon = '⚽', label = 'Range Item', min = 0, max = 10, value = 0 })
 local checkbox = menu:AddCheckbox({ icon = '💡', label = 'Checkbox Item', value = 'n' })
 local slider = menu:AddSlider({ icon = '❤️', label = 'Slider', value = 'demo', values = {
@@ -27,5 +27,21 @@ local slider = menu:AddSlider({ icon = '❤️', label = 'Slider', value = 'demo
     { label = 'Demo Item 3', value = 'demo3', description = 'Demo Item 3' },
     { label = 'Demo Item 4', value = 'demo4', description = 'Demo Item 4' }
 }})
+
+--- Events
+confirm:On('confirm', function(item) print('YOU ACCEPTED THE TERMS') end)
+confirm:On('deny', function(item) print('YOU DENIED THE TERMS') end)
+
+range:On('select', function(item, value) print(('FROM %s to %s YOU SELECTED %s'):format(item.Min, item.Max, value)) end)
+range:On('change', function(item, newValue, oldValue)
+    menu.Title = ('MenuV %s'):format(newValue)
+end)
+
+slider:On('select', function(item, value) print(('YOU SELECTED %s'):format(value)) end)
+
+confirm:On('enter', function(item) print('YOU HAVE NOW A CONFIRM ACTIVE') end)
+confirm:On('leave', function(item) print('YOU LEFT OUR CONFIRM :(') end)
+
+menu:On('switch', function(item, currentItem, prevItem) print(('YOU HAVE SWITCH THE ITEMS FROM %s TO %s'):format(prevItem.__type, currentItem.__type)) end)
 
 menu()
