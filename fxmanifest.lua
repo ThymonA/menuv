@@ -33,3 +33,10 @@ client_scripts {
     'app/lua_components/utilities.lua',
     'app/menuv.lua'
 }
+
+dependencies {
+    'yarn',
+    'webpack'
+}
+
+webpack_config 'webpack.config.js'
