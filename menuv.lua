@@ -100,15 +100,17 @@ end
 ---@param r number 0-255 RED
 ---@param g number 0-255 GREEN
 ---@param b number 0-255 BLUE
+---@param icon string Icon from FontAwsome https://fontawesome.com/icons?d=gallery
 ---@return Menu
-function MenuV:CreateMenu(title, subtitle, position, r, g, b)
+function MenuV:CreateMenu(title, subtitle, position, r, g, b, icon)
     local menu = CreateMenu({
         Title = title,
         Subtitle = subtitle,
         Position = position,
         R = r,
         G = g,
-        B = b
+        B = b,
+        Icon = icon
     })
 
     local index = #(self.Menus or {}) + 1
@@ -201,6 +203,12 @@ REGISTER_NUI_CALLBACK('open', function(info, cb)
     cb('ok')
 
     if (MenuV.CurrentMenu == nil or MenuV.CurrentMenu.UUID == uuid) then return end
+
+    for _, v in pairs(MenuV.ParentMenus) do
+        if (v.UUID == uuid) then
+            return
+        end
+    end
 
     MenuV.CurrentMenu:RemoveOnEvent('update', MenuV.CurrentUpdateUUID)
     MenuV.CurrentMenu:Trigger('close')

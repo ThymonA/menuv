@@ -34,6 +34,7 @@ export interface Item {
 
 export interface Menu {
     resource: string;
+    icon: string;
     uuid: string;
     title: string;
     subtitle: string;
@@ -54,6 +55,7 @@ export default VUE.extend({
     data() {
         return {
             resource: 'menuv',
+            icon: 'none',
             uuid: '',
             menu: false,
             show: false,
@@ -132,6 +134,7 @@ export default VUE.extend({
             this.RESET_MENU();
 
             this.resource = this.ENSURE(menu.resource, 'menuv');
+            this.icon = this.ENSURE(menu.icon, 'none');
             this.uuid = this.ENSURE(menu.uuid, '00000000-0000-0000-0000-000000000000');
             this.title = this.ENSURE(menu.title, this.title);
             this.subtitle = this.ENSURE(menu.subtitle, this.subtitle);
@@ -171,6 +174,7 @@ export default VUE.extend({
             this.resource = 'menuv';
             this.menu = false;
             this.show = false;
+            this.icon = 'none';
             this.uuid = '00000000-0000-0000-0000-000000000000';
             this.title = 'MenuV';
             this.subtitle = '';

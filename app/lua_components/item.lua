@@ -37,7 +37,7 @@ function CreateMenuItem(info)
         ---@type string
         UUID = U:UUID(),
         ---@type string
-        Icon = U:Ensure(info.Icon or info.icon, '▶️'),
+        Icon = U:Ensure(info.Icon or info.icon, 'none'),
         ---@type string
         Label = U:Ensure(info.Label or info.label, ''),
         ---@type string

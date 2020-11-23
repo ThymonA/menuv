@@ -54,7 +54,7 @@
     <header class="menuv-header">
       <strong>{{title}}</strong>
         <span class="menuv-bg-icon">
-          <i class="fas fa-car"></i>
+          <i v-if="icon != 'none'" :class="icon"></i>
         </span>
     </header>
     <nav class="menuv-subheader">
@@ -62,7 +62,7 @@
     </nav>
     <ul class="menuv-items">
       <li class="menuv-item" v-for="item in items" :key="item.uuid" :class="{'active': (index + 1) == item.index}">
-        <span class="menuv-icon">{{ENSURE(item.icon, '▶️')}}</span>
+        <span class="menuv-icon" v-if="ENSURE(item.icon, 'none') != 'none'">{{ENSURE(item.icon, 'none')}}</span>
         {{item.label}}
         <i class="fas fa-arrow-right" v-if="item.type == 'menu'"></i>
         <i v-if="item.type == 'checkbox'" :class="{'fas fa-check': item.value, 'far fa-square': !item.value}"></i>

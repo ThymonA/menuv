@@ -44,6 +44,8 @@ function CreateMenu(info)
         ---@type string
         UUID = U:UUID(),
         ---@type string
+        Icon = U:Ensure(info.Icon or info.icon, 'none'),
+        ---@type string
         Title = U:Ensure(info.Title or info.title, 'MenuV'),
         ---@type string
         Subtitle = U:Ensure(info.Subtitle or info.subtitle, ''),
@@ -460,6 +462,7 @@ function CreateMenu(info)
         ---@return table
         ToTable = function(t)
             local tempTable = {
+                icon = U:Ensure(t.Icon, 'none'),
                 uuid = U:Ensure(t.UUID, '00000000-0000-0000-0000-000000000000'),
                 title = U:Ensure(t.Title, 'MenuV'),
                 subtitle = U:Ensure(t.Subtitle, ''),
@@ -489,7 +492,7 @@ function CreateMenu(info)
                     index = index,
                     type = option.__type,
                     uuid = U:Ensure(option.UUID, 'unknown'),
-                    icon = U:Ensure(option.Icon, '▶️'),
+                    icon = U:Ensure(option.Icon, 'none'),
                     label = U:Ensure(option.Label, 'Unknown'),
                     description = U:Ensure(option.Description, ''),
                     value = 'none',
