@@ -133,6 +133,7 @@ export default VUE.extend({
             this.POST(`http://menuv/open`, { uuid: this.uuid, r: this.resource });
             this.RESET_MENU();
 
+            this.index = 0;
             this.resource = this.ENSURE(menu.resource, 'menuv');
             this.icon = this.ENSURE(menu.icon, 'none');
             this.uuid = this.ENSURE(menu.uuid, '00000000-0000-0000-0000-000000000000');
@@ -245,6 +246,10 @@ export default VUE.extend({
             }
 
             return output as T;
+        },
+        LABEL: function(input: string): string {
+            if (input.length <= 20) { return input; }
+            return `${input.substring(0, 20)}...`;
         },
         IS_DEFAULT: function(input: any): boolean {
             if (typeof input == 'string') {
