@@ -70,24 +70,6 @@ menu:On(event: string, callback: function);
 item:On(event: string, callback: function);
 ```
 
-<style>
-table th:first-of-type {
-    min-width: 10%;
-    max-width: 10%;
-    width: 10%;
-}
-table th:nth-of-type(2) {
-    min-width: 50%;
-    max-width: 50%;
-    width: 50%;
-}
-table th:nth-of-type(3) {
-    min-width: 30%;
-    max-width: 30%;
-    width: 30%;
-}
-</style>
-
 #### **MENU EVENTS**
 EVENT | PARAMS | DESCRIPTION
 :-----|:-------|:-----------
