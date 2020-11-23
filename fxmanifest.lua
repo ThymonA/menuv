@@ -21,17 +21,15 @@ url 'https://github.com/ThymonA/menuv/'
 files {
     'dist/*.html',
     'dist/assets/css/*.css',
-    'languages/*.json'
+    'languages/*.json',
+    'app/lua_components/*.lua',
+    'menuv.lua'
 }
 
 ui_page 'dist/menuv.html'
 
 client_scripts {
     'config.lua',
-    'menuv/utilities.lua',
-    'menuv/item.lua',
-    'menuv/menu.lua',
-    'menuv.lua',
-    'client/menuv.lua',
-    'example.lua'
+    'app/lua_components/utilities.lua',
+    'app/menuv.lua'
 }

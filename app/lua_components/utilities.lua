@@ -24,6 +24,7 @@ local setmetatable = assert(setmetatable)
 
 --- FiveM globals
 local GET_GAME_TIMER = assert(GetGameTimer)
+local GET_CURRENT_RESOURCE_NAME = assert(GetCurrentResourceName)
 
 --- Utilities for MenuV
 ---@class Utilities
@@ -382,6 +383,10 @@ function Utilities:Replace(str, this, that)
     end
 end
 
---- Make `Utilities` global accessible
-_G.Utilities = Utilities
-_ENV.Utilities = Utilities
+if (GET_CURRENT_RESOURCE_NAME() == 'menuv') then
+    --- Make `Utilities` global accessible
+    _G.Utilities = Utilities
+    _ENV.Utilities = Utilities
+else
+    return Utilities
+end

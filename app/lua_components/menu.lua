@@ -621,3 +621,5 @@ function CreateMenu(info)
     ---@field public ToTable fun(t: Menu):table
     return setmetatable({ data = item, __class = 'Menu', __type = 'Menu' }, mt)
 end
+
+return CreateMenu

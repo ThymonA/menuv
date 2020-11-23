@@ -243,3 +243,5 @@ function CreateMenuItem(info)
     ---@field public GetValue fun(t: Item):any
     return setmetatable({ data = item, __class = 'Item', __type = U:Ensure(info.Type or info.type, 'unknown') }, mt)
 end
+
+return CreateMenuItem

@@ -8,33 +8,90 @@
 -- Description: FiveM menu libarary for creating menu's
 ----------------------- [ MenuV ] -----------------------
 local assert = assert
----@type Utilities
-local U = assert(Utilities)
-local pcall = assert(pcall)
+local type = assert(type)
+local load = assert(load)
+local xpcall = assert(xpcall)
+local pairs = assert(pairs)
 local insert = assert(table.insert)
-local upper = assert(string.upper)
+local remove = assert(table.remove)
+local traceback = assert(debug.traceback)
 local setmetatable = assert(setmetatable)
+local __environment = assert(_ENV)
 
 --- FiveM globals
-local Wait = assert(Citizen.Wait)
+local LOAD_RESOURCE_FILE = assert(LoadResourceFile)
+local GET_CURRENT_RESOURCE_NAME = assert(GetCurrentResourceName)
 local CreateThread = assert(Citizen.CreateThread)
-local GetResourceState = assert(GetResourceState)
-local GetCurrentResourceName = assert(GetCurrentResourceName)
-local exports = assert(exports)
+local Wait = assert(Citizen.Wait)
 
---- MenuV
----@class MenuV
-local MenuV_T = {
+--- Load a file from `menuv`
+---@param path string Path in `menuv`
+---@return any|nil Results of nil
+local function load_file(path)
+    if (path == nil or type(path) ~= 'string') then return nil end
+
+    local raw_file = LOAD_RESOURCE_FILE('menuv', path)
+
+    if (raw_file) then
+        local raw_func, _ = load(raw_file, ('menuv/%s'):format(path), 't', __environment)
+
+        if (raw_func) then
+            local ok, result = xpcall(raw_func, traceback)
+
+            if (ok) then
+                return result
+            end
+        end
+    end
+
+    return nil
+end
+
+--- MenuV globals
+Utilities = assert(Utilities or load_file('app/lua_components/utilities.lua'))
+CreateMenuItem = assert(CreateMenuItem or load_file('app/lua_components/item.lua'))
+CreateMenu = assert(CreateMenu or load_file('app/lua_components/menu.lua'))
+
+--- MenuV table
+local menuv_table = {
+    ---@type string
     __class = 'MenuV',
+    ---@type string
     __type = 'MenuV',
-    __funcs = {
-        open = { loaded = false, self = nil, func = nil }
-    },
-    currentResource = GetCurrentResourceName(),
-    menus = {}
+    ---@type Menu|nil
+    CurrentMenu = nil,
+    ---@type string|nil
+    CurrentUpdateUUID = nil,
+    ---@type string
+    CurrentResourceName = GET_CURRENT_RESOURCE_NAME(),
+    ---@type boolean
+    Loaded = false,
+    ---@type Menu[]
+    Menus = {},
+    ---@type Menu[]
+    ParentMenus = {},
+    ---@type table<string, function>
+    NUICallbacks = {}
 }
-local MenuV_MT = {}
-local MenuV = setmetatable(MenuV_T, MenuV_MT)
+
+---@class MenuV
+MenuV = setmetatable(menuv_table, {})
+
+--- Send a NUI message to MenuV resource
+---@param input any
+local SEND_NUI_MESSAGE = function(input)
+    exports['menuv']:SendNUIMessage(input)
+end
+
+--- Register a NUI callback event
+---@param name string Name of callback
+---@param cb function Callback to execute
+local REGISTER_NUI_CALLBACK = function(name, cb)
+    name = Utilities:Ensure(name, 'unknown')
+    cb = Utilities:Ensure(cb, function(_, cb) cb('ok') end)
+
+    MenuV.NUICallbacks[name] = cb
+end
 
 --- Create a `MenuV` menu
 ---@param title string Title of Menu
@@ -45,7 +102,7 @@ local MenuV = setmetatable(MenuV_T, MenuV_MT)
 ---@param b number 0-255 BLUE
 ---@return Menu
 function MenuV:CreateMenu(title, subtitle, position, r, g, b)
-    local m = CreateMenu({
+    local menu = CreateMenu({
         Title = title,
         Subtitle = subtitle,
         Position = position,
@@ -54,122 +111,203 @@ function MenuV:CreateMenu(title, subtitle, position, r, g, b)
         B = b
     })
 
-    insert(self.menus, m)
+    local index = #(self.Menus or {}) + 1
 
-    return self.menus[#self.menus] or m
+    insert(self.Menus, index, menu)
+
+    return self.Menus[index] or menu
+end
+
+--- Load a menu based on `uuid`
+---@param uuid string UUID of menu
+---@return Menu|nil Founded menu or `nil`
+function MenuV:GetMenu(uuid)
+    uuid = Utilities:Ensure(uuid, '00000000-0000-0000-0000-000000000000')
+
+    for _, v in pairs(self.Menus) do
+        if (v.UUID == uuid) then
+            return v
+        end
+    end
+
+    return nil
 end
 
 --- Open a menu
---- @param input Menu|string Menu to open
-function MenuV:OpenMenu(input)
-    if (U:Typeof(input) == 'string') then
-        for i = 1, #self.menus, 1 do
-            if (self.menus[i].UUID == input) then
-                local menu = self.menus[i]
+---@param menu Menu|string Menu or UUID of Menu
+---@param cb function Execute this callback when menu has opened
+function MenuV:OpenMenu(menu, cb)
+    local uuid = Utilities:Typeof(menu) == 'Menu' and menu.UUID or Utilities:Typeof(menu) == 'string' and menu
 
-                if (self.__funcs.open.loaded) then
-                    if (self.__funcs.open.self == nil) then
-                        self.__funcs.open.func(menu)
-                    else
-                        self.__funcs.open.func(self.__funcs.open.self, menu)
-                    end
-                else
-                    CreateThread(function()
-                        while not self.__funcs.open.loaded do Wait(0) end
+    if (uuid == nil) then return end
 
-                        MenuV:OpenMenu(menu)
-                    end)
-                end
-            end
-        end
+    cb = Utilities:Ensure(cb, function() end)
+
+    if (not self.Loaded) then
+        CreateThread(function()
+            repeat Wait(0) until MenuV.Loaded
+
+            MenuV:OpenMenu(uuid, cb)
+        end)
         return
     end
 
-    if (U:Typeof(input) == 'Menu') then
-        local menu = input
+    menu = self:GetMenu(uuid)
 
-        if (self.__funcs.open.loaded) then
-            if (self.__funcs.open.self == nil) then
-                self.__funcs.open.func(menu)
-            else
-                self.__funcs.open.func(self.__funcs.open.self, menu)
+    if (menu == nil) then return end
+
+    if (self.CurrentMenu ~= nil) then
+        insert(self.ParentMenus, self.CurrentMenu)
+
+        self.CurrentMenu:RemoveOnEvent('update', self.CurrentUpdateUUID)
+    end
+
+    self.CurrentMenu = menu
+    self.CurrentUpdateUUID = menu:On('update', function(m, k, v)
+        k = Utilities:Ensure(k, 'unknown')
+
+        if (k == 'Title' or k == 'title') then
+            SEND_NUI_MESSAGE({ action = 'UPDATE_TITLE', title = Utilities:Ensure(v, 'MenuV') })
+        elseif (k == 'Subtitle' or k == 'subtitle') then
+            SEND_NUI_MESSAGE({ action = 'UPDATE_SUBTITLE', title = Utilities:Ensure(v, '') })
+        end
+    end)
+
+    SEND_NUI_MESSAGE({
+        action = 'OPEN_MENU',
+        menu = menu:ToTable()
+    })
+end
+
+--- Mark MenuV as loaded when `main` resource is loaded
+exports['menuv']:IsLoaded(function()
+    MenuV.Loaded = true
+end)
+
+--- Register callback handler for MenuV
+exports('NUICallback', function(name, info, cb)
+    name = Utilities:Ensure(name, 'unknown')
+
+    if (MenuV.NUICallbacks == nil or MenuV.NUICallbacks[name] == nil) then
+        return
+    end
+
+    MenuV.NUICallbacks[name](info, cb)
+end)
+
+REGISTER_NUI_CALLBACK('submit', function(info, cb)
+    local uuid = Utilities:Ensure(info.uuid, '00000000-0000-0000-0000-000000000000')
+
+    cb('ok')
+
+    if (MenuV.CurrentMenu == nil) then return end
+
+    for k, v in pairs(MenuV.CurrentMenu.Items) do
+        if (v.UUID == uuid) then
+            if (v.__type == 'confirm' or v.__type == 'checkbox') then
+                v.Value = Utilities:Ensure(info.value, false)
+            elseif (v.__type == 'range') then
+                v.Value = Utilities:Ensure(info.value, v.Min)
+            elseif (v.__type == 'slider') then
+                v.Value = Utilities:Ensure(info.value, 0) + 1
             end
-        else
-            CreateThread(function()
-                while not self.__funcs.open.loaded do Wait(0) end
 
-                MenuV:OpenMenu(menu)
-            end)
+            MenuV.CurrentMenu:Trigger('select', v)
+
+            if (v.__type == 'button' or v.__type == 'menu') then
+                MenuV.CurrentMenu.Items[k]:Trigger('select')
+            elseif (v.__type == 'range') then
+                MenuV.CurrentMenu.Items[k]:Trigger('select', v.Value)
+            elseif (v.__type == 'slider') then
+                local option = MenuV.CurrentMenu.Items[k].Values[v.Value] or nil
+
+                if (option == nil) then return end
+
+                MenuV.CurrentMenu.Items[k]:Trigger('select', option.Value)
+            end
+
+            return
         end
     end
-end
+end)
 
---- Try to execute `func`, if error has been throwed `catch_func` is called
----@param func function Try to execute this function
----@param catch_func function Catch when `func` has failed to execute
-local function try(func, catch_func)
-    if (U:Typeof(func) ~= 'function') then return end
-    if (U:Typeof(catch_func) ~= 'function') then return end
+REGISTER_NUI_CALLBACK('close', function(info, cb)
+    local uuid = Utilities:Ensure(info.uuid, '00000000-0000-0000-0000-000000000000')
 
-    local ok, exp = pcall(func)
+    if (MenuV.CurrentMenu == nil or MenuV.CurrentMenu.UUID ~= uuid) then cb('ok') return end
 
-    if (not ok) then
-        catch_func(exp)
+    MenuV.CurrentMenu:RemoveOnEvent('update', MenuV.CurrentUpdateUUID)
+    MenuV.CurrentMenu = nil
+
+    if (#MenuV.ParentMenus <= 0) then cb('ok') return end
+
+    local prev_index = #MenuV.ParentMenus
+    local prev_menu = MenuV.ParentMenus[prev_index] or nil
+
+    if (prev_menu == nil) then cb('ok') return end
+
+    remove(MenuV.ParentMenus, prev_index)
+
+    MenuV:OpenMenu(prev_menu, function()
+        cb('ok')
+    end)
+end)
+
+REGISTER_NUI_CALLBACK('switch', function(info, cb)
+    local prev_uuid = Utilities:EndsWith(info.prev, '00000000-0000-0000-0000-000000000000')
+    local next_uuid = Utilities:EndsWith(info.next, '00000000-0000-0000-0000-000000000000')
+    local prev_item, next_item = nil, nil
+
+    cb('ok')
+
+    if (MenuV.CurrentMenu == nil) then return end
+
+    for k, v in pairs(MenuV.CurrentMenu.Items) do
+        if (v.UUID == prev_uuid) then
+            prev_item = v
+
+            MenuV.CurrentMenu.Items[k]:Trigger('leave')
+        end
+
+        if (v.UUID == next_uuid) then
+            next_uuid = v
+
+            MenuV.CurrentMenu.Items[k]:Trigger('enter')
+        end
     end
-end
 
-local function load_export(_le)
-    CreateThread(function()
-        if (MenuV.currentResource == 'menuv') then
-            local loaded = _G.MENUV_LOADED or _ENV.MENUV_LOADED
+    if (prev_item ~= nil and next_item ~= nil) then
+        MenuV.CurrentMenu:Trigger('switch', next_item, prev_item)
+    end
+end)
 
-            if (not loaded) then
-                Wait(0)
-                load_export(_le)
+REGISTER_NUI_CALLBACK('update', function(info, cb)
+    local uuid = Utilities:Ensure(info.uuid, '00000000-0000-0000-0000-000000000000')
 
-                return
+    cb('ok')
+
+    if (MenuV.CurrentMenu == nil) then return end
+
+    for k, v in pairs(MenuV.CurrentMenu.Items) do
+        if (v.UUID == uuid) then
+            local newValue, oldValue = nil, nil
+
+            if (v.__type == 'confirm' or v.__type == 'checkbox') then
+                newValue = Utilities:Ensure(info.now, false)
+                oldValue = Utilities:Ensure(info.prev, false)
+            elseif (v.__type == 'range') then
+                newValue = Utilities:Ensure(info.now, v.Min)
+                oldValue = Utilities:Ensure(info.prev, v.Min)
+            elseif (v.__type == 'slider') then
+                newValue = Utilities:Ensure(info.now, 0) + 1
+                oldValue = Utilities:Ensure(info.prev, 0) + 1
             end
-        else
-            repeat Wait(0) until GetResourceState(_le.r) == 'started'
+
+            if (Utilities:Any(v.__type, { 'button', 'menu', 'label' }, 'value')) then return end
+
+            MenuV.CurrentMenu:Trigger('update', v, newValue, oldValue)
+            MenuV.CurrentMenu.Items[k]:Trigger('change', newValue, oldValue)
+            return
         end
-
-        try(function()
-            if (MenuV.currentResource ~= _le.r) then
-                MenuV.__funcs[_le.f] = { loaded = false, self = assert(exports[_le.r]), func = nil }
-                MenuV.__funcs[_le.f].func = assert(MenuV.__funcs[_le.f].self[_le.f])
-                MenuV.__funcs[_le.f].loaded = true
-            else
-                local KEY = ('MENUV_%s'):format(upper(_le.f))
-
-                MenuV.__funcs[_le.f] = { loaded = true, self = nil, func = assert(_G[KEY] or _ENV[KEY]) }
-            end
-        end, function()
-            MenuV.__funcs[_le.f] = { loaded = true, self = nil, func = function() end }
-        end)
-    end)
-end
-
---- Load and cache those exprots
-local __loadExports = {
-    [1] = { r = 'menuv', f = 'open' }
-}
-
-for _, _le in pairs(__loadExports) do
-    try(function()
-        if (MenuV.currentResource ~= _le.r) then
-            MenuV.__funcs[_le.f] = { loaded = false, self = assert(exports[_le.r]), func = nil }
-            MenuV.__funcs[_le.f].func = assert(MenuV.__funcs[_le.f].self[_le.f])
-            MenuV.__funcs[_le.f].loaded = true
-        else
-            MenuV.__funcs[_le.f] = { loaded = true, self = nil, func = assert(_G[('MENUV_%s'):format(upper(_le.f))] or _ENV[('MENUV_%s'):format(upper(_le.f))]) }
-        end
-    end, function()
-        MenuV.__funcs[_le.f] = { loaded = false, self = nil, func = nil }
-
-        load_export(_le)
-    end)
-end
-
---- Make `MenuV` global accessible
-_G.MenuV = MenuV
-_ENV.MenuV = MenuV
+    end
+end)

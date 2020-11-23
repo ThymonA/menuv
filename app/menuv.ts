@@ -33,6 +33,7 @@ export interface Item {
 }
 
 export interface Menu {
+    resource: string;
     uuid: string;
     title: string;
     subtitle: string;
@@ -52,6 +53,7 @@ export default VUE.extend({
     },
     data() {
         return {
+            resource: 'menuv',
             uuid: '',
             menu: false,
             show: false,
@@ -96,7 +98,7 @@ export default VUE.extend({
             const prevItem = this.items[oldValue];
             const currentItem = this.items[newValue];
 
-            this.POST('http://menuv/switch', { prev: prevItem.uuid, next: currentItem.uuid });
+            this.POST(`http://menuv/switch`, { prev: prevItem.uuid, next: currentItem.uuid, r: this.resource });
         },
         items: {
             deep: true,
@@ -116,7 +118,7 @@ export default VUE.extend({
 
                 if (sameItem == null) { return; }
                 
-                this.POST('http://menuv/update', { uuid: currentItem.uuid, prev: sameItem.value, now: currentItem.value });
+                this.POST(`http://menuv/update`, { uuid: currentItem.uuid, prev: sameItem.value, now: currentItem.value, r: this.resource });
             }
         }
     },
@@ -128,6 +130,7 @@ export default VUE.extend({
         OPEN_MENU({ menu }: { menu: Menu }) {
             this.RESET_MENU();
 
+            this.resource = this.ENSURE(menu.resource, 'menuv');
             this.uuid = this.ENSURE(menu.uuid, '00000000-0000-0000-0000-000000000000');
             this.title = this.ENSURE(menu.title, this.title);
             this.subtitle = this.ENSURE(menu.subtitle, this.subtitle);
@@ -162,6 +165,7 @@ export default VUE.extend({
             }
         },
         RESET_MENU() {
+            this.resource = 'menuv';
             this.menu = false;
             this.show = false;
             this.uuid = '00000000-0000-0000-0000-000000000000';
@@ -355,10 +359,10 @@ export default VUE.extend({
             switch(item.type) {
                 case 'button':
                 case 'menu':
-                    this.POST('http://menuv/submit', { uuid: item.uuid, value: null });
+                    this.POST(`http://menuv/submit`, { uuid: item.uuid, value: null, r: this.resource });
                     break;
                 case 'confirm':
-                    this.POST('http://menuv/submit', { uuid: item.uuid, value: item.value as boolean });
+                    this.POST(`http://menuv/submit`, { uuid: item.uuid, value: item.value as boolean, r: this.resource });
                     break;
                 case 'range':
                     let range_value = item.value as number;
@@ -366,14 +370,14 @@ export default VUE.extend({
                     if (range_value <= item.min) { range_value = item.min; }
                     else if (range_value >= item.max) { range_value = item.max; }
                     
-                    this.POST('http://menuv/submit', { uuid: item.uuid, value: range_value });
+                    this.POST(`http://menuv/submit`, { uuid: item.uuid, value: range_value, r: this.resource });
                     break;
                 case 'checkbox':
                     const boolean_value = item.value as boolean;
 
                     this.items[this.index].value = !boolean_value;
 
-                    this.POST('http://menuv/submit', { uuid: item.uuid, value: this.items[this.index].value });
+                    this.POST(`http://menuv/submit`, { uuid: item.uuid, value: this.items[this.index].value, r: this.resource });
                     break;
                 case 'slider':
                     let slider_value = item.value as number;
@@ -381,12 +385,12 @@ export default VUE.extend({
 
                     if (slider_values.length <= 0 || slider_value < 0 || slider_value >= slider_values.length) { return; }
                    
-                    this.POST('http://menuv/submit', { uuid: item.uuid, value: slider_value });
+                    this.POST(`http://menuv/submit`, { uuid: item.uuid, value: slider_value, r: this.resource });
                     break;
             }
         },
         KEY_CLOSE: function() {
-            this.POST('http://menuv/close', { uuid: this.uuid });
+            this.POST(`http://menuv/close`, { uuid: this.uuid, r: this.resource });
             this.CLOSE_MENU();
         },
         POST: function(url: string, data: object|[]) {

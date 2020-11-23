@@ -8,164 +8,93 @@
 -- Description: FiveM menu libarary for creating menu's
 ----------------------- [ MenuV ] -----------------------
 local assert = assert
+local lower = assert(string.lower)
+local upper = assert(string.upper)
+local decode = assert(json.decode)
+local rawget = assert(rawget)
+local rawset = assert(rawset)
+local setmetatable = assert(setmetatable)
+
+--- FiveM globals
+local GetInvokingResource = assert(GetInvokingResource)
+local LoadResourceFile = assert(LoadResourceFile)
+local RegisterKeyMapping = assert(RegisterKeyMapping)
+local RegisterCommand = assert(RegisterCommand)
+local SendNUIMessage = assert(SendNUIMessage)
+local RegisterNUICallback = assert(RegisterNUICallback)
+local IsScreenFadedOut = assert(IsScreenFadedOut)
+local IsPauseMenuActive = assert(IsPauseMenuActive)
+local CreateThread = assert(Citizen.CreateThread)
+local Wait = assert(Citizen.Wait)
+local exports = assert(exports)
+
+--- MenuV globals
 ---@type Utilities
-local U = assert(Utilities)
-local INSERT = assert(table.insert)
-local REMOVE = assert(table.remove)
-local DECODE = assert(json.decode)
-local LOWER = assert(string.lower)
-local UPPER = assert(string.upper)
-local RAWSET = assert(rawset)
-local RAWGET = assert(rawget)
+local Utilities = assert(Utilities)
 
---- FiveM Globals
-local REGISTER_NUI_CALLBACK = assert(RegisterNUICallback)
-local SEND_NUI_MESSAGE = assert(SendNUIMessage)
-local LOAD_RESOURCE_FILE = assert(LoadResourceFile)
-local REGISTER_KEY_MAPPING = assert(RegisterKeyMapping)
-local REGISTER_COMMAND = assert(RegisterCommand)
-local CREATE_THREAD = assert(Citizen.CreateThread)
-local WAIT = assert(Citizen.Wait)
-local IS_SCREEN_FADED_OUT = assert(IsScreenFadedOut)
-local IS_PAUSE_MENU_ACTIVE = assert(IsPauseMenuActive)
-
---- VARIABLES OF MENUV
-local MENUV_TABLE = {
-    ---@type Menu|nil
-    CURRENT_MENU = nil,
+local MenuV = setmetatable({
     ---@type string
-    CURRENT_UPDATE_UUID = nil,
-    ---@type string[]
-    PARENT_MENUS = {},
+    __class = 'MenuV',
+    ---@type string
+    __type = 'MenuV',
     ---@type boolean
-    LOADED = false,
+    Loaded = false,
+    ---@type string
+    Language = Utilities:Ensure((Config or {}).Language, 'en'),
     ---@type number
-    THREAD_TIME = 500,
-    ---@type boolean
-    THREAD_ACTIVE = false,
+    ThreadWait = Utilities:Ensure((Config or {}).HideInterval, 250),
     ---@type table<string, string>
-    TRANSLATIONS = {},
-    ---@type string
-    LANGUAGE = U:Ensure(MENUV_CONFIG.Language, 'en'),
-    ---@type table<string, table>
-    KEYS = setmetatable({ data = {}, __class = 'MENUV_KEYS', __type = 'KEYS' }, {
+    Translations = {},
+    ---@class keys
+    Keys = setmetatable({ data = {}, __class = 'MenuVKeys', __type = 'keys' }, {
         __index = function(t, k)
-            return RAWGET(t.data, k)
+            return rawget(t.data, k)
         end,
         __newindex = function(t, k, v)
-            local key = U:Ensure(k, 'unknown')
+            k = Utilities:Ensure(k, 'unknown')
 
-            if (key == 'unknown') then return end
+            if (k == 'unknown') then return end
 
-            local rawKey = RAWGET(t.data, key)
+            local rawKey = rawget(t.data, k)
             local keyExists = rawKey ~= nil
-            local previeusState = U:Ensure((rawKey or {}).status, false)
-            local newState = U:Ensure(v, false)
+            local prevState = Utilities:Ensure((rawKey or {}).status, false)
+            local newState = Utilities:Ensure(v, false)
 
             if (keyExists) then
-                RAWSET(t.data[key], 'status', newState)
+                rawset(t.data[k], 'status', newState)
 
-                if (previeusState ~= newState) then
-                    local trigger = newState and not previeusState and 'KEY_PRESSED' or 'KEY_RELEASED'
-                    local action = U:Ensure(rawKey.action, 'UNKNOWN')
+                if (prevState ~= newState) then
+                    local action = newState and not prevState and 'KEY_PRESSED' or 'KEY_RELEASED'
+                    local key = Utilities:Ensure(rawKey.action, 'UNKNOWN')
 
-                    SEND_NUI_MESSAGE({
-                        action = trigger,
-                        key = action
-                    })
+                    SendNUIMessage({ action = action, key = key })
                 end
             end
         end,
-        __call = function(t, key, action)
-            key = U:Ensure(key, 'unknown')
-            action = U:Ensure(action, 'UNKNOWN')
+        __call = function(t, k, a)
+            k = Utilities:Ensure(k, 'unknown')
+            a = Utilities:Ensure(a, 'UNKNOWN')
 
-            if (key == 'unknown') then return end
+            if (k == 'unknown') then return end
 
-            local rawKey = RAWGET(t.data, key)
+            local rawKey = rawget(t.data, k)
             local keyExists = rawKey ~= nil
 
             if (keyExists) then return end
 
-            RAWSET(t.data, key, { status = false, action = action })
+            rawset(t.data, k, { status = false, action = a })
         end
     })
-}
-
---- LUA METATABLE OF MENUV
-local MENUV_META = {}
-
---- MENUV MAIN CLASS
----@class MENUV_MAIN
-local MENUV_MAIN = setmetatable(MENUV_TABLE, MENUV_META)
+}, {})
 
 --- Load all translations
-function MENUV_MAIN:LOAD_TRANSLATIONS()
-    local path = ('languages/%s.json'):format(self.LANGUAGE)
-    local raw = LOAD_RESOURCE_FILE('menuv', path)
+local translations_path = ('languages/%s.json'):format(MenuV.Language)
+local translations_raw = LoadResourceFile('menuv', translations_path)
 
-    if (raw) then
-        local data = DECODE(raw)
+if (translations_raw) then
+    local transFile = decode(translations_raw)
 
-        if (data) then
-            self.TRANSLATIONS = U:Ensure(data.translations, {})
-        end
-    end
-end
-
---- Open a menu
----@param menu Menu Menu of MenuV
----@param cb function Trigger `callback` when menu has been opened
-function MENUV_MAIN:OPEN(menu, cb)
-    if (U:Typeof(menu) ~= 'Menu') then return end
-
-    cb = U:Ensure(cb, function() end)
-
-    if (not self.LOADED) then
-        CREATE_THREAD(function()
-            repeat WAIT(0) until self.LOADED
-
-            self:OPEN(menu, cb)
-        end)
-    else
-        if (self.CURRENT_MENU ~= nil) then
-            if (self.PARENT_MENUS == nil) then self.PARENT_MENUS = {} end
-
-            INSERT(self.PARENT_MENUS, self.CURRENT_MENU)
-
-            self.CURRENT_MENU:RemoveOnEvent('update', self.CURRENT_UPDATE_UUID)
-        end
-
-        self.THREAD_TIME = 250
-        self:MAIN_THREAD()
-        self.CURRENT_MENU = menu
-        self.CURRENT_UPDATE_UUID = self.CURRENT_MENU:On('update', function(m, k, v)
-            k = U:Ensure(k, 'unknown')
-
-            if (k == 'Title' or k == 'title') then
-                v = U:Ensure(v, 'MenuV')
-
-                SEND_NUI_MESSAGE({
-                    action = 'UPDATE_TITLE',
-                    title = v
-                })
-            elseif (k == 'Subtitle' or k == 'subtitle') then
-                v = U:Ensure(v, '')
-
-                SEND_NUI_MESSAGE({
-                    action = 'UPDATE_SUBTITLE',
-                    subtitle = v
-                })
-            end
-        end)
-
-        SEND_NUI_MESSAGE({
-            action = 'OPEN_MENU',
-            menu = menu:ToTable()
-        })
-
-        cb()
-    end
+    if (transFile) then MenuV.Translations = Utilities:Ensure(transFile.translations, {}) end
 end
 
 --- Register a `action` with custom keybind
@@ -173,226 +102,118 @@ end
 ---@param description string Description of keybind
 ---@param defaultType string Type like: keyboard, mouse etc.
 ---@param defaultKey string Default key for this keybind
-function MENUV_MAIN:REGISTER_KEY(action, description, defaultType, defaultKey)
-    description = U:Ensure(description, 'unknown')
-    defaultType = U:Ensure(defaultType, 'keyboard')
-    defaultKey = U:Ensure(defaultKey, 'F12')
-    action = U:Ensure(action, 'UNKNOWN')
+function MenuV:RegisterKey(action, description, defaultType, defaultKey)
+    action = Utilities:Ensure(action, 'UNKNOWN')
+    description = Utilities:Ensure(description, 'unknown')
+    defaultType = Utilities:Ensure(defaultType, 'keyboard')
+    defaultKey = Utilities:Ensure(defaultKey, 'F12')
 
-    action = U:Replace(action, ' ', '_')
-    action = UPPER(action)
+    action = Utilities:Replace(action, ' ', '_')
+    action = upper(action)
 
-    if (self.KEYS ~= nil and self.KEYS[action] ~= nil) then return end
+    if (self.Keys[action] ~= nil) then return end
 
-    self.KEYS(action, action)
+    self.Keys(action, action)
 
-    REGISTER_KEY_MAPPING(LOWER(('+menuv_%s'):format(action)), description, defaultType, defaultKey)
-    REGISTER_COMMAND(LOWER(('+menuv_%s'):format(action)), function() MENUV_MAIN.KEYS[action] = true end)
-    REGISTER_COMMAND(LOWER(('-menuv_%s'):format(action)), function() MENUV_MAIN.KEYS[action] = false end)
+    local k = lower(('menuv_%s'):format(action))
+
+    RegisterKeyMapping(('+%s'):format(k), description, defaultType, defaultKey)
+    RegisterCommand(('+%s'):format(k), function() MenuV.Keys[action] = true end)
+    RegisterCommand(('-%s'):format(k), function() MenuV.Keys[action] = false end)
 end
 
 --- Load translation
----@param translation string Translation key
----@return string Translation
-function MENUV_MAIN:T(translation)
-    translation = U:Ensure(translation, 'unknown')
+---@param k string Translation key
+---@return string Translation or 'MISSING TRANSLATION'
+local function T(k)
+    k = Utilities:Ensure(k, 'unknown')
 
-    return U:Ensure(self.TRANSLATIONS[translation], 'MISSING TRANSLATION')
+    return Utilities:Ensure(MenuV.Translations[k], 'MISSING TRANSLATION')
 end
 
---- Create a thread for showing / hiding menu when required
-function MENUV_MAIN:MAIN_THREAD()
-    if (self.THREAD_ACTIVE) then return end
+RegisterNUICallback('loaded', function(_, cb)
+    MenuV.Loaded = true
+    cb('ok')
+end)
 
-    self.THREAD_ACTIVE = true
+--- Trigger the NUICallback for the right resource
+---@param name string Name of callback
+---@param info table Info returns from callback
+---@param cb function Trigger this when callback is done
+local function TriggerResourceCallback(name, info, cb)
+    local r = Utilities:Ensure(info.r, 'menuv')
 
-    CREATE_THREAD(function()
-        local LAST_STATE = false
+    if (r == 'menuv') then cb('ok') return end
 
-        while true do
-            WAIT(MENUV_MAIN.THREAD_TIME)
+    local resource = exports[r] or nil
 
-            if (MENUV_MAIN.CURRENT_MENU ~= nil) then
-                local newState = IS_SCREEN_FADED_OUT() or IS_PAUSE_MENU_ACTIVE()
+    if (resource == nil) then cb('ok') return end
 
-                if (newState ~= LAST_STATE) then
-                    SEND_NUI_MESSAGE({
-                        action = 'UPDATE_STATUS',
-                        status = not newState
-                    })
-                end
+    local nuiCallback = resource['NUICallback'] or nil
 
-                LAST_STATE = newState
-            else
-                MENUV_MAIN.THREAD_TIME = 500
-                MENUV_MAIN.THREAD_ACTIVE = false
-                return
-            end
-        end
+    if (nuiCallback == nil) then cb('ok') return end
+
+    exports[r]:NUICallback(name, info, cb)
+end
+
+RegisterNUICallback('submit', function(info, cb) TriggerResourceCallback('submit', info, cb) end)
+RegisterNUICallback('close', function(info, cb) TriggerResourceCallback('close', info, cb) end)
+RegisterNUICallback('switch', function(info, cb) TriggerResourceCallback('switch', info, cb) end)
+RegisterNUICallback('update', function(info, cb) TriggerResourceCallback('update', info, cb) end)
+
+--- MenuV exports
+exports('IsLoaded', function(cb)
+    cb = Utilities:Ensure(cb, function() end)
+
+    if (MenuV.Loaded) then
+        cb()
+        return
+    end
+
+    CreateThread(function()
+        local callback = cb
+
+        repeat Wait(0) until MenuV.Loaded
+
+        callback()
     end)
-end
-
---- Set `LOADED` as `true` when `MenuV` is loaded
-REGISTER_NUI_CALLBACK('loaded', function(_, cb)
-    MENUV_MAIN.LOADED = true
-    cb('ok')
 end)
 
---- This event will be triggered when `ENTER` key is used
-REGISTER_NUI_CALLBACK('submit', function(info, cb)
-    local uuid = U:Ensure(info.uuid, '00000000-0000-0000-0000-000000000000')
+exports('SendNUIMessage', function(input)
+    local r = Utilities:Ensure(GetInvokingResource(), 'menuv')
 
-    cb('ok')
-
-    if (MENUV_MAIN.CURRENT_MENU == nil) then return end
-
-    --- @param option Item
-    for key, option in pairs(MENUV_MAIN.CURRENT_MENU.Items) do
-        if (option.UUID == uuid) then
-            if (option.__type == 'confirm' or option.__type == 'checkbox') then
-                option.Value = U:Ensure(info.value, false)
-            elseif (option.__type == 'range') then
-                option.Value = U:Ensure(info.value, option.Min)
-            elseif (option.__type == 'slider') then
-                option.Value = (U:Ensure(info.value, 0) + 1)
-            end
-
-            MENUV_MAIN.CURRENT_MENU:Trigger('select', option)
-
-            if (option.__type == 'button' or option.__type == 'menu') then
-                MENUV_MAIN.CURRENT_MENU.Items[key]:Trigger('select')
-            elseif (option.__type == 'range') then
-                MENUV_MAIN.CURRENT_MENU.Items[key]:Trigger('select', option.Value)
-            elseif (option.__type == 'slider') then
-                local selectedOption = MENUV_MAIN.CURRENT_MENU.Items[key].Values[option.Value] or nil
-
-                if (selectedOption == nil) then return end
-
-                MENUV_MAIN.CURRENT_MENU.Items[key]:Trigger('select', selectedOption.Value)
-            end
-            return
-        end
-    end
-end)
-
---- This event will be triggered when `CLOSE` key is used
-REGISTER_NUI_CALLBACK('close', function(info, cb)
-    local uuid = U:Ensure(info.uuid, '00000000-0000-0000-0000-000000000000')
-
-    if (MENUV_MAIN.CURRENT_MENU == nil or MENUV_MAIN.CURRENT_MENU.UUID ~= uuid) then
-        cb('ok')
-        return
-    end
-
-    MENUV_MAIN.CURRENT_MENU:RemoveOnEvent('update', MENUV_MAIN.CURRENT_UPDATE_UUID)
-    MENUV_MAIN.CURRENT_MENU = nil
-
-    if (#MENUV_MAIN.PARENT_MENUS <= 0) then
-        MENUV_MAIN.THREAD_TIME = 500
-        cb('ok')
-        return
-    end
-
-    local last_menu = MENUV_MAIN.PARENT_MENUS[#MENUV_MAIN.PARENT_MENUS] or nil
-
-    REMOVE(MENUV_MAIN.PARENT_MENUS, #MENUV_MAIN.PARENT_MENUS)
-
-    if (last_menu ~= nil) then
-        MENUV_MAIN:OPEN(last_menu, function()
-            cb('ok')
-        end)
-    else
-        cb('ok')
-    end
-end)
-
-REGISTER_NUI_CALLBACK('switch', function(info, cb)
-    local prev_uuid = U:Ensure(info.prev, '00000000-0000-0000-0000-000000000000')
-    local next_uuid = U:Ensure(info.next, '00000000-0000-0000-0000-000000000000')
-    local prev_item = nil
-    local next_item = nil
-
-    cb('ok')
-
-    if (MENUV_MAIN.CURRENT_MENU == nil) then return end
-
-    for key, option in pairs(MENUV_MAIN.CURRENT_MENU.Items) do
-        if (option.UUID == prev_uuid) then
-            prev_item = option
-
-            MENUV_MAIN.CURRENT_MENU.Items[key]:Trigger('leave')
+    if (Utilities:Typeof(input) == 'table') then
+        if (input.menu) then
+            rawset(input.menu, 'resource', r)
         end
 
-        if (option.UUID == next_uuid) then
-            next_item = option
-
-            MENUV_MAIN.CURRENT_MENU.Items[key]:Trigger('enter')
-        end
-    end
-
-    if (prev_item ~= nil and next_item ~= nil) then
-        MENUV_MAIN.CURRENT_MENU:Trigger('switch', next_item, prev_item)
+        SendNUIMessage(input)
     end
 end)
 
-REGISTER_NUI_CALLBACK('update', function(info, cb)
-    local uuid = U:Ensure(info.uuid, '00000000-0000-0000-0000-000000000000')
+--- Register `MenuV` keybinds
+MenuV:RegisterKey('UP', T('keybind_key_up'), 'KEYBOARD', 'UP')
+MenuV:RegisterKey('DOWN', T('keybind_key_down'), 'KEYBOARD', 'DOWN')
+MenuV:RegisterKey('LEFT', T('keybind_key_left'), 'KEYBOARD', 'LEFT')
+MenuV:RegisterKey('RIGHT', T('keybind_key_right'), 'KEYBOARD', 'RIGHT')
+MenuV:RegisterKey('ENTER', T('keybind_key_enter'), 'KEYBOARD', 'RETURN')
+MenuV:RegisterKey('CLOSE', T('keybind_key_close'), 'KEYBOARD', 'BACK')
 
-    cb('ok')
+--- Hide menu when screen is faded out or pause menu ia active
+CreateThread(function()
+    local prev_state = false
 
-    if (MENUV_MAIN.CURRENT_MENU == nil) then return end
+    while true do
+        repeat Wait(0) until MenuV.Loaded
 
-    --- @param option Item
-    for key, option in pairs(MENUV_MAIN.CURRENT_MENU.Items) do
-        if (option.UUID == uuid) then
-            local newValue, oldValue = nil, nil
+        local new_state = IsScreenFadedOut() or IsPauseMenuActive()
 
-            if (option.__type == 'confirm' or option.__type == 'checkbox') then
-                newValue = U:Ensure(info.now, false)
-                oldValue = U:Ensure(info.prev, false)
-            elseif (option.__type == 'range') then
-                newValue = U:Ensure(info.now, option.Min)
-                oldValue = U:Ensure(info.prev, option.Min)
-            elseif (option.__type == 'slider') then
-                newValue = (U:Ensure(info.now, 0) + 1)
-                oldValue = (U:Ensure(info.prev, 0) + 1)
-            end
-
-            if (U:Any(option.__type, { 'button', 'menu', 'label' }, 'value')) then
-                return
-            end
-
-            MENUV_MAIN.CURRENT_MENU:Trigger('update', option, newValue, oldValue)
-            MENUV_MAIN.CURRENT_MENU.Items[key]:Trigger('change', newValue, oldValue)
-            return
+        if (prev_state ~= new_state) then
+            SendNUIMessage({ action = 'UPDATE_STATUS', status = not new_state })
         end
+
+        prev_state = new_state
+
+        Wait(MenuV.ThreadWait)
     end
 end)
-
---- Make `MENUV_MAIN` global accessible
-_G.MENUV_MAIN = MENUV_MAIN
-_ENV.MENUV_MAIN = MENUV_MAIN
-
-local MENUV_OPEN = function(menu, cb)
-    MENUV_MAIN:OPEN(menu, cb)
-end
-
---- Export functions
-exports('open', MENUV_OPEN)
-_G.MENUV_OPEN = MENUV_OPEN
-_ENV.MENUV_OPEN = MENUV_OPEN
-
---- Load translations
-MENUV_MAIN:LOAD_TRANSLATIONS()
-
---- Register all keybinds
-MENUV_MAIN:REGISTER_KEY('UP', MENUV_MAIN:T('keybind_key_up'), 'KEYBOARD', 'UP')
-MENUV_MAIN:REGISTER_KEY('DOWN', MENUV_MAIN:T('keybind_key_down'), 'KEYBOARD', 'DOWN')
-MENUV_MAIN:REGISTER_KEY('LEFT', MENUV_MAIN:T('keybind_key_left'), 'KEYBOARD', 'LEFT')
-MENUV_MAIN:REGISTER_KEY('RIGHT', MENUV_MAIN:T('keybind_key_right'), 'KEYBOARD', 'RIGHT')
-MENUV_MAIN:REGISTER_KEY('ENTER', MENUV_MAIN:T('keybind_key_enter'), 'KEYBOARD', 'RETURN')
-MENUV_MAIN:REGISTER_KEY('CLOSE', MENUV_MAIN:T('keybind_key_close'), 'KEYBOARD', 'BACK')
-
---- Mark this resource as loaded
-_G.MENUV_LOADED = true
-_ENV.MENUV_LOADED = true
