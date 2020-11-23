@@ -10,7 +10,7 @@
 ----------------------- [ MenuV ] -----------------------
 */
 import VUE from 'vue';
-import menuv from './templates/menuv.vue';
+import menuv from './vue_templates/menuv.vue';
 
 const instance = new VUE({
     el: '#menuv',

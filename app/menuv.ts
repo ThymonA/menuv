@@ -10,7 +10,7 @@
 ----------------------- [ MenuV ] -----------------------
 */
 import VUE from 'vue';
-import STYLE from './component/style';
+import STYLE from './vue_components/style';
 
 export interface Option {
     label: string;

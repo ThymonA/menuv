@@ -35,12 +35,12 @@ module.exports = {
         new VUE_LOADER_PLUGIN(),
         new HTML_WEBPACK_PLUGIN({
             inlineSource: '.(js|css)$',
-            template: './html/menuv.html',
+            template: './app/html/menuv.html',
             filename: 'menuv.html'
         }),
         new HTML_WEBPACK_INLINE_SOURCE_PLUGIN(),
         new COPY_PLUGIN([
-            { from: 'html/assets/css/main.css', to: 'assets/css/main.css' }
+            { from: 'app/html/assets/css/main.css', to: 'assets/css/main.css' }
         ])
     ],
     resolve: {
