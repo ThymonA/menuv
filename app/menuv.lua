@@ -160,6 +160,7 @@ RegisterNUICallback('submit', function(info, cb) TriggerResourceCallback('submit
 RegisterNUICallback('close', function(info, cb) TriggerResourceCallback('close', info, cb) end)
 RegisterNUICallback('switch', function(info, cb) TriggerResourceCallback('switch', info, cb) end)
 RegisterNUICallback('update', function(info, cb) TriggerResourceCallback('update', info, cb) end)
+RegisterNUICallback('open', function(info, cb) TriggerResourceCallback('open', info, cb) end)
 
 --- MenuV exports
 exports('IsLoaded', function(cb)

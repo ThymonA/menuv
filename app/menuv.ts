@@ -128,6 +128,7 @@ export default VUE.extend({
             if (this.menu) { this.show = status; }
         },
         OPEN_MENU({ menu }: { menu: Menu }) {
+            this.POST(`http://menuv/open`, { uuid: this.uuid, r: this.resource });
             this.RESET_MENU();
 
             this.resource = this.ENSURE(menu.resource, 'menuv');

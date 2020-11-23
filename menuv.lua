@@ -195,6 +195,17 @@ exports('NUICallback', function(name, info, cb)
     MenuV.NUICallbacks[name](info, cb)
 end)
 
+REGISTER_NUI_CALLBACK('open', function(info, cb)
+    local uuid = Utilities:Ensure(info.uuid, '00000000-0000-0000-0000-000000000000')
+
+    cb('ok')
+
+    if (MenuV.CurrentMenu == nil or MenuV.CurrentMenu.UUID == uuid) then return end
+
+    MenuV.CurrentMenu = nil
+    MenuV.ParentMenus = {}
+end)
+
 REGISTER_NUI_CALLBACK('submit', function(info, cb)
     local uuid = Utilities:Ensure(info.uuid, '00000000-0000-0000-0000-000000000000')
 
