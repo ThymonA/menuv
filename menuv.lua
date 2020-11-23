@@ -254,8 +254,8 @@ REGISTER_NUI_CALLBACK('close', function(info, cb)
 end)
 
 REGISTER_NUI_CALLBACK('switch', function(info, cb)
-    local prev_uuid = Utilities:EndsWith(info.prev, '00000000-0000-0000-0000-000000000000')
-    local next_uuid = Utilities:EndsWith(info.next, '00000000-0000-0000-0000-000000000000')
+    local prev_uuid = Utilities:Ensure(info.prev, '00000000-0000-0000-0000-000000000000')
+    local next_uuid = Utilities:Ensure(info.next, '00000000-0000-0000-0000-000000000000')
     local prev_item, next_item = nil, nil
 
     cb('ok')
@@ -270,7 +270,7 @@ REGISTER_NUI_CALLBACK('switch', function(info, cb)
         end
 
         if (v.UUID == next_uuid) then
-            next_uuid = v
+            next_item = v
 
             MenuV.CurrentMenu.Items[k]:Trigger('enter')
         end

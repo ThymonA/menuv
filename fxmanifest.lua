@@ -19,11 +19,11 @@ contact 'contact@arens.io'
 url 'https://github.com/ThymonA/menuv/'
 
 files {
+    'menuv.lua',
+    'app/lua_components/*.lua',
     'dist/*.html',
     'dist/assets/css/*.css',
-    'languages/*.json',
-    'app/lua_components/*.lua',
-    'menuv.lua'
+    'languages/*.json'
 }
 
 ui_page 'dist/menuv.html'
