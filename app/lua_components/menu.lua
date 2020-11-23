@@ -39,6 +39,8 @@ function CreateMenu(info)
     info = U:Ensure(info, {})
 
     local item = {
+        ---@type boolean
+        IsOpen = false,
         ---@type string
         UUID = U:UUID(),
         ---@type string
@@ -600,6 +602,7 @@ function CreateMenu(info)
     }
 
     ---@class Menu
+    ---@field public IsOpen boolean `true` if menu is open, otherwise `false`
     ---@field public UUID string UUID of Menu
     ---@field public Title string Title of Menu
     ---@field public Subtitle string Subtitle of Menu
@@ -619,7 +622,12 @@ function CreateMenu(info)
     ---@field public AddRange fun(t: Menu, info: table):RangeItem
     ---@field public AddConfirm fun(t: Menu, info: table):ConfirmItem
     ---@field public ToTable fun(t: Menu):table
-    return setmetatable({ data = item, __class = 'Menu', __type = 'Menu' }, mt)
+    local menu = setmetatable({ data = item, __class = 'Menu', __type = 'Menu' }, mt)
+
+    menu:On('open', function() menu.IsOpen = true end)
+    menu:On('close', function() menu.IsOpen = false end)
+
+    return menu
 end
 
 return CreateMenu

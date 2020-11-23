@@ -139,6 +139,8 @@ export default VUE.extend({
             this.items = menu.items || [];
             this.show = true;
             this.menu = true;
+
+            this.POST(`http://menuv/opened`, { uuid: this.uuid, r: this.resource });
         },
         CLOSE_MENU() {
             this.RESET_MENU();      

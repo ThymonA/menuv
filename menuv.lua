@@ -202,8 +202,21 @@ REGISTER_NUI_CALLBACK('open', function(info, cb)
 
     if (MenuV.CurrentMenu == nil or MenuV.CurrentMenu.UUID == uuid) then return end
 
+    MenuV.CurrentMenu:RemoveOnEvent('update', MenuV.CurrentUpdateUUID)
+    MenuV.CurrentMenu:Trigger('close')
+
     MenuV.CurrentMenu = nil
     MenuV.ParentMenus = {}
+end)
+
+REGISTER_NUI_CALLBACK('opened', function(info, cb)
+    local uuid = Utilities:Ensure(info.uuid, '00000000-0000-0000-0000-000000000000')
+
+    cb('ok')
+
+    if (MenuV.CurrentMenu == nil or MenuV.CurrentMenu.UUID ~= uuid) then return end
+
+    MenuV.CurrentMenu:Trigger('open')
 end)
 
 REGISTER_NUI_CALLBACK('submit', function(info, cb)
@@ -248,6 +261,7 @@ REGISTER_NUI_CALLBACK('close', function(info, cb)
     if (MenuV.CurrentMenu == nil or MenuV.CurrentMenu.UUID ~= uuid) then cb('ok') return end
 
     MenuV.CurrentMenu:RemoveOnEvent('update', MenuV.CurrentUpdateUUID)
+    MenuV.CurrentMenu:Trigger('close')
     MenuV.CurrentMenu = nil
 
     if (#MenuV.ParentMenus <= 0) then cb('ok') return end
