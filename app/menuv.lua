@@ -219,3 +219,8 @@ CreateThread(function()
         Wait(MenuV.ThreadWait)
     end
 end)
+
+--- When resource is stopped
+AddEventHandler('onResourceStop', function(resourceName)
+    SendNUIMessage({ action = 'RESOURCE_STOPPED', resource = resourceName })
+end)

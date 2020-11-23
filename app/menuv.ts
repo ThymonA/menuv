@@ -80,7 +80,7 @@ export default VUE.extend({
             
             if (!data || !data.action) { return; }
 
-            const typeRef = data.action as 'UPDATE_STATUS' | 'OPEN_MENU' | 'CLOSE_MENU' | 'UPDATE_TITLE' | 'UPDATE_SUBTITLE' | 'KEY_PRESSED'
+            const typeRef = data.action as 'UPDATE_STATUS' | 'OPEN_MENU' | 'CLOSE_MENU' | 'UPDATE_TITLE' | 'UPDATE_SUBTITLE' | 'KEY_PRESSED' | 'RESOURCE_STOPPED'
         
             if (this[typeRef]) {
                 this[typeRef](data);
@@ -274,6 +274,13 @@ export default VUE.extend({
 
             if (this[keyRef]) {
                 this[keyRef]();
+            }
+        },
+        RESOURCE_STOPPED({ resource }: { resource: string }) {
+            if (!this.menu) { return; }
+
+            if (this.resource == resource) {
+                this.RESET_MENU();
             }
         },
         KEY_UP: function() {
