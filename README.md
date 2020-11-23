@@ -8,7 +8,7 @@
 
 ---
 
-**[MenuV](https://github.com/ThymonA/menuv)** is a library written for **[FiveM](https://fivem.net/)** and only uses NUI functionalities. This library allows you to create menus in **[FiveM](https://fivem.net/)**. This project is open-source and you must respect the [license](https://git.arens.io/ThymonA/corev-framework/blob/master/LICENSE) and the hard work.
+**[MenuV](https://github.com/ThymonA/menuv)** is a library written for **[FiveM](https://fivem.net/)** and only uses NUI functionalities. This library allows you to create menus in **[FiveM](https://fivem.net/)**. This project is open-source and you must respect the [license](https://github.com/ThymonA/menuv/blob/master/LICENSE) and the hard work.
 
 ## Features
 - Support for simple buttons, sliders, checkboxes, lists and confirms
