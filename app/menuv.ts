@@ -38,6 +38,7 @@ export interface Menu {
     uuid: string;
     title: string;
     subtitle: string;
+    position: 'topleft' | 'topcenter' | 'topright' | 'centerleft' | 'center' | 'centerright' | 'bottomleft' | 'bottomcenter' | 'bottomright'
     color: {
         r: number,
         g: number,
@@ -61,6 +62,7 @@ export default VUE.extend({
             show: false,
             title: 'MenuV',
             subtitle: '',
+            position: 'topleft',
             color: {
                 r: 0,
                 g: 0,
@@ -94,6 +96,7 @@ export default VUE.extend({
     watch: {
         title() {},
         subtitle() {},
+        position() {},
         color() {},
         options() {},
         index(newValue, oldValue) {
@@ -139,6 +142,7 @@ export default VUE.extend({
             this.uuid = this.ENSURE(menu.uuid, '00000000-0000-0000-0000-000000000000');
             this.title = this.ENSURE(menu.title, this.title);
             this.subtitle = this.ENSURE(menu.subtitle, this.subtitle);
+            this.position = this.ENSURE(menu.position, 'topleft');
             this.color = menu.color || this.color;
             this.items = menu.items || [];
             this.show = true;
@@ -179,6 +183,7 @@ export default VUE.extend({
             this.uuid = '00000000-0000-0000-0000-000000000000';
             this.title = 'MenuV';
             this.subtitle = '';
+            this.position = 'topleft';
             this.color.r = 0;
             this.color.g = 0;
             this.color.b = 255;

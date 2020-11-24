@@ -29,12 +29,59 @@ div .hide,
 }
 
 .menuv {
-    background-color: rgba(0, 0, 0, 0.65);
     max-width: 20em;
     max-height: 35em;
     margin-top: 1em;
     margin-left: 1em;
     font-size: 0.85em;
+}
+
+.menuv.topcenter {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.menuv.topright {
+    margin-right: 1em;
+    margin-left: auto;
+}
+
+.menuv.centerleft {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.menuv.center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.menuv.centerright {
+    position: absolute;
+    top: 50%;
+    right: 1em;
+    transform: translateY(-50%);
+}
+
+.menuv.bottomleft {
+    position: absolute;
+    bottom: 1em;
+}
+
+.menuv.bottomcenter {
+    position: absolute;
+    bottom: 1em;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.menuv.bottomright {
+    position: absolute;
+    bottom: 1em;
+    right: 1em;
 }
 
 .menuv.size-100 {
@@ -80,8 +127,8 @@ div .hide,
     max-height: 3.5em;
     max-width: 3.5em;
     overflow: hidden;
-    left: 10.5em;
     top: 0.6em;
+    margin-left: 0.8em;
 }
 
 .menuv .menuv-header .menuv-bg-icon i,
@@ -104,6 +151,7 @@ div .hide,
 }
 
 .menuv .menuv-items {
+    background-color: rgba(0, 0, 0, 0.65);
     padding-top: 0.5em;
     padding-bottom: 0.5em;
 }
@@ -338,7 +386,6 @@ div .hide,
 }
 
 .menuv .menuv-description {
-    position: absolute;
     background-color: rgba(0, 0, 0, 0.65);
     width: 100%;
     max-width: 20em;

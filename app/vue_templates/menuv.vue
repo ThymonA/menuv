@@ -10,7 +10,7 @@
 ----------------------- [ MenuV ] -----------------------
 -->
 <template>
-  <div id="menuv" class="menuv size-110" :class="{'hide': !show || !menu}" :data-uuid="uuid">
+  <div id="menuv" class="menuv size-110" :class="[{'hide': !show || !menu}, position]" :data-uuid="uuid">
     <v-style>
       .menuv .menuv-header .menuv-bg-icon i,
       .menuv .menuv-header .menuv-bg-icon svg {

@@ -466,6 +466,7 @@ function CreateMenu(info)
                 uuid = U:Ensure(t.UUID, '00000000-0000-0000-0000-000000000000'),
                 title = U:Ensure(t.Title, 'MenuV'),
                 subtitle = U:Ensure(t.Subtitle, ''),
+                position = U:Ensure(t.Position, 'topleft'),
                 color = {
                     r = U:Ensure(t.Color.R, 0),
                     g = U:Ensure(t.Color.G, 0),
