@@ -161,6 +161,8 @@ export default VUE.extend({
         },
         UPDATE_ITEMS({ items }: { items: Item[] }) {
             this.items = items || this.items;
+
+            if (this.index < 0 || this.index >= this.items.length) { this.index = 0; }
         },
         ADD_ITEM({ item, index }: { item: Item, index?: number }) {
             if (typeof index == 'undefined' || index == null || index < 0 || index >= this.items.length) {

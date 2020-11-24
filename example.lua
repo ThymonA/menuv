@@ -50,7 +50,7 @@ menu2:On('open', function(m)
     for i = 1, 10, 1 do
         math.randomseed(GetGameTimer() + i)
 
-        m:AddButton({ icon = '', label = ('Open Menu %s'):format(math.random(0, 1000)), value = menu, description = ('YEA! ANOTHER RANDOM NUMBER: %s'):format(math.random(0, 1000)), select = function(i) print('YOU CLICKED ON THIS ITEM!!!!') end })
+        m:AddButton({ icon = '❤️', label = ('Open Menu %s'):format(math.random(0, 1000)), value = menu, description = ('YEA! ANOTHER RANDOM NUMBER: %s'):format(math.random(0, 1000)), select = function(i) print('YOU CLICKED ON THIS ITEM!!!!') end })
     end
 end)
 

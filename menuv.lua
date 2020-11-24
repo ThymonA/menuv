@@ -62,6 +62,8 @@ local menuv_table = {
     CurrentMenu = nil,
     ---@type string|nil
     CurrentUpdateUUID = nil,
+    ---@type string|nil,
+    CurrentItemUpdateUUID = nil,
     ---@type string
     CurrentResourceName = GET_CURRENT_RESOURCE_NAME(),
     ---@type boolean
@@ -162,6 +164,7 @@ function MenuV:OpenMenu(menu, cb)
         insert(self.ParentMenus, self.CurrentMenu)
 
         self.CurrentMenu:RemoveOnEvent('update', self.CurrentUpdateUUID)
+        self.CurrentMenu:RemoveOnEvent('ichange', self.CurrentItemUpdateUUID)
     end
 
     self.CurrentMenu = menu
@@ -173,8 +176,11 @@ function MenuV:OpenMenu(menu, cb)
         elseif (k == 'Subtitle' or k == 'subtitle') then
             SEND_NUI_MESSAGE({ action = 'UPDATE_SUBTITLE', title = Utilities:Ensure(v, '') })
         elseif (k == 'Items' or k == 'items') then
-            SEND_NUI_MESSAGE({ action = 'UPDATE_ITEMS', items = (m:ToTable().items or {}) })
+            SEND_NUI_MESSAGE({ action = 'UPDATE_ITEMS', items = (m.Items:ToTable() or {}) })
         end
+    end)
+    self.CurrentItemUpdateUUID = menu:On('ichange', function(m)
+        SEND_NUI_MESSAGE({ action = 'UPDATE_ITEMS', items = (m.Items:ToTable() or {}) })
     end)
 
     SEND_NUI_MESSAGE({
@@ -213,6 +219,7 @@ REGISTER_NUI_CALLBACK('open', function(info, cb)
     end
 
     MenuV.CurrentMenu:RemoveOnEvent('update', MenuV.CurrentUpdateUUID)
+    MenuV.CurrentMenu:RemoveOnEvent('ichange', MenuV.CurrentItemUpdateUUID)
     MenuV.CurrentMenu:Trigger('close')
 
     MenuV.CurrentMenu = nil
@@ -271,6 +278,7 @@ REGISTER_NUI_CALLBACK('close', function(info, cb)
     if (MenuV.CurrentMenu == nil or MenuV.CurrentMenu.UUID ~= uuid) then cb('ok') return end
 
     MenuV.CurrentMenu:RemoveOnEvent('update', MenuV.CurrentUpdateUUID)
+    MenuV.CurrentMenu:RemoveOnEvent('ichange', MenuV.CurrentItemUpdateUUID)
     MenuV.CurrentMenu:Trigger('close')
     MenuV.CurrentMenu = nil
 
