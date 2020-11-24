@@ -175,6 +175,7 @@ function CreateMenuItem(info)
     item.Events.OnEnter = {}
     item.Events.OnLeave = {}
     item.Events.OnUpdate = {}
+    item.Events.OnDestroy = {}
 
     local mt = {
         __index = function(t, k)
@@ -241,7 +242,17 @@ function CreateMenuItem(info)
     ---@field public NewIndex fun(t: Item, k: string, v: any)
     ---@field public Parser fun(t: Item, k: string, v: any)
     ---@field public GetValue fun(t: Item):any
-    return setmetatable({ data = item, __class = 'Item', __type = U:Ensure(info.Type or info.type, 'unknown') }, mt)
+    local i = setmetatable({ data = item, __class = 'Item', __type = U:Ensure(info.Type or info.type, 'unknown') }, mt)
+
+    for k, v in pairs(info or {}) do
+        local key = U:Ensure(k, 'unknown')
+
+        if (key == 'unknown') then return end
+
+        i:On(key, v)
+    end
+
+    return i
 end
 
 return CreateMenuItem

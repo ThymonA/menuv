@@ -44,4 +44,14 @@ confirm:On('leave', function(item) print('YOU LEFT OUR CONFIRM :(') end)
 
 menu:On('switch', function(item, currentItem, prevItem) print(('YOU HAVE SWITCH THE ITEMS FROM %s TO %s'):format(prevItem.__type, currentItem.__type)) end)
 
+menu2:On('open', function(m)
+    m:ClearItems()
+
+    for i = 1, 10, 1 do
+        math.randomseed(GetGameTimer() + i)
+
+        m:AddButton({ icon = '', label = ('Open Menu %s'):format(math.random(0, 1000)), value = menu, description = ('YEA! ANOTHER RANDOM NUMBER: %s'):format(math.random(0, 1000)), select = function(i) print('YOU CLICKED ON THIS ITEM!!!!') end })
+    end
+end)
+
 menu()

@@ -457,6 +457,15 @@ function CreateMenu(info)
         SetPosition = function(t, position)
             t.Position = U:Ensure(position, 'topleft')
         end,
+        --- Clear all Menu items
+        ---@param t Menu
+        ClearItems = function(t)
+            for k, v in pairs(t.Items) do
+                t.Items[k]:Trigger('destroy', v)
+            end
+
+            t.Items = {}
+        end,
         --- @see Menu to @see table
         ---@param t Menu
         ---@return table
@@ -625,11 +634,20 @@ function CreateMenu(info)
     ---@field public AddSlider fun(t: Menu, info: table):SliderItem
     ---@field public AddRange fun(t: Menu, info: table):RangeItem
     ---@field public AddConfirm fun(t: Menu, info: table):ConfirmItem
+    ---@field public ClearItems fun(t: Menu)
     ---@field public ToTable fun(t: Menu):table
     local menu = setmetatable({ data = item, __class = 'Menu', __type = 'Menu' }, mt)
 
     menu:On('open', function() menu.IsOpen = true end)
     menu:On('close', function() menu.IsOpen = false end)
+
+    for k, v in pairs(info or {}) do
+        local key = U:Ensure(k, 'unknown')
+
+        if (key == 'unknown') then return end
+
+        menu:On(key, v)
+    end
 
     return menu
 end

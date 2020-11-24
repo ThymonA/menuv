@@ -172,6 +172,8 @@ function MenuV:OpenMenu(menu, cb)
             SEND_NUI_MESSAGE({ action = 'UPDATE_TITLE', title = Utilities:Ensure(v, 'MenuV') })
         elseif (k == 'Subtitle' or k == 'subtitle') then
             SEND_NUI_MESSAGE({ action = 'UPDATE_SUBTITLE', title = Utilities:Ensure(v, '') })
+        elseif (k == 'Items' or k == 'items') then
+            SEND_NUI_MESSAGE({ action = 'UPDATE_ITEMS', items = (m:ToTable().items or {}) })
         end
     end)
 
