@@ -191,6 +191,80 @@ function MenuV:OpenMenu(menu, cb)
     })
 end
 
+--- Close a menu
+---@param menu Menu|string Menu or UUID of Menu
+---@param cb function Execute this callback when menu has is closed or parent menu has opened
+function MenuV:CloseMenu(menu, cb)
+    local uuid = Utilities:Typeof(menu) == 'Menu' and menu.UUID or Utilities:Typeof(menu) == 'string' and menu
+
+    if (uuid == nil) then cb() return end
+
+    cb = Utilities:Ensure(cb, function() end)
+
+    if (not self.Loaded) then
+        CreateThread(function()
+            repeat Wait(0) until MenuV.Loaded
+
+            MenuV:CloseMenu(uuid, cb)
+        end)
+        return
+    end
+
+    menu = self:GetMenu(uuid)
+
+    if (menu == nil or self.CurrentMenu == nil or self.CurrentMenu.UUID ~= menu.UUID) then cb() return end
+
+    self.CurrentMenu:RemoveOnEvent('update', self.CurrentUpdateUUID)
+    self.CurrentMenu:RemoveOnEvent('ichange', self.CurrentItemUpdateUUID)
+    self.CurrentMenu:Trigger('close')
+    self.CurrentMenu = nil
+
+    if (#self.ParentMenus <= 0) then
+        SEND_NUI_MESSAGE({ action = 'CLOSE_MENU', uuid = uuid })
+        cb()
+        return
+    end
+
+    local prev_index = #self.ParentMenus
+    local prev_menu = self.ParentMenus[prev_index] or nil
+
+    if (prev_menu == nil) then cb() return end
+
+    remove(self.ParentMenus, prev_index)
+
+    self:OpenMenu(prev_menu, cb)
+end
+
+--- Close all menus
+---@param cb function Execute this callback when all menus are closed
+function MenuV:CloseAll(cb)
+    cb = Utilities:Ensure(cb, function() end)
+
+    if (not self.Loaded) then
+        CreateThread(function()
+            repeat Wait(0) until MenuV.Loaded
+
+            MenuV:CloseAll(cb)
+        end)
+        return
+    end
+
+    if (self.CurrentMenu == nil) then cb() return end
+
+    local uuid = Utilities:Ensure(self.CurrentMenu.UUID, '00000000-0000-0000-0000-000000000000')
+
+    self.CurrentMenu:RemoveOnEvent('update', self.CurrentUpdateUUID)
+    self.CurrentMenu:RemoveOnEvent('ichange', self.CurrentItemUpdateUUID)
+    self.CurrentMenu:Trigger('close')
+
+    SEND_NUI_MESSAGE({ action = 'CLOSE_MENU', uuid = uuid })
+
+    self.CurrentMenu = nil
+    self.ParentMenus = {}
+
+    cb()
+end
+
 --- Mark MenuV as loaded when `main` resource is loaded
 exports['menuv']:IsLoaded(function()
     MenuV.Loaded = true

@@ -153,8 +153,10 @@ export default VUE.extend({
 
             this.POST(`http://menuv/opened`, { uuid: this.uuid, r: this.resource });
         },
-        CLOSE_MENU() {
-            this.RESET_MENU();      
+        CLOSE_MENU({ uuid }: { uuid: string }) {
+            if (this.uuid == uuid) {
+                this.RESET_MENU();
+            }     
         },
         UPDATE_TITLE({ title }: { title: string }) {
             this.title = title || this.title;
@@ -437,7 +439,7 @@ export default VUE.extend({
         },
         KEY_CLOSE: function() {
             this.POST(`http://menuv/close`, { uuid: this.uuid, r: this.resource });
-            this.CLOSE_MENU();
+            this.CLOSE_MENU({ uuid: this.uuid });
         },
         POST: function(url: string, data: object|[]) {
             var request = new XMLHttpRequest();

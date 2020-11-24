@@ -684,6 +684,12 @@ function CreateMenu(info)
                 end)
             end
         end,
+        Open = function(t)
+            MenuV:OpenMenu(t)
+        end,
+        Close = function(t)
+            MenuV:CloseMenu(t)
+        end,
         --- @see Menu to @see table
         ---@param t Menu
         ---@return table
@@ -808,6 +814,8 @@ function CreateMenu(info)
     ---@field public AddRange fun(t: Menu, info: table):RangeItem
     ---@field public AddConfirm fun(t: Menu, info: table):ConfirmItem
     ---@field public ClearItems fun(t: Menu)
+    ---@field public Open fun(t: Menu)
+    ---@field public Close fun(t: Menu)
     ---@field public ToTable fun(t: Menu):table
     local menu = setmetatable({ data = item, __class = 'Menu', __type = 'Menu' }, mt)
 
