@@ -20,6 +20,21 @@
 - Event-based callbacks
 - Uses `2 msec` while menu open and idle.
 
+## Compile files
+**[MenuV](https://github.com/ThymonA/menuv)** uses [VueJS 2.6.11 or newer](https://vuejs.org/v2/guide/installation.html#NPM) and [TypeScript 3.8.3 or newer](https://www.npmjs.com/package/typescript) with [NodeJS Package Manager](https://nodejs.org/en/). You need to have [NPM a.k.a NodeJS Package Manager](https://nodejs.org/en/download/) installed on your system in order to compile **[MenuV](https://github.com/ThymonA/menuv)** files.
+
+First download all dependencies by doing
+```powershell
+npm install
+```
+After you have downloaded/loaded all dependencies, you can compile **[MenuV](https://github.com/ThymonA/menuv)** files by doeing.
+```powershell
+npx webpack
+```
+After the command is executed you will see a `dist` folder containing all the **NUI** files needed for **[MenuV](https://github.com/ThymonA/menuv)**.
+
+**When downloading a [release](https://github.com/ThymonA/menuv/releases), this step is not necessary.** Files are already compiled.
+
 ## How to use?
 To use **[MenuV](https://github.com/ThymonA/menuv)** you must add **@menuv/menuv.lua** in your **fxmanifest.lua** file.
 
