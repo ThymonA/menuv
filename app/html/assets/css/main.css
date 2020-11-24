@@ -123,12 +123,13 @@ div .hide,
 }
 
 .menuv .menuv-header .menuv-bg-icon {
-    position: absolute;
+    display: flex;
+    position: fixed;
     max-height: 3.5em;
     max-width: 3.5em;
     overflow: hidden;
     top: 0.6em;
-    margin-left: 0.8em;
+    margin-left: 9.8em;
 }
 
 .menuv .menuv-header .menuv-bg-icon i,
@@ -154,6 +155,7 @@ div .hide,
     background-color: rgba(0, 0, 0, 0.65);
     padding-top: 0.5em;
     padding-bottom: 0.5em;
+    color: white;
 }
 
 .menuv .menuv-items .menuv-item {
@@ -162,6 +164,7 @@ div .hide,
     max-height: 2em;
     height: 2em;
     line-height: 1.85em;
+    color: white;
 }
 
 .menuv .menuv-items .menuv-item i,
@@ -234,6 +237,11 @@ div .hide,
     font-weight: bold;
     font-weight: 500;
     border-radius: 0.125em;
+}
+
+.menuv .menuv-items .menuv-item span.menuv-options span.menuv-btn {
+    background-color: transparent;
+    color: white;
 }
 
 .menuv .menuv-items .menuv-item.active span.menuv-options span.menuv-btn {

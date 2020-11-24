@@ -12,6 +12,11 @@
 <template>
   <div id="menuv" class="menuv size-110" :class="[{'hide': !show || !menu}, position]" :data-uuid="uuid">
     <v-style>
+      html,
+      body {
+        color: {{TEXT_COLOR(color.r, color.g, color.b)}};
+      }
+
       .menuv .menuv-header .menuv-bg-icon i,
       .menuv .menuv-header .menuv-bg-icon svg {
         color: rgb({{color.r}},{{color.g}},{{color.b}});
@@ -24,27 +29,58 @@
       .menuv .menuv-items .menuv-item.active {
         border-left: 0.5em solid rgb({{color.r}},{{color.g}},{{color.b}});
         border-right: 0.5em solid rgb({{color.r}},{{color.g}},{{color.b}});
+        background-color: rgb({{color.r}},{{color.g}},{{color.b}});
+        color: {{TEXT_COLOR(color.r, color.g, color.b)}};
+      }
+
+      .menuv .menuv-items .menuv-item.active i,
+      .menuv .menuv-items .menuv-item.active svg {
+        color: {{TEXT_COLOR(color.r, color.g, color.b)}};
+      }
+
+      .menuv .menuv-items span.menuv-options span.menuv-btn {
+        color: {{TEXT_COLOR(color.r, color.g, color.b)}};
       }
 
       .menuv .menuv-items span.menuv-options span.menuv-btn.active {
         background-color: rgb({{color.r}},{{color.g}},{{color.b}});
+        color: {{TEXT_COLOR(color.r, color.g, color.b)}};
+      }
+
+      .menuv .menuv-items .menuv-item.active span.menuv-options span.menuv-btn {
+        background-color: rgb({{color.r}},{{color.g}},{{color.b}});
+        color: {{TEXT_COLOR(color.r, color.g, color.b)}};
       }
 
       .menuv .menuv-items .menuv-item.active span.menuv-options span.menuv-btn.active {
-        background-color: rgb({{color.r}},{{color.g}},{{color.b}});
+        background-color: black;
+        color: white;
       }
 
       .menuv .menuv-items input[type="range"]::-webkit-slider-runnable-track {
+        background: rgba({{color.r}},{{color.g}},{{color.b}}, 0.50);
+        box-shadow: 0px 0px 0px {{TEXT_COLOR(color.r, color.g, color.b, 0.50)}};
+        border: 0px solid {{TEXT_COLOR(color.r, color.g, color.b, 0.50)}};
+      }
+
+      .menuv .menuv-items input[type="range"]::-webkit-slider-thumb {
+        border: 1px solid rgb({{color.r}},{{color.g}},{{color.b}});
         background: rgb({{color.r}},{{color.g}},{{color.b}});
+        box-shadow: 0px 0px 0px {{TEXT_COLOR(color.r, color.g, color.b, 0.50)}};
       }
 
       .menuv .menuv-items .menuv-item.active input[type="range"]::-webkit-slider-thumb {
-        background: rgb({{color.r}},{{color.g}},{{color.b}});
-        border: 1px solid rgba({{color.r}},{{color.g}},{{color.b}}, 0.25);
+        background: {{TEXT_COLOR(color.r, color.g, color.b)}} !important;
+        border: 1px solid {{TEXT_COLOR(color.r, color.g, color.b, 0.50)}} !important;
+      }
+
+      .menuv .menuv-items .menuv-item.active input[type="range"]::-webkit-slider-runnable-track,
+      .menuv .menuv-items .menuv-item.active input[type="range"]:focus::-webkit-slider-runnable-track {
+        background: {{TEXT_COLOR(color.r, color.g, color.b, 0.50)}} !important;
       }
 
       .menuv .menuv-items input[type="range"]:focus::-webkit-slider-runnable-track {
-        background: rgb({{color.r}},{{color.g}},{{color.b}});
+        background: rgba({{color.r}},{{color.g}},{{color.b}}, 0.50);
       }
 
       .menuv .menuv-items .menuv-desc {

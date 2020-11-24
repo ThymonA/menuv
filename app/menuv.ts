@@ -261,6 +261,20 @@ export default VUE.extend({
             if (input.length <= 20) { return input; }
             return `${input.substring(0, 20)}...`;
         },
+        TEXT_COLOR: function(r: number, g: number, b: number, o: number): string {
+            o = o || 1.0
+
+            if (o > 1.0) { o = 1.0; }
+            if (o < 0.0) { o = 0.0; }
+
+            const luminance = ( 0.299 * r + 0.587 * g + 0.114 * b)/255;
+
+            if (luminance > 0.5) {
+                return `rgba(0, 0, 0, ${o})`;
+            }
+
+            return `rgba(255, 255, 255, ${o})`;
+        },
         IS_DEFAULT: function(input: any): boolean {
             if (typeof input == 'string') {
                 return input == null || (input as string) == 'nil' || (input as string) == '';
