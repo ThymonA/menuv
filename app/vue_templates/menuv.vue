@@ -38,6 +38,10 @@
         color: {{TEXT_COLOR(color.r, color.g, color.b)}};
       }
 
+      .menuv .menuv-items .menuv-item.active span.menuv-icon {
+        border-right: 1px solid {{TEXT_COLOR(color.r, color.g, color.b)}};
+      }
+
       .menuv .menuv-items span.menuv-options span.menuv-btn {
         color: {{TEXT_COLOR(color.r, color.g, color.b)}};
       }
