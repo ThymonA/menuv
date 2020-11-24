@@ -1,5 +1,5 @@
 # MenuV | Standalone Menu for FiveM | NUI Menu
-[![N|CoreV](https://i.imgur.com/MzFOd6M.png)](https://github.com/ThymonA/menuv)
+[![N|CoreV](https://i.imgur.com/xf0C7O3.png)](https://github.com/ThymonA/menuv)
 
 [![Issues](https://img.shields.io/github/issues/ThymonA/menuv.svg?style=for-the-badge)](https://github.com/ThymonA/menuv/issues)
 [![License](https://img.shields.io/github/license/ThymonA/menuv.svg?style=for-the-badge)](https://github.com/ThymonA/menuv/blob/master/LICENSE)
