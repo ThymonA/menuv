@@ -11,6 +11,7 @@ local assert = assert
 ---@type Utilities
 local U = assert(Utilities)
 local type = assert(type)
+local next = assert(next)
 local pairs = assert(pairs)
 local ipairs = assert(ipairs)
 local lower = assert(string.lower)
@@ -40,56 +41,54 @@ function CreateEmptyItemsTable(data)
         local tempTable = {}
         local index = 0
 
-        for _, option in pairs(t.data) do
-            if (U:Typeof(option) == 'Item') then
-                index = index + 1
+        for _, option in pairs(t) do
+            index = index + 1
 
-                tempTable[index] = {
-                    index = index,
-                    type = option.__type,
-                    uuid = U:Ensure(option.UUID, 'unknown'),
-                    icon = U:Ensure(option.Icon, 'none'),
-                    label = U:Ensure(option.Label, 'Unknown'),
-                    description = U:Ensure(option.Description, ''),
-                    value = 'none',
-                    values = {},
-                    min = U:Ensure(option.Min, 0),
-                    max = U:Ensure(option.Max, 0),
-                    disabled = U:Ensure(option.Disabled, false)
+            tempTable[index] = {
+                index = index,
+                type = option.__type,
+                uuid = U:Ensure(option.UUID, 'unknown'),
+                icon = U:Ensure(option.Icon, 'none'),
+                label = U:Ensure(option.Label, 'Unknown'),
+                description = U:Ensure(option.Description, ''),
+                value = 'none',
+                values = {},
+                min = U:Ensure(option.Min, 0),
+                max = U:Ensure(option.Max, 0),
+                disabled = U:Ensure(option.Disabled, false)
+            }
+
+            if (option.__type == 'button' or option.__type == 'menu') then
+                tempTable[index].value = 'none'
+            elseif (option.__type == 'checkbox' or option.__type == 'confirm') then
+                tempTable[index].value = U:Ensure(option.Value, false)
+            elseif (option.__type == 'range') then
+                tempTable[index].value = U:Ensure(option.Value, 0)
+
+                if (tempTable[index].value <= tempTable[index].min) then
+                    tempTable[index].value = tempTable[index].min
+                elseif (tempTable[index].value >= tempTable[index].max) then
+                    tempTable[index].value = tempTable[index].max
+                end
+            elseif (option.__type == 'slider') then
+                tempTable[index].value = 0
+            end
+
+            local _values = U:Ensure(option.Values, {})
+            local vIndex = 0
+
+            for valueIndex, value in pairs(_values) do
+                vIndex = vIndex + 1
+
+                tempTable[index].values[vIndex] = {
+                    label = U:Ensure(value.Label, 'Option'),
+                    description = U:Ensure(value.Description, ''),
+                    value = vIndex
                 }
 
-                if (option.__type == 'button' or option.__type == 'menu') then
-                    tempTable[index].value = 'none'
-                elseif (option.__type == 'checkbox' or option.__type == 'confirm') then
-                    tempTable[index].value = U:Ensure(option.Value, false)
-                elseif (option.__type == 'range') then
-                    tempTable[index].value = U:Ensure(option.Value, 0)
-
-                    if (tempTable[index].value <= tempTable[index].min) then
-                        tempTable[index].value = tempTable[index].min
-                    elseif (tempTable[index].value >= tempTable[index].max) then
-                        tempTable[index].value = tempTable[index].max
-                    end
-                elseif (option.__type == 'slider') then
-                    tempTable[index].value = 0
-                end
-
-                local _values = U:Ensure(option.Values, {})
-                local vIndex = 0
-
-                for valueIndex, value in pairs(_values) do
-                    vIndex = vIndex + 1
-
-                    tempTable[index].values[vIndex] = {
-                        label = U:Ensure(value.Label, 'Option'),
-                        description = U:Ensure(value.Description, ''),
-                        value = vIndex
-                    }
-
-                    if (option.__type == 'slider') then
-                        if (U:Ensure(option.Value, 0) == valueIndex) then
-                            tempTable[index].value = (valueIndex - 1)
-                        end
+                if (option.__type == 'slider') then
+                    if (U:Ensure(option.Value, 0) == valueIndex) then
+                        tempTable[index].value = (valueIndex - 1)
                     end
                 end
             end
@@ -97,6 +96,29 @@ function CreateEmptyItemsTable(data)
 
         return tempTable
     end
+
+    local item_pairs = function(t, k)
+        local _k, _v = next((rawget(t, 'data') or {}), k)
+
+        if (_v ~= nil and type(_v) ~= 'table') then
+            return item_pairs(t, _k)
+        end
+
+        return _k, _v
+    end
+
+    local item_ipairs = function(t, k)
+        local _k, _v = next((rawget(t, 'data') or {}), k)
+
+        if (_v ~= nil and (type(_v) ~= 'table' or type(_k) ~= 'number')) then
+            return item_ipairs(t, _k)
+        end
+
+        return _k, _v
+    end
+
+    _G.item_pairs = item_pairs
+    _ENV.item_pairs = item_pairs
 
     ---@class items
     return setmetatable({ data = data, Trigger = nil }, {
@@ -116,13 +138,38 @@ function CreateEmptyItemsTable(data)
             rawset(t, 'Trigger', U:Ensure(func, function() end))
         end,
         __pairs = function(t)
-            return pairs(rawget(t, 'data') or {})
+            local k = nil
+
+            return function()
+                local v
+
+                k, v = item_pairs(t, k)
+
+                return k, v
+            end, t, nil
         end,
         __ipairs = function(t)
-            return ipairs(rawget(t, 'data') or {})
+            local k = nil
+
+            return function()
+                local v
+
+                k, v = item_ipairs(t, k)
+
+                return k, v
+            end, t, 0
         end,
         __len = function(t)
-            return #(rawget(t, 'data') or {})
+            local items = U:Ensure(rawget(t, 'data'), {})
+            local itemCount = 0
+
+            for _, v in pairs(items) do
+                if (U:Typeof(v) == 'Item') then
+                    itemCount = itemCount + 1
+                end
+            end
+
+            return itemCount
         end
     })
 end
@@ -282,6 +329,7 @@ function CreateMenu(info)
             info.Type = 'button'
             info.Events = { OnSelect = {} }
             info.PrimaryEvent = 'OnSelect'
+            info.TriggerUpdate = not U:Ensure(info.IgnoreUpdate or info.ignoreUpdate, false)
 
             if (U:Typeof(info.Value or info.value) == 'Menu') then
                 info.Type = 'menu'
@@ -293,7 +341,19 @@ function CreateMenu(info)
                 item:On('select', function() item.Value() end)
             end
 
-            insert(t.Items, item)
+            if (info.TriggerUpdate) then
+                insert(t.Items, item)
+            else
+                local items = rawget(t.data, 'Items')
+
+                if (items) then
+                    local newIndex = #items + 1
+
+                    rawset(items.data, newIndex, item)
+
+                    return items.data[newIndex] or item
+                end
+            end
 
             return t.Items[#t.Items] or item
         end,
@@ -308,10 +368,23 @@ function CreateMenu(info)
             info.Value = U:Ensure(info.Value or info.value, false)
             info.Events = { OnChange = {}, OnCheck = {}, OnUncheck = {} }
             info.PrimaryEvent = 'OnCheck'
+            info.TriggerUpdate = not U:Ensure(info.IgnoreUpdate or info.ignoreUpdate, false)
 
             local item = CreateMenuItem(info)
 
-            insert(t.Items, item)
+            if (info.TriggerUpdate) then
+                insert(t.Items, item)
+            else
+                local items = rawget(t.data, 'Items')
+
+                if (items) then
+                    local newIndex = #items + 1
+
+                    rawset(items.data, newIndex, item)
+
+                    return items.data[newIndex] or item
+                end
+            end
 
             return t.Items[#t.Items] or item
         end,
@@ -325,6 +398,7 @@ function CreateMenu(info)
             info.Type = 'slider'
             info.Events = { OnChange = {}, OnSelect = {} }
             info.PrimaryEvent = 'OnSelect'
+            info.TriggerUpdate = not U:Ensure(info.IgnoreUpdate or info.ignoreUpdate, false)
 
             ---@class SliderItem : Item
             ---@filed private __event string Name of primary event
@@ -385,7 +459,19 @@ function CreateMenu(info)
                 item:AddValues(values)
             end
 
-            insert(t.Items, item)
+            if (info.TriggerUpdate) then
+                insert(t.Items, item)
+            else
+                local items = rawget(t.data, 'Items')
+
+                if (items) then
+                    local newIndex = #items + 1
+
+                    rawset(items.data, newIndex, item)
+
+                    return items.data[newIndex] or item
+                end
+            end
 
             return t.Items[#t.Items] or item
         end,
@@ -399,6 +485,7 @@ function CreateMenu(info)
             info.Type = 'range'
             info.Events = { OnChange = {}, OnSelect = {}, OnMin = {}, OnMax = {} }
             info.PrimaryEvent = 'OnSelect'
+            info.TriggerUpdate = not U:Ensure(info.IgnoreUpdate or info.ignoreUpdate, false)
             info.Value = U:Ensure(info.Value or info.value, 0)
             info.Min = U:Ensure(info.Min or info.min, 0)
             info.Max = U:Ensure(info.Max or info.max, 0)
@@ -477,7 +564,19 @@ function CreateMenu(info)
                 end
             end
 
-            insert(t.Items, item)
+            if (info.TriggerUpdate) then
+                insert(t.Items, item)
+            else
+                local items = rawget(t.data, 'Items')
+
+                if (items) then
+                    local newIndex = #items + 1
+
+                    rawset(items.data, newIndex, item)
+
+                    return items.data[newIndex] or item
+                end
+            end
 
             return t.Items[#t.Items] or item
         end,
@@ -492,6 +591,7 @@ function CreateMenu(info)
             info.Value = U:Ensure(info.Value or info.value, false)
             info.Events = { OnConfirm = {}, OnDeny = {}, OnChange = {} }
             info.PrimaryEvent = 'OnConfirm'
+            info.TriggerUpdate = not U:Ensure(info.IgnoreUpdate or info.ignoreUpdate, false)
             info.NewIndex = function(t, k, v)
                 if (k == 'Value') then
                     local value = U:Ensure(v, false)
@@ -530,7 +630,19 @@ function CreateMenu(info)
             --- Deny this item
             function item:Deny() item.Value = false end
 
-            insert(t.Items, item)
+            if (info.TriggerUpdate) then
+                insert(t.Items, item)
+            else
+                local items = rawget(t.data, 'Items')
+
+                if (items) then
+                    local newIndex = #items + 1
+
+                    rawset(items.data, newIndex, item)
+
+                    return items.data[newIndex] or item
+                end
+            end
 
             return t.Items[#t.Items] or item
         end,
