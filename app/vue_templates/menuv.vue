@@ -90,7 +90,6 @@
     <header class="menuv-header">
       <strong>{{title}}</strong>
         <span class="menuv-bg-icon">
-          <i v-if="icon != 'none'" :class="icon"></i>
         </span>
     </header>
     <nav class="menuv-subheader">
