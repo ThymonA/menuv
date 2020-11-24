@@ -103,8 +103,9 @@ end
 ---@param g number 0-255 GREEN
 ---@param b number 0-255 BLUE
 ---@param icon string Icon from FontAwsome https://fontawesome.com/icons?d=gallery
+---@param size string | "'size-100'" | "'size-110'" | "'size-125'" | "'size-150'" | "'size-175'" | "'size-200'"
 ---@return Menu
-function MenuV:CreateMenu(title, subtitle, position, r, g, b, icon)
+function MenuV:CreateMenu(title, subtitle, position, r, g, b, icon, size)
     local menu = CreateMenu({
         Title = title,
         Subtitle = subtitle,
@@ -112,7 +113,8 @@ function MenuV:CreateMenu(title, subtitle, position, r, g, b, icon)
         R = r,
         G = g,
         B = b,
-        Icon = icon
+        Icon = icon,
+        Size = size
     })
 
     local index = #(self.Menus or {}) + 1

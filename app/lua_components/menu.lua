@@ -199,6 +199,8 @@ function CreateMenu(info)
             G = U:Ensure(info.G or info.g, 0),
             B = U:Ensure(info.B or info.b, 255)
         },
+        ---@type string | "'size-100'" | "'size-110'" | "'size-125'" | "'size-150'" | "'size-175'" | "'size-200'"
+        Size = U:Ensure(info.Size or info.size, 'size-110'),
         ---@type table
         Events = U:Ensure(info.Events or info.events, {}),
         ---@type Item[]
@@ -692,6 +694,7 @@ function CreateMenu(info)
                 title = U:Ensure(t.Title, 'MenuV'),
                 subtitle = U:Ensure(t.Subtitle, ''),
                 position = U:Ensure(t.Position, 'topleft'),
+                size = U:Ensure(t.Size, 'size-110'),
                 color = {
                     r = U:Ensure(t.Color.R, 0),
                     g = U:Ensure(t.Color.G, 0),
@@ -724,6 +727,10 @@ function CreateMenu(info)
     item.Events.OnSwitch = {}
     item.Events.OnChange = {}
     item.Events.OnIChange = {}
+
+    if (not U:Any(item.Size, { 'size-100', 'size-110', 'size-125', 'size-150', 'size-175', 'size-200' }, 'value')) then
+        item.Size = 'size-110'
+    end
 
     local mt = {
         __index = function(t, k)

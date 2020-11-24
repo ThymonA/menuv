@@ -10,7 +10,7 @@
 ----------------------- [ MenuV ] -----------------------
 -->
 <template>
-  <div id="menuv" class="menuv size-110" :class="[{'hide': !show || !menu}, position]" :data-uuid="uuid">
+  <div id="menuv" class="menuv" :class="[{'hide': !show || !menu}, position, size]" :data-uuid="uuid">
     <v-style>
       html,
       body {

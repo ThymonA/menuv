@@ -38,7 +38,8 @@ export interface Menu {
     uuid: string;
     title: string;
     subtitle: string;
-    position: 'topleft' | 'topcenter' | 'topright' | 'centerleft' | 'center' | 'centerright' | 'bottomleft' | 'bottomcenter' | 'bottomright'
+    position: 'topleft' | 'topcenter' | 'topright' | 'centerleft' | 'center' | 'centerright' | 'bottomleft' | 'bottomcenter' | 'bottomright';
+    size: 'size-100' | 'size-110' | 'size-125' | 'size-150' | 'size-175' | 'size-200';
     color: {
         r: number,
         g: number,
@@ -63,6 +64,7 @@ export default VUE.extend({
             title: 'MenuV',
             subtitle: '',
             position: 'topleft',
+            size: 'size-110',
             color: {
                 r: 0,
                 g: 0,
@@ -143,6 +145,7 @@ export default VUE.extend({
             this.title = this.ENSURE(menu.title, this.title);
             this.subtitle = this.ENSURE(menu.subtitle, this.subtitle);
             this.position = this.ENSURE(menu.position, 'topleft');
+            this.size = this.ENSURE(menu.size, 'size-110');
             this.color = menu.color || this.color;
             this.items = menu.items || [];
             this.show = true;
