@@ -19,7 +19,7 @@ local menu2 = MenuV:CreateMenu('Demo 2', 'Open this demo menu in MenuV', 'toplef
 local menu_button = menu:AddButton({ icon = '😃', label = 'Open Demo 2 Menu', value = menu2, description = 'YEA :D from first menu' })
 local menu2_button = menu2:AddButton({ icon = '😃', label = 'Open First Menu', value = menu, description = 'YEA :D from second menu' })
 local confirm = menu:AddConfirm({ icon = '🔥', label = 'Confirm', value = 'no' })
-local range = menu:AddRange({ icon = '⚽', label = 'Range Item', min = 0, max = 10, value = 0 })
+local range = menu:AddRange({ icon = '⚽', label = 'Range Item', min = 0, max = 10, value = 0, saveOnUpdate = true })
 local checkbox = menu:AddCheckbox({ icon = '💡', label = 'Checkbox Item', value = 'n' })
 local slider = menu:AddSlider({ icon = '❤️', label = 'Slider', value = 'demo', values = {
     { label = 'Demo Item', value = 'demo', description = 'Demo Item 1' },

@@ -426,6 +426,20 @@ REGISTER_NUI_CALLBACK('update', function(info, cb)
 
             MenuV.CurrentMenu:Trigger('update', v, newValue, oldValue)
             MenuV.CurrentMenu.Items[k]:Trigger('change', newValue, oldValue)
+
+            if (v.SaveOnUpdate) then
+                MenuV.CurrentMenu.Items[k].Value = newValue
+
+                if (v.__type == 'range') then
+                    MenuV.CurrentMenu.Items[k]:Trigger('select', v.Value)
+                elseif (v.__type == 'slider') then
+                    local option = MenuV.CurrentMenu.Items[k].Values[v.Value] or nil
+
+                    if (option == nil) then return end
+
+                    MenuV.CurrentMenu.Items[k]:Trigger('select', option.Value)
+                end
+            end
             return
         end
     end

@@ -54,6 +54,8 @@ function CreateMenuItem(info)
         Disabled = U:Ensure(info.Disabled or info.disabled, false),
         ---@type table
         Events = U:Ensure(info.Events or info.events, {}),
+        ---@type boolean
+        SaveOnUpdate = U:Ensure(info.SaveOnUpdate or info.saveOnUpdate, false),
         ---@param t Item
         ---@param event string Name of Event
         Trigger = function(t, event, ...)
@@ -235,6 +237,7 @@ function CreateMenuItem(info)
     ---@field public Min number Min range value
     ---@field public Max number Max range value
     ---@field public Disabled boolean Disabled state of Item
+    ---@field public SaveOnUpdate boolean Save on `update`
     ---@field private Events table<string, function[]> List of registered `on` events
     ---@field public Trigger fun(t: Item, event: string)
     ---@field public On fun(t: Item, event: string, func: function|Menu)

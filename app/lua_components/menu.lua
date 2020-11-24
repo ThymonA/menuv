@@ -371,6 +371,17 @@ function CreateMenu(info)
             info.Events = { OnChange = {}, OnCheck = {}, OnUncheck = {} }
             info.PrimaryEvent = 'OnCheck'
             info.TriggerUpdate = not U:Ensure(info.IgnoreUpdate or info.ignoreUpdate, false)
+            info.NewIndex = function(t, k, v)
+                if (k == 'Value') then
+                    local value = U:Ensure(v, false)
+
+                    if (value) then
+                        t:Trigger('check', t)
+                    else
+                        t:Trigger('uncheck', t)
+                    end
+                end
+            end
 
             local item = CreateMenuItem(info)
 
@@ -801,7 +812,7 @@ function CreateMenu(info)
     ---@field public Position string | "'topleft'" | "'topcenter'" | "'topright'" | "'centerleft'" | "'center'" | "'centerright'" | "'bottomleft'" | "'bottomcenter'" | "'bottomright'"
     ---@field public Color table<string, number> Color of Menu
     ---@field private Events table<string, fun[]> List of registered `on` events
-    ---@field private Items Item[] List of items
+    ---@field public Items Item[] List of items
     ---@field public Trigger fun(t: Item, event: string)
     ---@field public On fun(t: Menu, event: string, func: function|Menu): string
     ---@field public RemoveOnEvent fun(t: Menu, event: string, uuid: string)
