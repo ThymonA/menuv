@@ -262,10 +262,6 @@ export default VUE.extend({
 
             return output as T;
         },
-        LABEL: function(input: string): string {
-            if (input.length <= 20) { return input; }
-            return `${input.substring(0, 20)}...`;
-        },
         TEXT_COLOR: function(r: number, g: number, b: number, o: number): string {
             o = o || 1.0
 

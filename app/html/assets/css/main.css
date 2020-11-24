@@ -30,7 +30,7 @@ div .hide,
 
 .menuv {
     max-width: 20em;
-    max-height: 35em;
+    max-height: 90vh;
     margin-top: 1em;
     margin-left: 1em;
     font-size: 0.85em;
@@ -165,6 +165,7 @@ div .hide,
     height: 2em;
     line-height: 1.85em;
     color: white;
+    min-width: 22em;
 }
 
 .menuv .menuv-items .menuv-item i,
@@ -184,6 +185,7 @@ div .hide,
     width: 23.25em;
     max-width: 23.25em;
     margin-left: -0.5em;
+    line-height: 1.8em;
 }
 
 .menuv .menuv-items .menuv-item.active i,
@@ -195,7 +197,52 @@ div .hide,
     margin-left: 2.5px;
     margin-right: 5px;
     border-right: 1px solid white;
-    padding-right: 7.5px;
+    padding-right: 5px;
+    float: left;
+    width: 2em;
+    text-align: center;
+}
+
+.menuv .menuv-items span.menuv-title {
+    word-break: break-all;
+    display: inline-block;
+    overflow: hidden;
+    max-height: 2em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 14em;
+}
+
+.menuv .menuv-items li.menuv-confirm span.menuv-title {
+    max-width: 15em;
+}
+
+.menuv .menuv-items li.menuv-confirm.hasIcon span.menuv-title {
+    max-width: 13em;
+}
+
+.menuv .menuv-items li.menuv-range span.menuv-title {
+    max-width: 15em;
+}
+
+.menuv .menuv-items li.menuv-range.hasIcon span.menuv-title {
+    max-width: 11em;
+}
+
+.menuv .menuv-items li.menuv-checkbox span.menuv-title {
+    max-width: 17em;
+}
+
+.menuv .menuv-items li.menuv-checkbox.hasIcon span.menuv-title {
+    max-width: 17em;
+}
+
+.menuv .menuv-items li.menuv-slider span.menuv-title {
+    max-width: 17em;
+}
+
+.menuv .menuv-items li.menuv-slider.hasIcon span.menuv-title {
+    max-width: 17em;
 }
 
 .menuv .menuv-items .menuv-item.active span.menuv-icon {
@@ -261,6 +308,7 @@ div .hide,
 }
 
 .menuv .menuv-items input[type="range"] {
+    display: flex;
     float: right;
     -webkit-appearance: none;
     max-width: 6.5em;

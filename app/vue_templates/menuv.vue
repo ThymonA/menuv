@@ -96,9 +96,9 @@
       {{subtitle}}
     </nav>
     <ul class="menuv-items">
-      <li class="menuv-item" v-for="item in items" :key="item.uuid" :class="{'active': (index + 1) == item.index}">
+      <li class="menuv-item" v-for="item in items" :key="item.uuid" :class="[{'active': (index + 1) == item.index, 'hasIcon': ENSURE(item.icon, 'none') != 'none' }, (`menuv-${item.type}`)]">
         <span class="menuv-icon" v-if="ENSURE(item.icon, 'none') != 'none'">{{ENSURE(item.icon, 'none')}}</span>
-        {{LABEL(item.label)}}
+        <span class="menuv-title">{{item.label}}</span>
         <i class="fas fa-arrow-right" v-if="item.type == 'menu'"></i>
         <i v-if="item.type == 'checkbox'" :class="{'fas fa-check': item.value, 'far fa-square': !item.value}"></i>
         <input type="range" :min="item.min" :max="item.max" :value="(item.value)" v-if="item.type == 'range'">
