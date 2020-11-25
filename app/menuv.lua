@@ -24,6 +24,7 @@ local SendNUIMessage = assert(SendNUIMessage)
 local RegisterNUICallback = assert(RegisterNUICallback)
 local IsScreenFadedOut = assert(IsScreenFadedOut)
 local IsPauseMenuActive = assert(IsPauseMenuActive)
+local PlaySoundFrontend = assert(PlaySoundFrontend)
 local CreateThread = assert(Citizen.CreateThread)
 local Wait = assert(Citizen.Wait)
 local exports = assert(exports)
@@ -45,6 +46,8 @@ local MenuV = setmetatable({
     ThreadWait = Utilities:Ensure((Config or {}).HideInterval, 250),
     ---@type table<string, string>
     Translations = {},
+    ---@type table<string, table>
+    Sounds = Utilities:Ensure((Config or {}).Sounds, {}),
     ---@class keys
     Keys = setmetatable({ data = {}, __class = 'MenuVKeys', __type = 'keys' }, {
         __index = function(t, k)
@@ -136,6 +139,24 @@ RegisterNUICallback('loaded', function(_, cb)
     cb('ok')
 end)
 
+RegisterNUICallback('sound', function(info, cb)
+    local key = upper(Utilities:Ensure(info.key, 'UNKNOWN'))
+
+    if (MenuV.Sounds == nil and MenuV.Sounds[key] == nil) then cb('ok') return end
+
+    local sound = Utilities:Ensure(MenuV.Sounds[key], {})
+    local soundType = lower(Utilities:Ensure(sound.type, 'unknown'))
+
+    if (soundType == 'native') then
+        local name = Utilities:Ensure(sound.name, 'UNKNOWN')
+        local library = Utilities:Ensure(sound.library, 'UNKNOWN')
+
+        PlaySoundFrontend(-1, name, library, true)
+    end
+
+    cb('ok')
+end)
+
 --- Trigger the NUICallback for the right resource
 ---@param name string Name of callback
 ---@param info table Info returns from callback
@@ -187,6 +208,7 @@ exports('SendNUIMessage', function(input)
     if (Utilities:Typeof(input) == 'table') then
         if (input.menu) then
             rawset(input.menu, 'resource', r)
+            rawset(input.menu, 'defaultSounds', MenuV.Sounds)
         end
 
         SendNUIMessage(input)

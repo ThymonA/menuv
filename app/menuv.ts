@@ -12,6 +12,12 @@
 import VUE from 'vue';
 import STYLE from './vue_components/style';
 
+export interface Sounds {
+    type: 'native' | 'custom';
+    name: string;
+    library: string;
+}
+
 export interface Option {
     label: string;
     description: string;
@@ -44,8 +50,9 @@ export interface Menu {
         r: number,
         g: number,
         b: number
-    },
-    items: Item[]
+    };
+    items: Item[];
+    defaultSounds: Record<'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'ENTER' | 'CLOSE', Sounds>;
 }
 
 export default VUE.extend({
@@ -72,7 +79,8 @@ export default VUE.extend({
             },
             items: [] as Item[],
             listener: (event: MessageEvent) => {},
-            index: 0
+            index: 0,
+            sounds: {} as Record<'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'ENTER' | 'CLOSE', Sounds>,
         }
     },
     destroyed() {
@@ -148,6 +156,7 @@ export default VUE.extend({
             this.size = this.ENSURE(menu.size, 'size-110');
             this.color = menu.color || this.color;
             this.items = menu.items || [];
+            this.sounds = menu.defaultSounds || this.sounds;
             this.show = true;
             this.menu = true;
 
@@ -198,6 +207,12 @@ export default VUE.extend({
             this.color.g = 0;
             this.color.b = 255;
             this.items = [];
+            this.sounds['UP'] = { type: 'custom', name: 'unknown', library: 'unknown' } as Sounds;
+            this.sounds['DOWN'] = { type: 'custom', name: 'unknown', library: 'unknown' } as Sounds;
+            this.sounds['LEFT'] = { type: 'custom', name: 'unknown', library: 'unknown' } as Sounds;
+            this.sounds['RIGHT'] = { type: 'custom', name: 'unknown', library: 'unknown' } as Sounds;
+            this.sounds['ENTER'] = { type: 'custom', name: 'unknown', library: 'unknown' } as Sounds;
+            this.sounds['CLOSE'] = { type: 'custom', name: 'unknown', library: 'unknown' } as Sounds;
         },
         GET_SLIDER_LABEL({ uuid }: { uuid: string }) {
             for (var i = 0; i < this.items.length; i++) {
@@ -314,6 +329,10 @@ export default VUE.extend({
             }
         },
         KEY_UP: function() {
+            if (this.sounds['UP'] && this.sounds['UP'].type == 'native') {
+                this.POST(`http://menuv/sound`, { key: 'UP' });
+            }
+
             if ((this.index - 1) >= 0) {
                 this.index--;
             } else {
@@ -321,6 +340,10 @@ export default VUE.extend({
             }
         },
         KEY_DOWN: function() {
+            if (this.sounds['DOWN'] && this.sounds['DOWN'].type == 'native') {
+                this.POST(`http://menuv/sound`, { key: 'DOWN' });
+            }
+
             if ((this.index + 1) < this.items.length) {
                 this.index++;
             } else {
@@ -328,6 +351,10 @@ export default VUE.extend({
             }
         },
         KEY_LEFT: function() {
+            if (this.sounds['LEFT'] && this.sounds['LEFT'].type == 'native') {
+                this.POST(`http://menuv/sound`, { key: 'LEFT' });
+            }
+
             if (this.items.length <= this.index) { return; }
 
             const item = this.items[this.index];
@@ -362,6 +389,10 @@ export default VUE.extend({
             }
         },
         KEY_RIGHT: function() {
+            if (this.sounds['RIGHT'] && this.sounds['RIGHT'].type == 'native') {
+                this.POST(`http://menuv/sound`, { key: 'RIGHT' });
+            }
+
             if (this.items.length <= this.index) { return; }
 
             const item = this.items[this.index];
@@ -396,6 +427,10 @@ export default VUE.extend({
             }
         },
         KEY_ENTER: function() {
+            if (this.sounds['ENTER'] && this.sounds['ENTER'].type == 'native') {
+                this.POST(`http://menuv/sound`, { key: 'ENTER' });
+            }
+
             if (this.items.length <= this.index) { return; }0
 
             const item = this.items[this.index];
@@ -434,6 +469,10 @@ export default VUE.extend({
             }
         },
         KEY_CLOSE: function() {
+            if (this.sounds['CLOSE'] && this.sounds['CLOSE'].type == 'native') {
+                this.POST(`http://menuv/sound`, { key: 'CLOSE' });
+            }
+
             this.POST(`http://menuv/close`, { uuid: this.uuid, r: this.resource });
             this.CLOSE_MENU({ uuid: this.uuid });
         },
