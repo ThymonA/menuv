@@ -101,7 +101,7 @@ export default VUE.extend({
 
         window.addEventListener('message', this.listener);
 
-        this.POST('http://menuv/loaded', {});
+        this.POST('https://menuv/loaded', {});
     },
     watch: {
         title() {},
@@ -113,7 +113,7 @@ export default VUE.extend({
             const prevItem = this.items[oldValue];
             const currentItem = this.items[newValue];
 
-            this.POST(`http://menuv/switch`, { prev: prevItem.uuid, next: currentItem.uuid, r: this.resource });
+            this.POST(`https://menuv/switch`, { prev: prevItem.uuid, next: currentItem.uuid, r: this.resource });
         },
         items: {
             deep: true,
@@ -133,7 +133,7 @@ export default VUE.extend({
 
                 if (sameItem == null) { return; }
                 
-                this.POST(`http://menuv/update`, { uuid: currentItem.uuid, prev: sameItem.value, now: currentItem.value, r: this.resource });
+                this.POST(`https://menuv/update`, { uuid: currentItem.uuid, prev: sameItem.value, now: currentItem.value, r: this.resource });
             }
         }
     },
@@ -143,7 +143,7 @@ export default VUE.extend({
             if (this.menu) { this.show = status; }
         },
         OPEN_MENU({ menu }: { menu: Menu }) {
-            this.POST(`http://menuv/open`, { uuid: this.uuid, r: this.resource });
+            this.POST(`https://menuv/open`, { uuid: this.uuid, r: this.resource });
             this.RESET_MENU();
 
             this.index = 0;
@@ -160,7 +160,7 @@ export default VUE.extend({
             this.show = true;
             this.menu = true;
 
-            this.POST(`http://menuv/opened`, { uuid: this.uuid, r: this.resource });
+            this.POST(`https://menuv/opened`, { uuid: this.uuid, r: this.resource });
         },
         CLOSE_MENU({ uuid }: { uuid: string }) {
             if (this.uuid == uuid) {
@@ -330,7 +330,7 @@ export default VUE.extend({
         },
         KEY_UP: function() {
             if (this.sounds['UP'] && this.sounds['UP'].type == 'native') {
-                this.POST(`http://menuv/sound`, { key: 'UP' });
+                this.POST(`https://menuv/sound`, { key: 'UP' });
             }
 
             if ((this.index - 1) >= 0) {
@@ -341,7 +341,7 @@ export default VUE.extend({
         },
         KEY_DOWN: function() {
             if (this.sounds['DOWN'] && this.sounds['DOWN'].type == 'native') {
-                this.POST(`http://menuv/sound`, { key: 'DOWN' });
+                this.POST(`https://menuv/sound`, { key: 'DOWN' });
             }
 
             if ((this.index + 1) < this.items.length) {
@@ -352,7 +352,7 @@ export default VUE.extend({
         },
         KEY_LEFT: function() {
             if (this.sounds['LEFT'] && this.sounds['LEFT'].type == 'native') {
-                this.POST(`http://menuv/sound`, { key: 'LEFT' });
+                this.POST(`https://menuv/sound`, { key: 'LEFT' });
             }
 
             if (this.items.length <= this.index) { return; }
@@ -390,7 +390,7 @@ export default VUE.extend({
         },
         KEY_RIGHT: function() {
             if (this.sounds['RIGHT'] && this.sounds['RIGHT'].type == 'native') {
-                this.POST(`http://menuv/sound`, { key: 'RIGHT' });
+                this.POST(`https://menuv/sound`, { key: 'RIGHT' });
             }
 
             if (this.items.length <= this.index) { return; }
@@ -428,7 +428,7 @@ export default VUE.extend({
         },
         KEY_ENTER: function() {
             if (this.sounds['ENTER'] && this.sounds['ENTER'].type == 'native') {
-                this.POST(`http://menuv/sound`, { key: 'ENTER' });
+                this.POST(`https://menuv/sound`, { key: 'ENTER' });
             }
 
             if (this.items.length <= this.index) { return; }0
@@ -438,10 +438,10 @@ export default VUE.extend({
             switch(item.type) {
                 case 'button':
                 case 'menu':
-                    this.POST(`http://menuv/submit`, { uuid: item.uuid, value: null, r: this.resource });
+                    this.POST(`https://menuv/submit`, { uuid: item.uuid, value: null, r: this.resource });
                     break;
                 case 'confirm':
-                    this.POST(`http://menuv/submit`, { uuid: item.uuid, value: item.value as boolean, r: this.resource });
+                    this.POST(`https://menuv/submit`, { uuid: item.uuid, value: item.value as boolean, r: this.resource });
                     break;
                 case 'range':
                     let range_value = item.value as number;
@@ -449,14 +449,14 @@ export default VUE.extend({
                     if (range_value <= item.min) { range_value = item.min; }
                     else if (range_value >= item.max) { range_value = item.max; }
                     
-                    this.POST(`http://menuv/submit`, { uuid: item.uuid, value: range_value, r: this.resource });
+                    this.POST(`https://menuv/submit`, { uuid: item.uuid, value: range_value, r: this.resource });
                     break;
                 case 'checkbox':
                     const boolean_value = item.value as boolean;
 
                     this.items[this.index].value = !boolean_value;
 
-                    this.POST(`http://menuv/submit`, { uuid: item.uuid, value: this.items[this.index].value, r: this.resource });
+                    this.POST(`https://menuv/submit`, { uuid: item.uuid, value: this.items[this.index].value, r: this.resource });
                     break;
                 case 'slider':
                     let slider_value = item.value as number;
@@ -464,16 +464,16 @@ export default VUE.extend({
 
                     if (slider_values.length <= 0 || slider_value < 0 || slider_value >= slider_values.length) { return; }
                    
-                    this.POST(`http://menuv/submit`, { uuid: item.uuid, value: slider_value, r: this.resource });
+                    this.POST(`https://menuv/submit`, { uuid: item.uuid, value: slider_value, r: this.resource });
                     break;
             }
         },
         KEY_CLOSE: function() {
             if (this.sounds['CLOSE'] && this.sounds['CLOSE'].type == 'native') {
-                this.POST(`http://menuv/sound`, { key: 'CLOSE' });
+                this.POST(`https://menuv/sound`, { key: 'CLOSE' });
             }
 
-            this.POST(`http://menuv/close`, { uuid: this.uuid, r: this.resource });
+            this.POST(`https://menuv/close`, { uuid: this.uuid, r: this.resource });
             this.CLOSE_MENU({ uuid: this.uuid });
         },
         POST: function(url: string, data: object|[]) {
