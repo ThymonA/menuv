@@ -13,8 +13,8 @@ local MenuV = assert(MenuV)
 
 --- MenuV Menu
 ---@type Menu
-local menu = MenuV:CreateMenu('MenuV', 'Welcome to MenuV', 'topleft', 0, 0, 255, 'fas fa-gamepad', 'size-150')
-local menu2 = MenuV:CreateMenu('Demo 2', 'Open this demo menu in MenuV', 'topleft', 255, 0, 0, 'size-110')
+local menu = MenuV:CreateMenu(false, 'Welcome to MenuV', 'topleft', 0, 0, 255, 'size-125', 'example')
+local menu2 = MenuV:CreateMenu('Demo 2', 'Open this demo menu in MenuV', 'topleft', 255, 0, 0)
 
 local menu_button = menu:AddButton({ icon = '😃', label = 'Open Demo 2 Menu', value = menu2, description = 'YEA :D from first menu' })
 local menu2_button = menu2:AddButton({ icon = '😃', label = 'Open First Menu', value = menu, description = 'YEA :D from second menu' })

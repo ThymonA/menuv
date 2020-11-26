@@ -21,6 +21,8 @@ local __environment = assert(_ENV)
 --- FiveM globals
 local LOAD_RESOURCE_FILE = assert(LoadResourceFile)
 local GET_CURRENT_RESOURCE_NAME = assert(GetCurrentResourceName)
+local HAS_STREAMED_TEXTURE_DICT_LOADED = assert(HasStreamedTextureDictLoaded)
+local REQUEST_STREAMED_TEXTURE_DICT = assert(RequestStreamedTextureDict)
 local CreateThread = assert(Citizen.CreateThread)
 local Wait = assert(Citizen.Wait)
 
@@ -102,10 +104,11 @@ end
 ---@param r number 0-255 RED
 ---@param g number 0-255 GREEN
 ---@param b number 0-255 BLUE
----@param icon string Icon from FontAwsome https://fontawesome.com/icons?d=gallery
 ---@param size string | "'size-100'" | "'size-110'" | "'size-125'" | "'size-150'" | "'size-175'" | "'size-200'"
+---@param texture string Name of texture example: "default"
+---@param dictionary string Name of dictionary example: "menuv"
 ---@return Menu
-function MenuV:CreateMenu(title, subtitle, position, r, g, b, icon, size)
+function MenuV:CreateMenu(title, subtitle, position, r, g, b, size, texture, dictionary)
     local menu = CreateMenu({
         Title = title,
         Subtitle = subtitle,
@@ -113,8 +116,9 @@ function MenuV:CreateMenu(title, subtitle, position, r, g, b, icon, size)
         R = r,
         G = g,
         B = b,
-        Icon = icon,
-        Size = size
+        Size = size,
+        Texture = texture,
+        Dictionary = dictionary
     })
 
     local index = #(self.Menus or {}) + 1
@@ -149,18 +153,26 @@ function MenuV:OpenMenu(menu, cb)
 
     cb = Utilities:Ensure(cb, function() end)
 
-    if (not self.Loaded) then
+    menu = self:GetMenu(uuid)
+
+    if (menu == nil) then return end
+
+    local dictionaryLoaded = HAS_STREAMED_TEXTURE_DICT_LOADED(menu.Dictionary)
+
+    if (not self.Loaded or not dictionaryLoaded) then
+        if (not dictionaryLoaded) then REQUEST_STREAMED_TEXTURE_DICT(menu.Dictionary) end
+
         CreateThread(function()
             repeat Wait(0) until MenuV.Loaded
+
+            if (not dictionaryLoaded) then
+                repeat Wait(10) until HAS_STREAMED_TEXTURE_DICT_LOADED(menu.Dictionary)
+            end
 
             MenuV:OpenMenu(uuid, cb)
         end)
         return
     end
-
-    menu = self:GetMenu(uuid)
-
-    if (menu == nil) then return end
 
     if (self.CurrentMenu ~= nil) then
         insert(self.ParentMenus, self.CurrentMenu)

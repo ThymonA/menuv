@@ -17,6 +17,11 @@
         color: {{TEXT_COLOR(color.r, color.g, color.b)}};
       }
 
+      .menuv .menuv-header {
+        background: url("https://nui-img/{{dictionary}}/{{texture}}") no-repeat;
+        background-size: 100%;
+      }
+
       .menuv .menuv-header .menuv-bg-icon i,
       .menuv .menuv-header .menuv-bg-icon svg {
         color: rgb({{color.r}},{{color.g}},{{color.b}});

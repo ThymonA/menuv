@@ -40,7 +40,6 @@ export interface Item {
 
 export interface Menu {
     resource: string;
-    icon: string;
     uuid: string;
     title: string;
     subtitle: string;
@@ -52,6 +51,8 @@ export interface Menu {
         b: number
     };
     items: Item[];
+    texture: string;
+    dictionary: string;
     defaultSounds: Record<'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'ENTER' | 'CLOSE', Sounds>;
 }
 
@@ -64,7 +65,6 @@ export default VUE.extend({
     data() {
         return {
             resource: 'menuv',
-            icon: 'none',
             uuid: '',
             menu: false,
             show: false,
@@ -72,6 +72,8 @@ export default VUE.extend({
             subtitle: '',
             position: 'topleft',
             size: 'size-110',
+            texture: 'none',
+            dictionary: 'none',
             color: {
                 r: 0,
                 g: 0,
@@ -109,6 +111,9 @@ export default VUE.extend({
         position() {},
         color() {},
         options() {},
+        menu() {},
+        show() {},
+        size() {},
         index(newValue, oldValue) {
             const prevItem = this.items[oldValue];
             const currentItem = this.items[newValue];
@@ -148,12 +153,13 @@ export default VUE.extend({
 
             this.index = 0;
             this.resource = this.ENSURE(menu.resource, 'menuv');
-            this.icon = this.ENSURE(menu.icon, 'none');
             this.uuid = this.ENSURE(menu.uuid, '00000000-0000-0000-0000-000000000000');
             this.title = this.ENSURE(menu.title, this.title);
             this.subtitle = this.ENSURE(menu.subtitle, this.subtitle);
             this.position = this.ENSURE(menu.position, 'topleft');
             this.size = this.ENSURE(menu.size, 'size-110');
+            this.texture = this.ENSURE(menu.texture, 'none');
+            this.dictionary = this.ENSURE(menu.dictionary, 'none');
             this.color = menu.color || this.color;
             this.items = menu.items || [];
             this.sounds = menu.defaultSounds || this.sounds;
@@ -198,11 +204,13 @@ export default VUE.extend({
             this.resource = 'menuv';
             this.menu = false;
             this.show = false;
-            this.icon = 'none';
             this.uuid = '00000000-0000-0000-0000-000000000000';
             this.title = 'MenuV';
             this.subtitle = '';
             this.position = 'topleft';
+            this.size = 'size-110';
+            this.texture = 'none';
+            this.dictionary = 'none';
             this.color.r = 0;
             this.color.g = 0;
             this.color.b = 255;

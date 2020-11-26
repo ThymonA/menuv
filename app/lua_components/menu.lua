@@ -29,6 +29,8 @@ local setmetatable = assert(setmetatable)
 --- FiveM globals
 local GET_CURRENT_RESOURCE_NAME = assert(GetCurrentResourceName)
 local GET_INVOKING_RESOURCE = assert(GetInvokingResource)
+local HAS_STREAMED_TEXTURE_DICT_LOADED = assert(HasStreamedTextureDictLoaded)
+local REQUEST_STREAMED_TEXTURE_DICT = assert(RequestStreamedTextureDict)
 
 --- MenuV local variable
 local current_resource = GET_CURRENT_RESOURCE_NAME()
@@ -174,6 +176,16 @@ function CreateEmptyItemsTable(data)
     })
 end
 
+--- Load a texture dictionary if not already loaded
+---@param textureDictionary string Name of texture dictionary
+local function LoadTextureDictionary(textureDictionary)
+    textureDictionary = U:Ensure(textureDictionary, 'menuv')
+
+    if (HAS_STREAMED_TEXTURE_DICT_LOADED(textureDictionary)) then return end
+
+    REQUEST_STREAMED_TEXTURE_DICT(textureDictionary, true)
+end
+
 --- Create a new menu item
 ---@param info table Menu information
 ---@return Menu New item
@@ -186,9 +198,7 @@ function CreateMenu(info)
         ---@type string
         UUID = U:UUID(),
         ---@type string
-        Icon = U:Ensure(info.Icon or info.icon, 'none'),
-        ---@type string
-        Title = U:Ensure(info.Title or info.title, 'MenuV'),
+        Title = not (info.Title or info.title) and '‏‏‎ ‎' or U:Ensure(info.Title or info.title, 'MenuV'),
         ---@type string
         Subtitle = U:Ensure(info.Subtitle or info.subtitle, ''),
         ---@type string | "'topleft'" | "'topcenter'" | "'topright'" | "'centerleft'" | "'center'" | "'centerright'" | "'bottomleft'" | "'bottomcenter'" | "'bottomright'"
@@ -201,6 +211,10 @@ function CreateMenu(info)
         },
         ---@type string | "'size-100'" | "'size-110'" | "'size-125'" | "'size-150'" | "'size-175'" | "'size-200'"
         Size = U:Ensure(info.Size or info.size, 'size-110'),
+        ---@type string
+        Dictionary = U:Ensure(info.Dictionary or info.dictionary, 'menuv'),
+        ---@type string
+        Texture = U:Ensure(info.Texture or info.texture, 'default'),
         ---@type table
         Events = U:Ensure(info.Events or info.events, {}),
         ---@type Item[]
@@ -706,12 +720,13 @@ function CreateMenu(info)
         ---@return table
         ToTable = function(t)
             local tempTable = {
-                icon = U:Ensure(t.Icon, 'none'),
                 uuid = U:Ensure(t.UUID, '00000000-0000-0000-0000-000000000000'),
                 title = U:Ensure(t.Title, 'MenuV'),
                 subtitle = U:Ensure(t.Subtitle, ''),
                 position = U:Ensure(t.Position, 'topleft'),
                 size = U:Ensure(t.Size, 'size-110'),
+                dictionary = U:Ensure(t.Dictionary, 'menuv'),
+                texture = U:Ensure(t.Texture, 'default'),
                 color = {
                     r = U:Ensure(t.Color.R, 0),
                     g = U:Ensure(t.Color.G, 0),
@@ -810,6 +825,8 @@ function CreateMenu(info)
     ---@field public Title string Title of Menu
     ---@field public Subtitle string Subtitle of Menu
     ---@field public Position string | "'topleft'" | "'topcenter'" | "'topright'" | "'centerleft'" | "'center'" | "'centerright'" | "'bottomleft'" | "'bottomcenter'" | "'bottomright'"
+    ---@field public Texture string Name of texture example: "default"
+    ---@field public Dictionary string Name of dictionary example: "menuv"
     ---@field public Color table<string, number> Color of Menu
     ---@field private Events table<string, fun[]> List of registered `on` events
     ---@field public Items Item[] List of items
@@ -844,6 +861,8 @@ function CreateMenu(info)
 
         menu:On(key, v)
     end
+
+    LoadTextureDictionary(menu.Dictionary)
 
     return menu
 end
