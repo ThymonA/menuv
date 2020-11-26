@@ -48,11 +48,11 @@ client_scripts {
 ### Create a menu
 Create a menu by calling the **MenuV:CreateMenu** function.
 ```ts
-MenuV:CreateMenu(title: string, subtitle: string, position: string, red: number, green: number, blue: number, icon: string)
+MenuV:CreateMenu(title: string, subtitle: string, position: string, red: number, green: number, blue: number, texture: string, disctionary: string)
 ```
 **Example:**
 ```lua
-local menu = MenuV:CreateMenu('MenuV', 'Welcome to MenuV', 'topleft', 255, 0, 0, 'fas fa-gamepad')
+local menu = MenuV:CreateMenu('MenuV', 'Welcome to MenuV', 'topleft', 255, 0, 0)
 ```
 
 ### Create menu items
