@@ -36,14 +36,15 @@ After the command is executed you will see a `dist` folder containing all the **
 **When downloading a [release](https://github.com/ThymonA/menuv/releases), this step is not necessary.** Files are already compiled.
 
 ## How to use?
-To use **[MenuV](https://github.com/ThymonA/menuv)** you must add **@menuv/menuv.lua** in your **fxmanifest.lua** file.
+1. Add `start menuv` to your **server.cfg** before the resources that's uses **menuv**
+2. To use **[MenuV](https://github.com/ThymonA/menuv)** you must add **@menuv/menuv.lua** in your **fxmanifest.lua** file.
 
-```lua
-client_scripts {
-    '@menuv/menuv.lua',
-    'example.lua'
-}
-```
+   ```lua
+   client_scripts {
+      '@menuv/menuv.lua',
+      'example.lua'
+   }
+   ```
 
 ### Create a menu
 Create a menu by calling the **MenuV:CreateMenu** function.
