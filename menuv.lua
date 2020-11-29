@@ -188,7 +188,7 @@ function MenuV:OpenMenu(menu, cb)
         if (k == 'Title' or k == 'title') then
             SEND_NUI_MESSAGE({ action = 'UPDATE_TITLE', title = Utilities:Ensure(v, 'MenuV') })
         elseif (k == 'Subtitle' or k == 'subtitle') then
-            SEND_NUI_MESSAGE({ action = 'UPDATE_SUBTITLE', title = Utilities:Ensure(v, '') })
+            SEND_NUI_MESSAGE({ action = 'UPDATE_SUBTITLE', subtitle = Utilities:Ensure(v, '') })
         elseif (k == 'Items' or k == 'items') then
             SEND_NUI_MESSAGE({ action = 'UPDATE_ITEMS', items = (m.Items:ToTable() or {}) })
         end
@@ -201,6 +201,8 @@ function MenuV:OpenMenu(menu, cb)
         action = 'OPEN_MENU',
         menu = menu:ToTable()
     })
+
+    cb()
 end
 
 --- Close a menu

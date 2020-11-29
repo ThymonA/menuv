@@ -115,10 +115,18 @@ export default VUE.extend({
         show() {},
         size() {},
         index(newValue, oldValue) {
-            const prevItem = this.items[oldValue];
-            const currentItem = this.items[newValue];
+            let prev_uuid = null;
+            let next_uuid = null;
 
-            this.POST(`https://menuv/switch`, { prev: prevItem.uuid, next: currentItem.uuid, r: this.resource });
+            if (oldValue >= 0 && oldValue < this.items.length) {
+                prev_uuid = this.items[oldValue].uuid;
+            }
+            
+            if (newValue >= 0 && newValue < this.items.length) {
+                next_uuid = this.items[newValue].uuid;
+            }
+
+            this.POST(`https://menuv/switch`, { prev: prev_uuid, next: next_uuid, r: this.resource });
         },
         items: {
             deep: true,
@@ -151,7 +159,6 @@ export default VUE.extend({
             this.POST(`https://menuv/open`, { uuid: this.uuid, r: this.resource });
             this.RESET_MENU();
 
-            this.index = 0;
             this.resource = this.ENSURE(menu.resource, 'menuv');
             this.uuid = this.ENSURE(menu.uuid, '00000000-0000-0000-0000-000000000000');
             this.title = this.ENSURE(menu.title, this.title);
@@ -165,6 +172,7 @@ export default VUE.extend({
             this.sounds = menu.defaultSounds || this.sounds;
             this.show = true;
             this.menu = true;
+            this.index = this.NEXT_INDEX(0);
 
             this.POST(`https://menuv/opened`, { uuid: this.uuid, r: this.resource });
         },
@@ -182,7 +190,9 @@ export default VUE.extend({
         UPDATE_ITEMS({ items }: { items: Item[] }) {
             this.items = items || this.items;
 
-            if (this.index < 0 || this.index >= this.items.length) { this.index = 0; }
+            if (this.index < 0 || this.index >= this.items.length) {
+                this.index = this.NEXT_INDEX(this.index);
+            }
         },
         ADD_ITEM({ item, index }: { item: Item, index?: number }) {
             if (typeof index == 'undefined' || index == null || index < 0 || index >= this.items.length) {
@@ -337,33 +347,29 @@ export default VUE.extend({
             }
         },
         KEY_UP: function() {
-            if (this.sounds['UP'] && this.sounds['UP'].type == 'native') {
-                this.POST(`https://menuv/sound`, { key: 'UP' });
-            }
+            const newIndex = this.PREV_INDEX();
 
-            if ((this.index - 1) >= 0) {
-                this.index--;
-            } else {
-                this.index = (this.items.length - 1);
+            if (this.index != newIndex) {
+                this.index = newIndex;
+
+                if (this.sounds['UP'] && this.sounds['UP'].type == 'native') {
+                    this.POST(`https://menuv/sound`, { key: 'UP' });
+                }
             }
         },
         KEY_DOWN: function() {
-            if (this.sounds['DOWN'] && this.sounds['DOWN'].type == 'native') {
-                this.POST(`https://menuv/sound`, { key: 'DOWN' });
-            }
+            const newIndex = this.NEXT_INDEX(this.index);
 
-            if ((this.index + 1) < this.items.length) {
-                this.index++;
-            } else {
-                this.index = 0;
+            if (this.index != newIndex) {
+                this.index = newIndex;
+
+                if (this.sounds['DOWN'] && this.sounds['DOWN'].type == 'native') {
+                    this.POST(`https://menuv/sound`, { key: 'DOWN' });
+                }
             }
         },
         KEY_LEFT: function() {
-            if (this.sounds['LEFT'] && this.sounds['LEFT'].type == 'native') {
-                this.POST(`https://menuv/sound`, { key: 'LEFT' });
-            }
-
-            if (this.items.length <= this.index) { return; }
+            if (this.index < 0 || this.items.length <= this.index || this.items[this.index].disabled) { return; }
 
             const item = this.items[this.index];
 
@@ -376,32 +382,50 @@ export default VUE.extend({
 
                     this.items[this.index].value = !boolean_value;
 
+                    if (this.sounds['LEFT'] && this.sounds['LEFT'].type == 'native') {
+                        this.POST(`https://menuv/sound`, { key: 'LEFT' });
+                    }
+
                     break;
                 case 'range':
+                    let new_range_index = null;
                     let range_value = item.value as number;
 
-                    if ((range_value - 1) <= item.min) { this.items[this.index].value = item.min; }
-                    else if ((range_value - 1) >= item.max) { this.items[this.index].value = item.max; }
-                    else { this.items[this.index].value--; }
+                    if ((range_value - 1) <= item.min) { new_range_index = item.min; }
+                    else if ((range_value - 1) >= item.max) { new_range_index = item.max; }
+                    else { new_range_index = (this.items[this.index].value - 1); }
+
+                    if (new_range_index != this.items[this.index].value) {
+                        this.items[this.index].value = new_range_index;
+
+                        if (this.sounds['LEFT'] && this.sounds['LEFT'].type == 'native') {
+                            this.POST(`https://menuv/sound`, { key: 'LEFT' });
+                        }
+                    }
 
                     break;
                 case 'slider':
+                    let new_slider_index = null;
                     const slider_value = item.value as number;
                     const slider_values = item.values || [];
 
                     if (slider_values.length <= 0) { return; }
-                    if ((slider_value - 1) < 0 || (slider_value - 1) >= slider_values.length) { this.items[this.index].value = (slider_values.length - 1); }
-                    else { this.items[this.index].value--; }
+                    if ((slider_value - 1) < 0 || (slider_value - 1) >= slider_values.length) { new_slider_index = (slider_values.length - 1); }
+                    else { new_slider_index = (this.items[this.index].value - 1); }
+
+                    if (new_slider_index != this.items[this.index].value) {
+                        this.items[this.index].value = new_slider_index;
+
+                        if (this.sounds['LEFT'] && this.sounds['LEFT'].type == 'native') {
+                            this.POST(`https://menuv/sound`, { key: 'LEFT' });
+                        }
+                    }
 
                     break;
             }
         },
         KEY_RIGHT: function() {
-            if (this.sounds['RIGHT'] && this.sounds['RIGHT'].type == 'native') {
-                this.POST(`https://menuv/sound`, { key: 'RIGHT' });
-            }
-
-            if (this.items.length <= this.index) { return; }
+            if (this.index < 0 || this.items.length <= this.index || this.items[this.index].disabled) { return; }
 
             const item = this.items[this.index];
 
@@ -414,32 +438,54 @@ export default VUE.extend({
 
                     this.items[this.index].value = !boolean_value;
 
+                    if (this.sounds['RIGHT'] && this.sounds['RIGHT'].type == 'native') {
+                        this.POST(`https://menuv/sound`, { key: 'RIGHT' });
+                    }
+
                     break;
                 case 'range':
+                    let new_range_index = null;
                     let range_value = item.value as number;
 
-                    if ((range_value + 1) <= item.min) { this.items[this.index].value = item.min; }
-                    else if ((range_value + 1) >= item.max) { this.items[this.index].value = item.max; }
-                    else { this.items[this.index].value++; }
+                    if ((range_value + 1) <= item.min) { new_range_index = item.min; }
+                    else if ((range_value + 1) >= item.max) { new_range_index = item.max; }
+                    else { new_range_index = (this.items[this.index].value + 1); }
+
+                    if (new_range_index != this.items[this.index].value) {
+                        this.items[this.index].value = new_range_index;
+
+                        if (this.sounds['RIGHT'] && this.sounds['RIGHT'].type == 'native') {
+                            this.POST(`https://menuv/sound`, { key: 'RIGHT' });
+                        }
+                    }
 
                     break;
                 case 'slider':
+                    let new_slider_index = null;
                     const slider_value = item.value as number;
                     const slider_values = item.values || [];
 
                     if (slider_values.length <= 0) { return; }
-                    if ((slider_value + 1) < 0 || (slider_value + 1) >= slider_values.length) { this.items[this.index].value = 0; }
-                    else { this.items[this.index].value++; }
+                    if ((slider_value + 1) < 0 || (slider_value + 1) >= slider_values.length) { new_slider_index = 0; }
+                    else { new_slider_index = (this.items[this.index].value + 1); }
+
+                    if (new_slider_index != this.items[this.index].value) {
+                        this.items[this.index].value = new_slider_index;
+
+                        if (this.sounds['RIGHT'] && this.sounds['RIGHT'].type == 'native') {
+                            this.POST(`https://menuv/sound`, { key: 'RIGHT' });
+                        }
+                    }
 
                     break;
             }
         },
         KEY_ENTER: function() {
+            if (this.index < 0 || this.items.length <= this.index || this.items[this.index].disabled) { return; }
+
             if (this.sounds['ENTER'] && this.sounds['ENTER'].type == 'native') {
                 this.POST(`https://menuv/sound`, { key: 'ENTER' });
             }
-
-            if (this.items.length <= this.index) { return; }0
 
             const item = this.items[this.index];
 
@@ -491,6 +537,76 @@ export default VUE.extend({
             request.open('POST', url, true);
             request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
             request.send(JSON.stringify(data));
+        },
+        NEXT_INDEX: function(idx: number) {
+            if (idx == null || typeof idx == "undefined") { idx = this.index; }
+        
+            let index = 0;
+            let newIndex = -2;
+
+            if (this.items.length <= 0) { return -1; }
+
+            while (newIndex < -1) {
+                if ((idx + 1 + index) < this.items.length) {
+                    if (!this.items[(idx + 1 + index)].disabled) {
+                        newIndex = (idx + 1 + index);
+                    } else {
+                        index++;
+                    }
+                } else if (index >= this.items.length) {
+                    return -1;
+                } else {
+                    const addIndex = (idx + 1 + index) - this.items.length;
+
+                    if (addIndex < this.items.length) {
+                        if (!this.items[addIndex].disabled) {
+                            newIndex = addIndex;
+                        } else {
+                            index++;
+                        }
+                    } else {
+                        index++;
+                    }
+                }
+            }
+
+            if (newIndex < 0) { return -1; }
+
+            return newIndex;
+        },
+        PREV_INDEX: function() {
+            let index = 0;
+            let newIndex = -2;
+
+            if (this.items.length <= 0) { return -1; }
+
+            while (newIndex < -1) {
+                if ((this.index - 1 - index) >= 0) {
+                    if (!this.items[(this.index - 1 - index)].disabled) {
+                        newIndex = (this.index - 1 - index);
+                    } else {
+                        index++;
+                    }
+                } else if (index >= this.items.length) {
+                    return -1;
+                } else {
+                    const addIndex = (this.index - 1 - index) + this.items.length;
+
+                    if (addIndex < this.items.length && addIndex >= 0) {
+                        if (!this.items[addIndex].disabled) {
+                            newIndex = addIndex;
+                        } else {
+                            index++;
+                        }
+                    } else {
+                        index++;
+                    }
+                }
+            }
+
+            if (newIndex < 0) { return -1; }
+
+            return newIndex;
         }
     }
 });

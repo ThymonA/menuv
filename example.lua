@@ -13,7 +13,7 @@ local MenuV = assert(MenuV)
 
 --- MenuV Menu
 ---@type Menu
-local menu = MenuV:CreateMenu(false, 'Welcome to MenuV', 'topleft', 0, 0, 255, 'size-125', 'example')
+local menu = MenuV:CreateMenu(false, 'Welcome to MenuV', 'topleft', 255, 0, 0, 'size-125', 'example')
 local menu2 = MenuV:CreateMenu('Demo 2', 'Open this demo menu in MenuV', 'topleft', 255, 0, 0)
 
 local menu_button = menu:AddButton({ icon = '😃', label = 'Open Demo 2 Menu', value = menu2, description = 'YEA :D from first menu' })
@@ -21,6 +21,7 @@ local menu2_button = menu2:AddButton({ icon = '😃', label = 'Open First Menu',
 local confirm = menu:AddConfirm({ icon = '🔥', label = 'Confirm', value = 'no' })
 local range = menu:AddRange({ icon = '⚽', label = 'Range Item', min = 0, max = 10, value = 0, saveOnUpdate = true })
 local checkbox = menu:AddCheckbox({ icon = '💡', label = 'Checkbox Item', value = 'n' })
+local checkbox_disabled = menu:AddCheckbox({ icon = '💡', label = 'Checkbox Disabled', value = 'n', disabled = true })
 local slider = menu:AddSlider({ icon = '❤️', label = 'Slider', value = 'demo', values = {
     { label = 'Demo Item', value = 'demo', description = 'Demo Item 1' },
     { label = 'Demo Item 2', value = 'demo2', description = 'Demo Item 2' },

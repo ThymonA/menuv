@@ -188,6 +188,12 @@ div .hide,
     line-height: 1.8em;
 }
 
+.menuv .menuv-items .menuv-item.disabled {
+    opacity: 0.75;
+    background: #383838;
+    text-decoration: line-through;
+}
+
 .menuv .menuv-items .menuv-item.active i,
 .menuv .menuv-items .menuv-item.active svg {
     color: black;
@@ -211,6 +217,10 @@ div .hide,
     white-space: nowrap;
     text-overflow: ellipsis;
     max-width: 14em;
+}
+
+.menuv .menuv-items .menuv-item.disabled span.menuv-title {
+    text-decoration: line-through;
 }
 
 .menuv .menuv-items li.menuv-confirm span.menuv-title {
