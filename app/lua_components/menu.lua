@@ -326,17 +326,21 @@ function CreateMenu(info)
             for _, v in pairs(t.Events[event]) do
                 if (type(v) == 'table' and U:Typeof(v.func) == 'function') then
                     CreateThread(function()
-                        local threadId = coroutine.running()
-
-                        if (threadId ~= nil) then
-                            insert(t.data.Threads, threadId)
-
+                        if (event == 'OnClose') then
                             v.func(t, unpack(args))
+                        else
+                            local threadId = coroutine.running()
 
-                            for i = 0, #(t.data.Threads or {}), 1 do
-                                if (t.data.Threads[i] == threadId) then
-                                    remove(t.data.Threads, i)
-                                    return
+                            if (threadId ~= nil) then
+                                insert(t.data.Threads, threadId)
+
+                                v.func(t, unpack(args))
+
+                                for i = 0, #(t.data.Threads or {}), 1 do
+                                    if (t.data.Threads[i] == threadId) then
+                                        remove(t.data.Threads, i)
+                                        return
+                                    end
                                 end
                             end
                         end
