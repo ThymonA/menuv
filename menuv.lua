@@ -191,7 +191,7 @@ function MenuV:OpenMenu(menu, cb)
         elseif (k == 'Item' or k == 'item' and Utilities:Typeof(v) == 'Item') then
             SEND_NUI_MESSAGE({ action = 'UPDATE_ITEM', item = m.Items:ItemToTable(v) or {} })
         elseif (k == 'AddItem' or k == 'additem' and Utilities:Typeof(v) == 'Item') then
-            SEND_NUI_MESSAGE({ action = 'ADD_ITEM', item = (v:ToTable() or {}) })
+            SEND_NUI_MESSAGE({ action = 'ADD_ITEM', item = m.Items:ItemToTable(v) })
         elseif (k == 'RemoveItem' or k == 'removeitem' and Utilities:Typeof(v) == 'Item') then
             SEND_NUI_MESSAGE({ action = 'REMOVE_ITEM', uuid = v.UUID })
         elseif (k == 'UpdateItem' or k == 'updateitem' and Utilities:Typeof(v) == 'Item') then

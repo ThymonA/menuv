@@ -183,7 +183,7 @@ export default VUE.extend({
 
             this.items = _items;
 
-            const nextIndex = this.NEXT_INDEX(this.index);
+            const nextIndex = this.NEXT_INDEX(0);
             const prevIndex = this.PREV_INDEX(nextIndex);
 
             this.index = prevIndex;

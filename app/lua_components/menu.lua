@@ -162,6 +162,19 @@ function CreateEmptyItemsTable(data)
 
         return tempTable
     end
+    data.AddItem = function(t, item)
+        if (U:Typeof(item) == 'Item') then
+            local newIndex = #t + 1
+
+            rawset(t.data, newIndex, item)
+
+            if (t.Trigger ~= nil and type(t.Trigger) == 'function') then
+                t:Trigger('update', 'AddItem', item)
+            end
+        end
+
+        return U:Ensure(rawget(t, 'data'), {})
+    end
 
     local item_pairs = function(t, k)
         local _k, _v = next((rawget(t, 'data') or {}), k)
@@ -305,6 +318,9 @@ function CreateMenu(info)
                 return
             end
 
+            if (event == 'OnOpen') then rawset(t, 'IsOpen', true)
+            elseif (event == 'OnClose') then rawset(t, 'IsOpen', false) end
+
             local args = pack(...)
 
             for _, v in pairs(t.Events[event]) do
@@ -429,7 +445,7 @@ function CreateMenu(info)
             end
 
             if (info.TriggerUpdate) then
-                insert(t.Items, item)
+                t.Items:AddItem(item)
             else
                 local items = rawget(t.data, 'Items')
 
@@ -472,7 +488,7 @@ function CreateMenu(info)
             local item = CreateMenuItem(info)
 
             if (info.TriggerUpdate) then
-                insert(t.Items, item)
+                t.Items:AddItem(item)
             else
                 local items = rawget(t.data, 'Items')
 
@@ -560,7 +576,7 @@ function CreateMenu(info)
             end
 
             if (info.TriggerUpdate) then
-                insert(t.Items, item)
+                t.Items:AddItem(item)
             else
                 local items = rawget(t.data, 'Items')
 
@@ -666,7 +682,7 @@ function CreateMenu(info)
             end
 
             if (info.TriggerUpdate) then
-                insert(t.Items, item)
+                t.Items:AddItem(item)
             else
                 local items = rawget(t.data, 'Items')
 
@@ -733,7 +749,7 @@ function CreateMenu(info)
             function item:Deny() item.Value = false end
 
             if (info.TriggerUpdate) then
-                insert(t.Items, item)
+                t.Items:AddItem(item)
             else
                 local items = rawget(t.data, 'Items')
 
@@ -851,8 +867,14 @@ function CreateMenu(info)
             MenuV:OpenMenu(t)
         end,
         __newindex = function(t, k, v)
+            local whitelisted = { 'Title', 'Subtitle', 'Position', 'Color', 'R', 'G', 'B', 'Size', 'Dictionary', 'Texture' }
             local key = U:Ensure(k, 'unknown')
             local oldValue = rawget(t.data, k)
+
+            if (not U:Any(key, whitelisted, 'value') and oldValue ~= nil) then
+                return
+            end
+
             local checkInput = t.Validate ~= nil and type(t.Validate) == 'function'
             local inputParser = t.Parser ~= nil and type(t.Parser) == 'function'
             local updateIndexTrigger = t.NewIndex ~= nil and type(t.NewIndex) == 'function'
@@ -925,9 +947,6 @@ function CreateMenu(info)
     menu.Items(function(items, trigger, key, index, value, oldValue)
         menu:Trigger(trigger, key, index, value, oldValue)
     end)
-
-    menu:On('open', function() menu.IsOpen = true end)
-    menu:On('close', function() menu.IsOpen = false end)
 
     for k, v in pairs(info or {}) do
         local key = U:Ensure(k, 'unknown')
