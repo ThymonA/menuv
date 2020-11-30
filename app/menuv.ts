@@ -228,6 +228,10 @@ export default VUE.extend({
                     this.items[i].max = item.max || this.items[i].max;
                     this.items[i].disabled = item.disabled || this.items[i].disabled;
 
+                    if (this.index == i && this.items[i].disabled) {
+                        this.index = this.NEXT_INDEX(this.index);
+                    }
+
                     return;
                 }
             }
