@@ -160,6 +160,30 @@ div .hide,
     color: white;
 }
 
+.menuv.size-100 .menuv-items {
+    max-height: 66.1vh;
+}
+
+.menuv.size-110 .menuv-items {
+    max-height: 59.2vh;
+}
+
+.menuv.size-125 .menuv-items {
+    max-height: 50.2vh;
+}
+
+.menuv.size-150 .menuv-items {
+    max-height: 45.8vh;
+}
+
+.menuv.size-175 .menuv-items {
+    max-height: 39vh;
+}
+
+.menuv.size-200 .menuv-items {
+    max-height: 32.2vh;
+}
+
 .menuv .menuv-items .menuv-item {
     padding: 0.25em 0.50em;
     font-size: 0.9em;
