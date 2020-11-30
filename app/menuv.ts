@@ -226,13 +226,19 @@ export default VUE.extend({
                 this.RESET_MENU();
             }     
         },
-        UPDATE_TITLE({ title }: { title: string }) {
+        UPDATE_TITLE({ title, __uuid }: { title: string, __uuid: string }) {
+            if (__uuid != this.uuid) { return; }
+
             this.title = title || this.title;
         },
-        UPDATE_SUBTITLE({ subtitle }: { subtitle: string }) {
+        UPDATE_SUBTITLE({ subtitle, __uuid }: { subtitle: string, __uuid: string }) {
+            if (__uuid != this.uuid) { return; }
+
             this.subtitle = subtitle || this.subtitle;
         },
-        UPDATE_ITEMS({ items }: { items: Item[] }) {
+        UPDATE_ITEMS({ items, __uuid }: { items: Item[], __uuid: string }) {
+            if (__uuid != this.uuid) { return; }
+
             const _items = items || this.items;
 
             for (var i = 0; i < _items.length; i++) {
@@ -246,8 +252,8 @@ export default VUE.extend({
 
             this.index = prevIndex;
         },
-        UPDATE_ITEM({ item }: { item: Item }) {
-            if (item == null || typeof item == "undefined") { return; }
+        UPDATE_ITEM({ item, __uuid }: { item: Item, __uuid: string }) {
+            if (__uuid != this.uuid || item == null || typeof item == "undefined") { return; }
 
             for (var i = 0; i < this.items.length; i++) {
                 if (this.items[i].uuid == item.uuid) {
@@ -260,7 +266,7 @@ export default VUE.extend({
                     this.items[i].max = item.max || this.items[i].max;
                     this.items[i].disabled = item.disabled || this.items[i].disabled;
 
-                    if (this.index == i && this.items[i].disabled) {
+                    if ((this.index == i && this.items[i].disabled) || (this.index < 0 && !this.items[i].disabled)) {
                         this.index = this.NEXT_INDEX(this.index);
                     }
 
@@ -268,7 +274,9 @@ export default VUE.extend({
                 }
             }
         },
-        ADD_ITEM({ item, index }: { item: Item, index?: number }) {
+        ADD_ITEM({ item, index, __uuid }: { item: Item, index?: number, __uuid: string }) {
+            if (__uuid != this.uuid) { return; }
+
             item.prev_value = item.value;
 
             if (typeof index == 'undefined' || index == null || index < 0 || index >= this.items.length) {
@@ -276,9 +284,11 @@ export default VUE.extend({
             } else {
                 this.items.splice(index, 0, item);
             }
+
+            if (this.index < 0 && !item.disabled) { this.index = this.NEXT_INDEX(this.index); }
         },
-        REMOVE_ITEM({ uuid }: { uuid: string }) {
-            if (typeof uuid != 'string' || uuid == '') { return }
+        REMOVE_ITEM({ uuid, __uuid }: { uuid: string, __uuid: string }) {
+            if (__uuid != this.uuid || typeof uuid != 'string' || uuid == '') { return }
 
             for (var i = 0; i < this.items.length; i++) {
                 if (this.items[i].uuid == uuid) {

@@ -787,17 +787,16 @@ function CreateMenu(info)
         ClearItems = function(t, update)
             update = U:Ensure(update, true)
 
-            if (update) then
-                t.Items = CreateEmptyItemsTable({})
-                t.Items(function(_, trigger, key, index, value, oldValue)
-                    t:Trigger(trigger, key, index, value, oldValue)
-                end)
-            else
-                rawset(t, 'Items', CreateEmptyItemsTable({}))
+            local items = CreateEmptyItemsTable({})
 
-                t.data.Items(function(_, trigger, key, index, value, oldValue)
-                    t:Trigger(trigger, key, index, value, oldValue)
-                end)
+            items(function(_, trigger, key, index, value, oldValue)
+                t:Trigger(trigger, key, index, value, oldValue)
+            end)
+
+            rawset(t.data, 'Items', items)
+
+            if (update and t.Trigger ~= nil and type(t.Trigger) == 'function') then
+                t:Trigger('update', 'Items', items)
             end
         end,
         Open = function(t)

@@ -183,19 +183,19 @@ function MenuV:OpenMenu(menu, cb)
         k = Utilities:Ensure(k, 'unknown')
 
         if (k == 'Title' or k == 'title') then
-            SEND_NUI_MESSAGE({ action = 'UPDATE_TITLE', title = Utilities:Ensure(v, 'MenuV') })
+            SEND_NUI_MESSAGE({ action = 'UPDATE_TITLE', title = Utilities:Ensure(v, 'MenuV'), __uuid = m.UUID })
         elseif (k == 'Subtitle' or k == 'subtitle') then
-            SEND_NUI_MESSAGE({ action = 'UPDATE_SUBTITLE', subtitle = Utilities:Ensure(v, '') })
+            SEND_NUI_MESSAGE({ action = 'UPDATE_SUBTITLE', subtitle = Utilities:Ensure(v, ''), __uuid = m.UUID })
         elseif (k == 'Items' or k == 'items') then
-            SEND_NUI_MESSAGE({ action = 'UPDATE_ITEMS', items = (m.Items:ToTable() or {}) })
+            SEND_NUI_MESSAGE({ action = 'UPDATE_ITEMS', items = (m.Items:ToTable() or {}), __uuid = m.UUID })
         elseif (k == 'Item' or k == 'item' and Utilities:Typeof(v) == 'Item') then
-            SEND_NUI_MESSAGE({ action = 'UPDATE_ITEM', item = m.Items:ItemToTable(v) or {} })
+            SEND_NUI_MESSAGE({ action = 'UPDATE_ITEM', item = m.Items:ItemToTable(v) or {}, __uuid = m.UUID })
         elseif (k == 'AddItem' or k == 'additem' and Utilities:Typeof(v) == 'Item') then
-            SEND_NUI_MESSAGE({ action = 'ADD_ITEM', item = m.Items:ItemToTable(v) })
+            SEND_NUI_MESSAGE({ action = 'ADD_ITEM', item = m.Items:ItemToTable(v), __uuid = m.UUID })
         elseif (k == 'RemoveItem' or k == 'removeitem' and Utilities:Typeof(v) == 'Item') then
-            SEND_NUI_MESSAGE({ action = 'REMOVE_ITEM', uuid = v.UUID })
+            SEND_NUI_MESSAGE({ action = 'REMOVE_ITEM', uuid = v.UUID, __uuid = m.UUID })
         elseif (k == 'UpdateItem' or k == 'updateitem' and Utilities:Typeof(v) == 'Item') then
-            SEND_NUI_MESSAGE({ action = 'UPDATE_ITEM', item = m.Items:ItemToTable(v) or {} })
+            SEND_NUI_MESSAGE({ action = 'UPDATE_ITEM', item = m.Items:ItemToTable(v) or {}, __uuid = m.UUID })
         end
     end)
 
