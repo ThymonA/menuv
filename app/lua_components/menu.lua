@@ -104,9 +104,9 @@ function CreateEmptyItemsTable(data)
         local uuid = U:Typeof(i) == 'Item' and i.UUID or U:Ensure(i, '00000000-0000-0000-0000-000000000000')
 
         for _, option in pairs(t) do
-            if (option.UUID == uuid) then
-                index = index + 1
+            index = index + 1
 
+            if (option.UUID == uuid) then
                 tempTable = {
                     index = index,
                     type = option.__type,
@@ -164,7 +164,7 @@ function CreateEmptyItemsTable(data)
     end
     data.AddItem = function(t, item)
         if (U:Typeof(item) == 'Item') then
-            local newIndex = #t + 1
+            local newIndex = #(U:Ensure(rawget(t, 'data'), {})) + 1
 
             rawset(t.data, newIndex, item)
 
