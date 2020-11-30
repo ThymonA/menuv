@@ -32,6 +32,8 @@ function CreateMenuItem(info)
     info = U:Ensure(info, {})
 
     local item = {
+        ---@type Menu|nil
+        __menu = U:Ensure(info.__Menu or info.__menu, { __class = 'Menu', __type = 'Menu' }, true) or nil,
         ---@type string
         __event = U:Ensure(info.PrimaryEvent or info.primaryEvent, 'unknown'),
         ---@type string
@@ -217,6 +219,10 @@ function CreateMenuItem(info)
 
             if (updateIndexTrigger) then
                 t:NewIndex(key, v)
+            end
+
+            if (t.__menu ~= nil and U:Typeof(t.__menu) == 'Menu' and t.__menu.Trigger ~= nil and U:Typeof( t.__menu.Trigger) == 'function') then
+                t.__menu:Trigger('update', 'UpdateItem', t)
             end
 
             if (key == 'Value' and t.Trigger ~= nil and type(t.Trigger) == 'function') then

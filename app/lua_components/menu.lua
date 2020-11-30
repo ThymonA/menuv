@@ -98,6 +98,70 @@ function CreateEmptyItemsTable(data)
 
         return tempTable
     end
+    data.ItemToTable = function(t, i)
+        local tempTable = {}
+        local index = 0
+        local uuid = U:Typeof(i) == 'Item' and i.UUID or U:Ensure(i, '00000000-0000-0000-0000-000000000000')
+
+        for _, option in pairs(t) do
+            if (option.UUID == uuid) then
+                index = index + 1
+
+                tempTable = {
+                    index = index,
+                    type = option.__type,
+                    uuid = U:Ensure(option.UUID, 'unknown'),
+                    icon = U:Ensure(option.Icon, 'none'),
+                    label = U:Ensure(option.Label, 'Unknown'),
+                    description = U:Ensure(option.Description, ''),
+                    value = 'none',
+                    values = {},
+                    min = U:Ensure(option.Min, 0),
+                    max = U:Ensure(option.Max, 0),
+                    disabled = U:Ensure(option.Disabled, false)
+                }
+
+                if (option.__type == 'button' or option.__type == 'menu') then
+                    tempTable.value = 'none'
+                elseif (option.__type == 'checkbox' or option.__type == 'confirm') then
+                    tempTable.value = U:Ensure(option.Value, false)
+                elseif (option.__type == 'range') then
+                    tempTable.value = U:Ensure(option.Value, 0)
+
+                    if (tempTable.value <= tempTable.min) then
+                        tempTable.value = tempTable.min
+                    elseif (tempTable.value >= tempTable.max) then
+                        tempTable.value = tempTable.max
+                    end
+                elseif (option.__type == 'slider') then
+                    tempTable.value = 0
+                end
+
+                local _values = U:Ensure(option.Values, {})
+                local vIndex = 0
+
+                for valueIndex, value in pairs(_values) do
+                    vIndex = vIndex + 1
+
+                    tempTable.values[vIndex] = {
+                        label = U:Ensure(value.Label, 'Option'),
+                        description = U:Ensure(value.Description, ''),
+                        value = vIndex
+                    }
+
+                    if (option.__type == 'slider') then
+                        if (U:Ensure(option.Value, 0) == valueIndex) then
+                            tempTable.value = (valueIndex - 1)
+                        end
+                    end
+                end
+
+                return tempTable
+            end
+        end
+
+        return tempTable
+    end
 
     local item_pairs = function(t, k)
         local _k, _v = next((rawget(t, 'data') or {}), k)
@@ -133,7 +197,13 @@ function CreateEmptyItemsTable(data)
             rawset(t.data, k, v)
 
             if (t.Trigger ~= nil and type(t.Trigger) == 'function') then
-                t:Trigger('ichange', 'Items', k, v, oldValue)
+                if (oldValue == nil) then
+                    t:Trigger('update', 'AddItem', v)
+                elseif (oldValue ~= nil and v == nil) then
+                    t:Trigger('update', 'RemoveItem', oldValue)
+                elseif (oldValue ~= v) then
+                    t:Trigger('update', 'UpdateItem', v, oldValue)
+                end
             end
         end,
         __call = function(t, func)
@@ -346,6 +416,7 @@ function CreateMenu(info)
             info.Events = { OnSelect = {} }
             info.PrimaryEvent = 'OnSelect'
             info.TriggerUpdate = not U:Ensure(info.IgnoreUpdate or info.ignoreUpdate, false)
+            info.__menu = t
 
             if (U:Typeof(info.Value or info.value) == 'Menu') then
                 info.Type = 'menu'
@@ -385,6 +456,7 @@ function CreateMenu(info)
             info.Events = { OnChange = {}, OnCheck = {}, OnUncheck = {} }
             info.PrimaryEvent = 'OnCheck'
             info.TriggerUpdate = not U:Ensure(info.IgnoreUpdate or info.ignoreUpdate, false)
+            info.__menu = t
             info.NewIndex = function(t, k, v)
                 if (k == 'Value') then
                     local value = U:Ensure(v, false)
@@ -426,6 +498,7 @@ function CreateMenu(info)
             info.Events = { OnChange = {}, OnSelect = {} }
             info.PrimaryEvent = 'OnSelect'
             info.TriggerUpdate = not U:Ensure(info.IgnoreUpdate or info.ignoreUpdate, false)
+            info.__menu = t
 
             ---@class SliderItem : Item
             ---@filed private __event string Name of primary event
@@ -513,6 +586,7 @@ function CreateMenu(info)
             info.Events = { OnChange = {}, OnSelect = {}, OnMin = {}, OnMax = {} }
             info.PrimaryEvent = 'OnSelect'
             info.TriggerUpdate = not U:Ensure(info.IgnoreUpdate or info.ignoreUpdate, false)
+            info.__menu = t
             info.Value = U:Ensure(info.Value or info.value, 0)
             info.Min = U:Ensure(info.Min or info.min, 0)
             info.Max = U:Ensure(info.Max or info.max, 0)
@@ -619,6 +693,7 @@ function CreateMenu(info)
             info.Events = { OnConfirm = {}, OnDeny = {}, OnChange = {} }
             info.PrimaryEvent = 'OnConfirm'
             info.TriggerUpdate = not U:Ensure(info.IgnoreUpdate or info.ignoreUpdate, false)
+            info.__menu = t
             info.NewIndex = function(t, k, v)
                 if (k == 'Value') then
                     local value = U:Ensure(v, false)

@@ -32,6 +32,7 @@ export interface Item {
     label: string;
     description: string;
     value: any;
+    prev_value: any;
     values: Option[];
     min: number;
     max: number;
@@ -94,7 +95,7 @@ export default VUE.extend({
             
             if (!data || !data.action) { return; }
 
-            const typeRef = data.action as 'UPDATE_STATUS' | 'OPEN_MENU' | 'CLOSE_MENU' | 'UPDATE_TITLE' | 'UPDATE_SUBTITLE' | 'KEY_PRESSED' | 'RESOURCE_STOPPED' | 'UPDATE_ITEMS'
+            const typeRef = data.action as 'UPDATE_STATUS' | 'OPEN_MENU' | 'CLOSE_MENU' | 'UPDATE_TITLE' | 'UPDATE_SUBTITLE' | 'KEY_PRESSED' | 'RESOURCE_STOPPED' | 'UPDATE_ITEMS' | 'UPDATE_ITEM'
         
             if (this[typeRef]) {
                 this[typeRef](data);
@@ -139,12 +140,14 @@ export default VUE.extend({
                 if (currentItem == null) { return; }
 
                 for (var i = 0; i < oldValue.length; i++) {
-                    if (currentItem.uuid == oldValue[i].uuid && currentItem.type == oldValue[i].type) {
+                    if (currentItem.uuid == oldValue[i].uuid) {
                         sameItem = oldValue[i];
                     }
                 }
 
-                if (sameItem == null) { return; }
+                if (sameItem == null || currentItem.value == currentItem.prev_value) { return; }
+
+                currentItem.prev_value = currentItem.value;
                 
                 this.POST(`https://menuv/update`, { uuid: currentItem.uuid, prev: sameItem.value, now: currentItem.value, r: this.resource });
             }
@@ -168,12 +171,22 @@ export default VUE.extend({
             this.texture = this.ENSURE(menu.texture, 'none');
             this.dictionary = this.ENSURE(menu.dictionary, 'none');
             this.color = menu.color || this.color;
-            this.items = menu.items || [];
             this.sounds = menu.defaultSounds || this.sounds;
             this.show = true;
             this.menu = true;
-            this.index = this.NEXT_INDEX(0);
 
+            const _items = this.items = menu.items || [];
+
+            for (var i = 0; i < _items.length; i++) {
+                _items[i].prev_value = _items[i].value;
+            }
+
+            this.items = _items;
+
+            const nextIndex = this.NEXT_INDEX(this.index);
+            const prevIndex = this.PREV_INDEX(nextIndex);
+
+            this.index = prevIndex;
             this.POST(`https://menuv/opened`, { uuid: this.uuid, r: this.resource });
         },
         CLOSE_MENU({ uuid }: { uuid: string }) {
@@ -188,13 +201,40 @@ export default VUE.extend({
             this.subtitle = subtitle || this.subtitle;
         },
         UPDATE_ITEMS({ items }: { items: Item[] }) {
-            this.items = items || this.items;
+            const _items = items || this.items;
 
-            if (this.index < 0 || this.index >= this.items.length) {
-                this.index = this.NEXT_INDEX(this.index);
+            for (var i = 0; i < _items.length; i++) {
+                _items[i].prev_value = _items[i].value;
+            }
+
+            this.items = _items;
+
+            const nextIndex = this.NEXT_INDEX(this.index);
+            const prevIndex = this.PREV_INDEX(nextIndex);
+
+            this.index = prevIndex;
+        },
+        UPDATE_ITEM({ item }: { item: Item }) {
+            if (item == null || typeof item == "undefined") { return; }
+
+            for (var i = 0; i < this.items.length; i++) {
+                if (this.items[i].uuid == item.uuid) {
+                    this.items[i].icon = item.icon || this.items[i].icon;
+                    this.items[i].label = item.label || this.items[i].label;
+                    this.items[i].description = item.description || this.items[i].description;
+                    this.items[i].value = item.value || this.items[i].value;
+                    this.items[i].values = item.values || this.items[i].values;
+                    this.items[i].min = item.min || this.items[i].min;
+                    this.items[i].max = item.max || this.items[i].max;
+                    this.items[i].disabled = item.disabled || this.items[i].disabled;
+
+                    return;
+                }
             }
         },
         ADD_ITEM({ item, index }: { item: Item, index?: number }) {
+            item.prev_value = item.value;
+
             if (typeof index == 'undefined' || index == null || index < 0 || index >= this.items.length) {
                 this.items.push(item);
             } else {
@@ -347,7 +387,7 @@ export default VUE.extend({
             }
         },
         KEY_UP: function() {
-            const newIndex = this.PREV_INDEX();
+            const newIndex = this.PREV_INDEX(this.index);
 
             if (this.index != newIndex) {
                 this.index = newIndex;
@@ -574,23 +614,25 @@ export default VUE.extend({
 
             return newIndex;
         },
-        PREV_INDEX: function() {
+        PREV_INDEX: function(idx: number) {
+            if (idx == null || typeof idx == "undefined") { idx = this.index; }
+
             let index = 0;
             let newIndex = -2;
 
             if (this.items.length <= 0) { return -1; }
 
             while (newIndex < -1) {
-                if ((this.index - 1 - index) >= 0) {
-                    if (!this.items[(this.index - 1 - index)].disabled) {
-                        newIndex = (this.index - 1 - index);
+                if ((idx - 1 - index) >= 0) {
+                    if (!this.items[(idx - 1 - index)].disabled) {
+                        newIndex = (idx - 1 - index);
                     } else {
                         index++;
                     }
                 } else if (index >= this.items.length) {
                     return -1;
                 } else {
-                    const addIndex = (this.index - 1 - index) + this.items.length;
+                    const addIndex = (idx - 1 - index) + this.items.length;
 
                     if (addIndex < this.items.length && addIndex >= 0) {
                         if (!this.items[addIndex].disabled) {
