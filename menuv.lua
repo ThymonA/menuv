@@ -176,6 +176,7 @@ function MenuV:OpenMenu(menu, cb)
         insert(self.ParentMenus, self.CurrentMenu)
 
         self.CurrentMenu:RemoveOnEvent('update', self.CurrentUpdateUUID)
+        self.CurrentMenu:DestroyThreads()
     end
 
     self.CurrentMenu = menu
@@ -232,6 +233,7 @@ function MenuV:CloseMenu(menu, cb)
 
     self.CurrentMenu:RemoveOnEvent('update', self.CurrentUpdateUUID)
     self.CurrentMenu:Trigger('close')
+    self.CurrentMenu:DestroyThreads()
     self.CurrentMenu = nil
 
     if (#self.ParentMenus <= 0) then
@@ -270,6 +272,7 @@ function MenuV:CloseAll(cb)
 
     self.CurrentMenu:RemoveOnEvent('update', self.CurrentUpdateUUID)
     self.CurrentMenu:Trigger('close')
+    self.CurrentMenu:DestroyThreads()
 
     SEND_NUI_MESSAGE({ action = 'CLOSE_MENU', uuid = uuid })
 
@@ -310,7 +313,7 @@ REGISTER_NUI_CALLBACK('open', function(info, cb)
 
     MenuV.CurrentMenu:RemoveOnEvent('update', MenuV.CurrentUpdateUUID)
     MenuV.CurrentMenu:Trigger('close')
-
+    MenuV.CurrentMenu:DestroyThreads()
     MenuV.CurrentMenu = nil
     MenuV.ParentMenus = {}
 end)
@@ -368,6 +371,7 @@ REGISTER_NUI_CALLBACK('close', function(info, cb)
 
     MenuV.CurrentMenu:RemoveOnEvent('update', MenuV.CurrentUpdateUUID)
     MenuV.CurrentMenu:Trigger('close')
+    MenuV.CurrentMenu:DestroyThreads()
     MenuV.CurrentMenu = nil
 
     if (#MenuV.ParentMenus <= 0) then cb('ok') return end

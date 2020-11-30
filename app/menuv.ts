@@ -279,6 +279,13 @@ export default VUE.extend({
 
             item.prev_value = item.value;
 
+            for (var i = 0; i < this.items.length; i++) {
+                if (this.items[i].uuid == item.uuid) {
+                    this.UPDATE_ITEM({ item: item, __uuid: __uuid });
+                    return;
+                }
+            }
+
             if (typeof index == 'undefined' || index == null || index < 0 || index >= this.items.length) {
                 this.items.push(item);
             } else {
