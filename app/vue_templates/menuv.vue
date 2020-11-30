@@ -104,8 +104,8 @@
     <nav class="menuv-subheader">
       {{subtitle}}
     </nav>
-    <ul class="menuv-items">
-      <li class="menuv-item" v-for="item in items" :key="item.uuid" :class="[{'active': (index + 1) == item.index, 'hasIcon': ENSURE(item.icon, 'none') != 'none', 'disabled': item.disabled }, (`menuv-${item.type}`)]">
+    <ul class="menuv-items" ref="items">
+      <li class="menuv-item" v-for="item in items" :key="item.uuid" :class="[{'active': (index + 1) == item.index, 'hasIcon': ENSURE(item.icon, 'none') != 'none', 'disabled': item.disabled }, (`menuv-${item.type}`)]" :index="(item.index - 1)">
         <span class="menuv-icon" v-if="ENSURE(item.icon, 'none') != 'none'">{{ENSURE(item.icon, 'none')}}</span>
         <span class="menuv-title">{{item.label}}</span>
         <i class="fas fa-arrow-right" v-if="item.type == 'menu'"></i>

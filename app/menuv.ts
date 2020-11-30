@@ -11,6 +11,21 @@
 */
 import VUE from 'vue';
 import STYLE from './vue_components/style';
+import * as VueScrollTo from 'vue-scrollto';
+
+VUE.use(VueScrollTo.default, {
+    container: 'ul.menuv-items',
+    duration: 500,
+    easing: 'ease-in',
+    offset: -25,
+    force: true,
+    cancelable: false,
+    onStart: false,
+    onDone: false,
+    onCancel: false,
+    x: false,
+    y: true
+});
 
 export interface Sounds {
     type: 'native' | 'custom';
@@ -153,6 +168,23 @@ export default VUE.extend({
             }
         }
     },
+    updated: function() {
+        if (this.index < 0) { return; }
+
+        const el = document.getElementsByTagName('li');
+
+        for (var i = 0; i < el.length; i++) {
+            const index = el[i].getAttribute('index')
+
+            if (index === null) { continue; }
+
+            const idx = parseInt(index);
+
+            if (idx == this.index) {
+                this.$scrollTo(`li[index="${this.index}"]`, 0, {});
+            }
+        }
+    },
     computed: {},
     methods: {
         UPDATE_STATUS({ status }: { status: boolean }) {
@@ -251,6 +283,10 @@ export default VUE.extend({
             for (var i = 0; i < this.items.length; i++) {
                 if (this.items[i].uuid == uuid) {
                     this.items.splice(i, 1);
+                }
+
+                if (i == this.index) {
+                    this.index = this.PREV_INDEX(this.index);
                 }
             }
         },
