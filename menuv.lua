@@ -72,6 +72,8 @@ local menuv_table = {
     Menus = {},
     ---@type Menu[]
     ParentMenus = {},
+    ---@type table<int, string>
+    Controls = {},
     ---@type table<string, function>
     NUICallbacks = {}
 }
@@ -282,6 +284,27 @@ function MenuV:CloseAll(cb)
     cb()
 end
 
+--- Add control key to toggle menu
+---@param menu Menu|string Menu object or UUID
+---@param key int Control key index according to FiveM docs
+function MenuV:AddControl(menu, key)
+    local uuid = Utilities:Typeof(menu) == 'Menu' and menu.UUID or Utilities:Typeof(menu) == 'string' and menu
+
+    if (uuid == nil) then return end
+
+    self.Controls[key] = uuid
+end
+
+--- Remove menu toggle key
+---@param key int Control key index according to FiveM docs
+function MenuV:RemoveControl(key)
+    local uuid = Utilities:Typeof(menu) == 'Menu' and menu.UUID or Utilities:Typeof(menu) == 'string' and menu
+
+    if (uuid == nil) then return end
+
+    self.Controls[key] = nil
+end
+
 --- Mark MenuV as loaded when `main` resource is loaded
 exports['menuv']:IsLoaded(function()
     MenuV.Loaded = true
@@ -457,6 +480,21 @@ REGISTER_NUI_CALLBACK('update', function(info, cb)
                 end
             end
             return
+        end
+    end
+end)
+
+Citizen.CreateThread(function()
+    while true do
+        Citizen.Wait(0)
+        for k, v in pairs(MenuV.Controls) do
+            if IsControlJustPressed(0, k) then
+                if MenuV.CurrentMenu ~= nil then
+                    MenuV:CloseAll()
+                else
+                    MenuV:OpenMenu(v)
+                end
+            end
         end
     end
 end)
