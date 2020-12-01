@@ -836,6 +836,11 @@ function CreateMenu(info)
         Close = function(t)
             MenuV:CloseMenu(t)
         end,
+        --- Add control key to toggle menu
+        ---@param key int Control key index according to FiveM docs
+        AddControl = function(t, key)
+            MenuV:AddControl(t, key)
+        end,
         --- @see Menu to @see table
         ---@param t Menu
         ---@return table
