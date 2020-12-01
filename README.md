@@ -49,11 +49,11 @@ After the command is executed you will see a `dist` folder containing all the **
 ### Create a menu
 Create a menu by calling the **MenuV:CreateMenu** function.
 ```ts
-MenuV:CreateMenu(title: string, subtitle: string, position: string, red: number, green: number, blue: number, texture: string, disctionary: string)
+MenuV:CreateMenu(title: string, subtitle: string, position: string, red: number, green: number, blue: number, texture: string, disctionary: string, namespace: string)
 ```
 **Example:**
 ```lua
-local menu = MenuV:CreateMenu('MenuV', 'Welcome to MenuV', 'topleft', 255, 0, 0)
+local menu = MenuV:CreateMenu('MenuV', 'Welcome to MenuV', 'topleft', 255, 0, 0, 'size-125', 'default', 'menuv', 'example_namespace')
 ```
 
 ### Create menu items
