@@ -8,11 +8,13 @@
 -- Description: FiveM menu libarary for creating menu's
 ----------------------- [ MenuV ] -----------------------
 local assert = assert
+local load = assert(load)
+local xpcall = assert(xpcall)
 local lower = assert(string.lower)
 local upper = assert(string.upper)
-local decode = assert(json.decode)
 local rawget = assert(rawget)
 local rawset = assert(rawset)
+local traceback = assert(debug.traceback)
 local setmetatable = assert(setmetatable)
 
 --- FiveM globals
@@ -33,6 +35,29 @@ local exports = assert(exports)
 ---@type Utilities
 local Utilities = assert(Utilities)
 
+--- Load a file from `menuv`
+---@param path string Path in `menuv`
+---@return any|nil Results of nil
+local function load_file(path)
+    if (path == nil or type(path) ~= 'string') then return nil end
+
+    local raw_file = LoadResourceFile('menuv', path)
+
+    if (raw_file) then
+        local raw_func, _ = load(raw_file, ('menuv/%s'):format(path), 't', _ENV)
+
+        if (raw_func) then
+            local ok, result = xpcall(raw_func, traceback)
+
+            if (ok) then
+                return result
+            end
+        end
+    end
+
+    return nil
+end
+
 local MenuV = setmetatable({
     ---@type string
     __class = 'MenuV',
@@ -40,12 +65,10 @@ local MenuV = setmetatable({
     __type = 'MenuV',
     ---@type boolean
     Loaded = false,
-    ---@type string
-    Language = Utilities:Ensure((Config or {}).Language, 'en'),
     ---@type number
     ThreadWait = Utilities:Ensure((Config or {}).HideInterval, 250),
     ---@type table<string, string>
-    Translations = {},
+    Translations = load_file('app/lua_components/translations.lua') or {},
     ---@type table<string, table>
     Sounds = Utilities:Ensure((Config or {}).Sounds, {}),
     ---@class keys
@@ -89,16 +112,6 @@ local MenuV = setmetatable({
         end
     })
 }, {})
-
---- Load all translations
-local translations_path = ('languages/%s.json'):format(MenuV.Language)
-local translations_raw = LoadResourceFile('menuv', translations_path)
-
-if (translations_raw) then
-    local transFile = decode(translations_raw)
-
-    if (transFile) then MenuV.Translations = Utilities:Ensure(transFile.translations, {}) end
-end
 
 --- Register a `action` with custom keybind
 ---@param action string Action like: UP, DOWN, LEFT...

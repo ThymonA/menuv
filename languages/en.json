@@ -15,6 +15,7 @@
         "keybind_key_left": "Left in a menu",
         "keybind_key_right": "Right in a menu",
         "keybind_key_enter": "Confirm item in menu",
-        "keybind_key_close": "Closing a menu"
+        "keybind_key_close": "Closing a menu",
+        "open_menu": "Open menu '%s_%s' with this key"
     }
 }

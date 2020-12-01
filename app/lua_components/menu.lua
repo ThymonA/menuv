@@ -276,6 +276,8 @@ function CreateMenu(info)
     info = U:Ensure(info, {})
 
     local item = {
+        ---@type string
+        Namespace = U:Ensure(info.Namespace or info.namespace, 'unknown'),
         ---@type boolean
         IsOpen = false,
         ---@type string
@@ -795,6 +797,32 @@ function CreateMenu(info)
 
             return t.Items[#t.Items] or item
         end,
+        --- Add control key for specific menu
+        ---@param t Menu|string MenuV menu
+        ---@param action string Name of action
+        ---@param func function This will be executed
+        ---@param description string Key description
+        ---@param defaultType string Default key type
+        ---@param defaultKey string Default key
+        AddControlKey = function(t, action, func, description, defaultType, defaultKey)
+            if (U:Typeof(t.Namespace) ~= 'string' or t.Namespace == 'unknown') then
+                error('[MenuV] Namespace is required for assigning keys.')
+                return
+            end
+
+            MenuV:AddControlKey(t, action, func, description, defaultType, defaultKey)
+        end,
+        --- Assign key for opening this menu
+        ---@param t Menu|string MenuV menu
+        ---@param defaultType string Default key type
+        ---@param defaultKey string Default key
+        OpenWith = function(t, defaultType, defaultKey)
+            t:AddControlKey('open', function(m)
+                MenuV:CloseAll(function()
+                    MenuV:OpenMenu(m)
+                end)
+            end, MenuV:T('open_menu'):format(MenuV.CurrentResourceName, t.Namespace), defaultType, defaultKey)
+        end,
         --- Change title of menu
         ---@param t Menu
         ---@param title string Title of menu
@@ -968,6 +996,11 @@ function CreateMenu(info)
     ---@field public AddSlider fun(t: Menu, info: table):SliderItem
     ---@field public AddRange fun(t: Menu, info: table):RangeItem
     ---@field public AddConfirm fun(t: Menu, info: table):ConfirmItem
+    ---@field public AddControlKey fun(t: Menu, action: string, func: function, description: string, defaultType: string, defaultKey: string)
+    ---@field public OpenWith fun(t: Menu, defaultType: string, defaultKey: string)
+    ---@field public SetTitle fun(t: Menu, title: string)
+    ---@field public SetSubtitle fun(t: Menu, subtitle: string)
+    ---@field public SetPosition fun(t: Menu, position: string)
     ---@field public ClearItems fun(t: Menu)
     ---@field public Open fun(t: Menu)
     ---@field public Close fun(t: Menu)

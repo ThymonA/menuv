@@ -20,6 +20,7 @@ url 'https://github.com/ThymonA/menuv/'
 
 files {
     'menuv.lua',
+    'config.lua',
     'app/lua_components/*.lua',
     'dist/*.html',
     'dist/assets/css/*.css',

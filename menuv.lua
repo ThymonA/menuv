@@ -12,17 +12,23 @@ local type = assert(type)
 local load = assert(load)
 local xpcall = assert(xpcall)
 local pairs = assert(pairs)
+local rawget = assert(rawget)
+local rawset = assert(rawset)
 local insert = assert(table.insert)
 local remove = assert(table.remove)
+local format = assert(string.format)
+local upper = assert(string.upper)
 local traceback = assert(debug.traceback)
 local setmetatable = assert(setmetatable)
-local __environment = assert(_ENV)
 
 --- FiveM globals
 local LOAD_RESOURCE_FILE = assert(LoadResourceFile)
 local GET_CURRENT_RESOURCE_NAME = assert(GetCurrentResourceName)
 local HAS_STREAMED_TEXTURE_DICT_LOADED = assert(HasStreamedTextureDictLoaded)
 local REQUEST_STREAMED_TEXTURE_DICT = assert(RequestStreamedTextureDict)
+local REGISTER_KEY_MAPPING = assert(RegisterKeyMapping)
+local REGISTER_COMMAND = assert(RegisterCommand)
+local GET_HASH_KEY = assert(GetHashKey)
 local CreateThread = assert(Citizen.CreateThread)
 local Wait = assert(Citizen.Wait)
 
@@ -35,7 +41,7 @@ local function load_file(path)
     local raw_file = LOAD_RESOURCE_FILE('menuv', path)
 
     if (raw_file) then
-        local raw_func, _ = load(raw_file, ('menuv/%s'):format(path), 't', __environment)
+        local raw_func, _ = load(raw_file, ('menuv/%s'):format(path), 't', _ENV)
 
         if (raw_func) then
             local ok, result = xpcall(raw_func, traceback)
@@ -50,6 +56,7 @@ local function load_file(path)
 end
 
 --- MenuV globals
+Config = assert(Config or load_file('config.lua'))
 Utilities = assert(Utilities or load_file('app/lua_components/utilities.lua'))
 CreateMenuItem = assert(CreateMenuItem or load_file('app/lua_components/item.lua'))
 CreateMenu = assert(CreateMenu or load_file('app/lua_components/menu.lua'))
@@ -73,7 +80,47 @@ local menuv_table = {
     ---@type Menu[]
     ParentMenus = {},
     ---@type table<string, function>
-    NUICallbacks = {}
+    NUICallbacks = {},
+    ---@type table<string, string>
+    Translations = load_file('app/lua_components/translations.lua') or {},
+    ---@class keys
+    Keys = setmetatable({ data = {}, __class = 'MenuVKeys', __type = 'keys' }, {
+        __index = function(t, k)
+            return rawget(t.data, k)
+        end,
+        __newindex = function(t, actionHax, v)
+            actionHax = Utilities:Ensure(actionHax, 'unknown')
+
+            if (actionHax == 'unknown') then return end
+
+            local rawKey = rawget(t.data, actionHax)
+            local keyExists = rawKey ~= nil
+            local prevState = Utilities:Ensure((rawKey or {}).status, false)
+            local newState = Utilities:Ensure(v, false)
+
+            if (keyExists) then
+                rawset(t.data[actionHax], 'status', newState)
+
+                if (prevState ~= newState and newState) then
+                    rawKey.func(rawKey.menu)
+                end
+            end
+        end,
+        __call = function(t, actionHax, m, actionFunc)
+            actionHax = Utilities:Ensure(actionHax, 'unknown')
+            m = Utilities:Typeof(m) == 'Menu' and m or nil
+            actionFunc = Utilities:Ensure(actionFunc, function() end)
+
+            if (actionHax == 'unknown') then return end
+
+            local rawKey = rawget(t.data, actionHax)
+            local keyExists = rawKey ~= nil
+
+            if (keyExists) then return end
+
+            rawset(t.data, actionHax, { status = false, menu = m, func = actionFunc })
+        end
+    })
 }
 
 ---@class MenuV
@@ -95,6 +142,15 @@ local REGISTER_NUI_CALLBACK = function(name, cb)
     MenuV.NUICallbacks[name] = cb
 end
 
+--- Load translation
+---@param k string Translation key
+---@return string Translation or 'MISSING TRANSLATION'
+function MenuV:T(k)
+    k = Utilities:Ensure(k, 'unknown')
+
+    return Utilities:Ensure(MenuV.Translations[k], 'MISSING TRANSLATION')
+end
+
 --- Create a `MenuV` menu
 ---@param title string Title of Menu
 ---@param subtitle string Subtitle of Menu
@@ -105,8 +161,9 @@ end
 ---@param size string | "'size-100'" | "'size-110'" | "'size-125'" | "'size-150'" | "'size-175'" | "'size-200'"
 ---@param texture string Name of texture example: "default"
 ---@param dictionary string Name of dictionary example: "menuv"
+---@param namespace string Namespace of Menu
 ---@return Menu
-function MenuV:CreateMenu(title, subtitle, position, r, g, b, size, texture, dictionary)
+function MenuV:CreateMenu(title, subtitle, position, r, g, b, size, texture, dictionary, namespace)
     local menu = CreateMenu({
         Title = title,
         Subtitle = subtitle,
@@ -116,7 +173,8 @@ function MenuV:CreateMenu(title, subtitle, position, r, g, b, size, texture, dic
         B = b,
         Size = size,
         Texture = texture,
-        Dictionary = dictionary
+        Dictionary = dictionary,
+        Namespace = namespace
     })
 
     local index = #(self.Menus or {}) + 1
@@ -280,6 +338,48 @@ function MenuV:CloseAll(cb)
     self.ParentMenus = {}
 
     cb()
+end
+
+--- Register keybind for specific menu
+---@param menu Menu|string MenuV menu
+---@param action string Name of action
+---@param func function This will be executed
+---@param description string Key description
+---@param defaultType string Default key type
+---@param defaultKey string Default key
+function MenuV:AddControlKey(menu, action, func, description, defaultType, defaultKey)
+    local uuid = Utilities:Typeof(menu) == 'Menu' and menu.UUID or Utilities:Typeof(menu) == 'string' and menu
+
+    action = Utilities:Ensure(action, 'UNKNOWN')
+    func = Utilities:Ensure(func, function() end)
+    description = Utilities:Ensure(description, 'unknown')
+    defaultType = Utilities:Ensure(defaultType, 'keyboard')
+    defaultKey = Utilities:Ensure(defaultKey, 'F12')
+
+    local m = self:GetMenu(uuid)
+
+    if (m == nil) then return end
+
+    if (Utilities:Typeof(m.Namespace) ~= 'string' or m.Namespace == 'unknown') then
+        error('[MenuV] Namespace is required for assigning keys.')
+        return
+    end
+
+    action = Utilities:Replace(action, ' ', '_')
+    action = upper(action)
+
+    local resourceName = Utilities:Ensure(self.CurrentResourceName, 'unknown')
+    local namespace = Utilities:Ensure(m.Namespace, 'unknown')
+    local actionHash = GET_HASH_KEY(('%s_%s_%s'):format(resourceName, namespace, action))
+    local actionHax = format('%x', actionHash)
+
+    if (self.Keys[actionHax] ~= nil) then return end
+
+    self.Keys(actionHax, m, func)
+
+    REGISTER_KEY_MAPPING(('+%s'):format(actionHax), description, defaultType, defaultKey)
+    REGISTER_COMMAND(('+%s'):format(actionHax), function() MenuV.Keys[actionHax] = true end)
+    REGISTER_COMMAND(('-%s'):format(actionHax), function() MenuV.Keys[actionHax] = false end)
 end
 
 --- Mark MenuV as loaded when `main` resource is loaded

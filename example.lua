@@ -13,7 +13,7 @@ local MenuV = assert(MenuV)
 
 --- MenuV Menu
 ---@type Menu
-local menu = MenuV:CreateMenu(false, 'Welcome to MenuV', 'topleft', 255, 0, 0, 'size-125', 'example')
+local menu = MenuV:CreateMenu(false, 'Welcome to MenuV', 'topleft', 255, 0, 0, 'size-125', 'example', 'menuv', 'example_namespace')
 local menu2 = MenuV:CreateMenu('Demo 2', 'Open this demo menu in MenuV', 'topleft', 255, 0, 0)
 
 local menu_button = menu:AddButton({ icon = '😃', label = 'Open Demo 2 Menu', value = menu2, description = 'YEA :D from first menu' })
@@ -55,4 +55,4 @@ menu2:On('open', function(m)
     end
 end)
 
-menu()
+menu:OpenWith('keyboard', 'F1') -- Press F1 to open Menu

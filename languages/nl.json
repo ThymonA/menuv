@@ -15,6 +15,7 @@
         "keybind_key_left": "Links in een menu",
         "keybind_key_right": "Rechts in een menu",
         "keybind_key_enter": "Item bevestigen in menu",
-        "keybind_key_close": "Sluiten van een menu"
+        "keybind_key_close": "Sluiten van een menu",
+        "open_menu": "Menu '%s_%s' openen met deze key"
     }
 }
