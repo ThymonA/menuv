@@ -488,6 +488,18 @@ REGISTER_NUI_CALLBACK('close', function(info, cb)
     end)
 end)
 
+REGISTER_NUI_CALLBACK('close_all', function(info, cb)
+    if (MenuV.CurrentMenu == nil) then cb('ok') return end
+
+    MenuV.CurrentMenu:RemoveOnEvent('update', MenuV.CurrentUpdateUUID)
+    MenuV.CurrentMenu:Trigger('close')
+    MenuV.CurrentMenu:DestroyThreads()
+    MenuV.CurrentMenu = nil
+    MenuV.ParentMenus = {}
+
+    cb('ok')
+end)
+
 REGISTER_NUI_CALLBACK('switch', function(info, cb)
     local prev_uuid = Utilities:Ensure(info.prev, '00000000-0000-0000-0000-000000000000')
     local next_uuid = Utilities:Ensure(info.next, '00000000-0000-0000-0000-000000000000')

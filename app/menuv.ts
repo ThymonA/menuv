@@ -430,7 +430,7 @@ export default VUE.extend({
                 return
             }
 
-            const keyRef = `KEY_${k}` as 'KEY_UP' | 'KEY_DOWN' | 'KEY_LEFT' | 'KEY_RIGHT' | 'KEY_ENTER' | 'KEY_CLOSE';
+            const keyRef = `KEY_${k}` as 'KEY_UP' | 'KEY_DOWN' | 'KEY_LEFT' | 'KEY_RIGHT' | 'KEY_ENTER' | 'KEY_CLOSE' | 'KEY_CLOSE_ALL';
 
             if (this[keyRef]) {
                 this[keyRef]();
@@ -626,6 +626,14 @@ export default VUE.extend({
 
             this.POST(`https://menuv/close`, { uuid: this.uuid, r: this.resource });
             this.CLOSE_MENU({ uuid: this.uuid });
+        },
+        KEY_CLOSE_ALL: function() {
+            if (this.sounds['CLOSE'] && this.sounds['CLOSE'].type == 'native') {
+                this.POST(`https://menuv/sound`, { key: 'CLOSE' });
+            }
+
+            this.POST(`https://menuv/close_all`, { r: this.resource });
+            this.RESET_MENU();
         },
         POST: function(url: string, data: object|[]) {
             var request = new XMLHttpRequest();

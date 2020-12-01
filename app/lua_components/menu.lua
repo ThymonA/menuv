@@ -821,7 +821,7 @@ function CreateMenu(info)
                 MenuV:CloseAll(function()
                     MenuV:OpenMenu(m)
                 end)
-            end, MenuV:T('open_menu'):format(MenuV.CurrentResourceName, t.Namespace), defaultType, defaultKey)
+            end, MenuV:T('open_menu'):format(t.Namespace), defaultType, defaultKey)
         end,
         --- Change title of menu
         ---@param t Menu

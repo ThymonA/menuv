@@ -16,6 +16,7 @@
         "keybind_key_right": "Rechts in een menu",
         "keybind_key_enter": "Item bevestigen in menu",
         "keybind_key_close": "Sluiten van een menu",
-        "open_menu": "Menu '%s_%s' openen met deze key"
+        "keybind_key_close_all": "Sluit alle menu's (inclusief ouders)",
+        "open_menu": "Menu '%s' openen met deze key"
     }
 }

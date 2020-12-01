@@ -196,6 +196,7 @@ RegisterNUICallback('switch', function(info, cb) TriggerResourceCallback('switch
 RegisterNUICallback('update', function(info, cb) TriggerResourceCallback('update', info, cb) end)
 RegisterNUICallback('open', function(info, cb) TriggerResourceCallback('open', info, cb) end)
 RegisterNUICallback('opened', function(info, cb) TriggerResourceCallback('opened', info, cb) end)
+RegisterNUICallback('close_all', function(info, cb) TriggerResourceCallback('close_all', info, cb) end)
 
 --- MenuV exports
 exports('IsLoaded', function(cb)
@@ -235,6 +236,7 @@ MenuV:RegisterKey('LEFT', T('keybind_key_left'), 'KEYBOARD', 'LEFT')
 MenuV:RegisterKey('RIGHT', T('keybind_key_right'), 'KEYBOARD', 'RIGHT')
 MenuV:RegisterKey('ENTER', T('keybind_key_enter'), 'KEYBOARD', 'RETURN')
 MenuV:RegisterKey('CLOSE', T('keybind_key_close'), 'KEYBOARD', 'BACK')
+MenuV:RegisterKey('CLOSE_ALL', T('keybind_key_close_all'), 'KEYBOARD', 'PLUS')
 
 --- Hide menu when screen is faded out or pause menu ia active
 CreateThread(function()
