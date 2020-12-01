@@ -1,7 +1,7 @@
 {
   "name": "menuv",
   "version": "1.0.0",
-  "description": "FiveM menu libarary for creating menu's",
+  "description": "FiveM menu library for creating menu's",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

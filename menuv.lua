@@ -5,7 +5,7 @@
 -- Author: Thymon Arens <contact@arens.io>
 -- Name: MenuV
 -- Version: 1.0.0
--- Description: FiveM menu libarary for creating menu's
+-- Description: FiveM menu library for creating menu's
 ----------------------- [ MenuV ] -----------------------
 local assert = assert
 local type = assert(type)

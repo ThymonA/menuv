@@ -5,7 +5,7 @@
 -- Author: Thymon Arens <contact@arens.io>
 -- Name: MenuV
 -- Version: 1.0.0
--- Description: FiveM menu libarary for creating menu's
+-- Description: FiveM menu library for creating menu's
 ----------------------- [ MenuV ] -----------------------
 fx_version 'cerulean'
 game 'gta5'
@@ -13,7 +13,7 @@ lua54 'yes'
 
 name 'MenuV'
 version '1.0.0'
-description 'FiveM menu libarary for creating menu\'s'
+description 'FiveM menu library for creating menu\'s'
 author 'ThymonA'
 contact 'contact@arens.io'
 url 'https://github.com/ThymonA/menuv/'
