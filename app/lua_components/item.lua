@@ -173,6 +173,10 @@ function CreateMenuItem(info)
 
                 return rawValue
             end
+        end,
+        ---@return Menu|nil
+        GetParentMenu = function(t)
+            return t.__menu or nil
         end
     }
 
@@ -251,6 +255,7 @@ function CreateMenuItem(info)
     ---@field public NewIndex fun(t: Item, k: string, v: any)
     ---@field public Parser fun(t: Item, k: string, v: any)
     ---@field public GetValue fun(t: Item):any
+    ---@field public GetParentMenu func(t: Item):Menu|nil
     local i = setmetatable({ data = item, __class = 'Item', __type = U:Ensure(info.Type or info.type, 'unknown') }, mt)
 
     for k, v in pairs(info or {}) do
