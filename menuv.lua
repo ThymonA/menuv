@@ -184,6 +184,40 @@ function MenuV:CreateMenu(title, subtitle, position, r, g, b, size, texture, dic
     return self.Menus[index] or menu
 end
 
+--- Create a menu that inherits properties from another menu
+---@param parent Menu|string Menu or UUID of menu
+---@param overrides table<string, string|number> Properties to override in menu object (ignore parent)
+function MenuV:CreateChildMenu(parent, overrides)
+    overrides = Utilities:Ensure(overrides, {})
+
+    local uuid = Utilities:Typeof(parent) == 'Menu' and parent.UUID or Utilities:Typeof(parent) == 'string' and parent
+
+    if (uuid == nil) then return end
+
+    parentMenu = self:GetMenu(uuid)
+
+    if (parentMenu == nil) then return end
+
+    local menu = CreateMenu({
+        Title = Utilities:Ensure(overrides.title or overrides.Title, parentMenu.Title),
+        Subtitle = Utilities:Ensure(overrides.subtitle or overrides.Subtitle, parentMenu.Subtitle),
+        Position = Utilities:Ensure(overrides.position or overrides.Position, parentMenu.Position),
+        R = Utilities:Ensure(overrides.r or overrides.R, parentMenu.Color.R),
+        G = Utilities:Ensure(overrides.g or overrides.G, parentMenu.Color.G),
+        B = Utilities:Ensure(overrides.b or overrides.B, parentMenu.Color.B),
+        Size = Utilities:Ensure(overrides.size or overrides.Size, parentMenu.Size),
+        Texture = Utilities:Ensure(overrides.texture or overrides.Texture, parentMenu.Texture),
+        Dictionary = Utilities:Ensure(overrides.dictionary or overrides.Dictionary, parentMenu.Dictionary),
+        Namespace = Utilities:Ensure(overrides.namespace or overrides.Namespace, parentMenu.Namespace)
+    })
+
+    local index = #(self.Menus or {}) + 1
+
+    insert(self.Menus, index, menu)
+
+    return self.Menus[index] or menu
+end
+
 --- Load a menu based on `uuid`
 ---@param uuid string UUID of menu
 ---@return Menu|nil Founded menu or `nil`
