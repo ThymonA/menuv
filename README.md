@@ -1,5 +1,5 @@
 # MenuV | Standalone Menu for FiveM | NUI Menu
-[![N|CoreV](https://i.imgur.com/xf0C7O3.png)](https://github.com/ThymonA/menuv)
+[![N|CoreV](https://i.imgur.com/iq1llQG.jpg)](https://github.com/ThymonA/menuv)
 
 [![Issues](https://img.shields.io/github/issues/ThymonA/menuv.svg?style=for-the-badge)](https://github.com/ThymonA/menuv/issues)
 [![License](https://img.shields.io/github/license/ThymonA/menuv.svg?style=for-the-badge)](https://github.com/ThymonA/menuv/blob/master/LICENSE)
@@ -19,6 +19,7 @@
 - Rebindable keys
 - Event-based callbacks
 - Uses `2 msec` while menu open and idle.
+- Documentation on [menuv.fivem.io/api/](https://menuv.fivem.io/api/)
 
 ## Compile files
 **[MenuV](https://github.com/ThymonA/menuv)** uses [VueJS 2.6.11 or newer](https://vuejs.org/v2/guide/installation.html#NPM) and [TypeScript 3.8.3 or newer](https://www.npmjs.com/package/typescript) with [NodeJS Package Manager](https://nodejs.org/en/). You need to have [NPM a.k.a NodeJS Package Manager](https://nodejs.org/en/download/) installed on your system in order to compile **[MenuV](https://github.com/ThymonA/menuv)** files.
@@ -86,55 +87,8 @@ menu:On(event: string, callback: function);
 item:On(event: string, callback: function);
 ```
 
-#### **MENU EVENTS**
-EVENT | PARAMS | DESCRIPTION
-:-----|:-------|:-----------
-**open** | `{ menu: Menu }` | Triggered when menu is open
-**close** | `{ menu: Menu }` | Triggered when menu is closed
-**select** | `{ menu:  Menu, item: Item}` | Triggered when user pressed `ENTER` on item
-**update** | `{ menu: Menu, key: string, newValue: any, oldValue: any }` | Triggered when menu object has changed
-**switch** | `{ menu: Menu, nextItem: Item, prevItem: Item }` | Triggered when user switched between items
-
-#### **GLOBAL ITEM EVENTS**
-EVENT | PARAMS | DESCRIPTION
-:-----|:-------|:-----------
-**enter** | `{ item: Item }` | Triggered when item become active
-**leave** | `{ item: Item }` | Triggered when item become inactive
-**update** | `{ item: Item }` | Triggered when item object has changed
-
-#### **BUTTON ITEM EVENTS**
-EVENT | PARAMS | DESCRIPTION
-:-----|:-------|:-----------
-**select** | `{ item: Item }` | Triggered when user pressed `ENTER` on button
-
-#### **CHECKBOX ITEM EVENTS**
-EVENT | PARAMS | DESCRIPTION
-:-----|:-------|:-----------
-**change** | `{ item: Item, newValue: boolean, oldValue: boolean }` | Triggered when checkbox state changed in **NUI**
-**check** | `{ item: Item }` | Triggered when checkbox state is set to `true`
-**uncheck** | `{ item: Item }` | Triggered when checkbox state is set to `false`
-
-#### **SLIDER ITEM EVENTS**
-EVENT | PARAMS | DESCRIPTION
-:-----|:-------|:-----------
-**change** | `{ item: Item, newValue: number, oldValue: number }` | Triggered when slider changed in **NUI**
-**select** | `{ item: Item, value: any }` | Triggered when user pressed `ENTER` on slider
-
-#### **RANGE ITEM EVENTS**
-EVENT | PARAMS | DESCRIPTION
-:-----|:-------|:-----------
-**change** | `{ item: Item, newValue: number, oldValue: number }` | Triggered when range changed in **NUI**
-**select** | `{ item: Item, value: number }` | Triggered when user pressed `ENTER` on range
-
-#### **CONFIRM ITEM EVENTS**
-EVENT | PARAMS | DESCRIPTION
-:-----|:-------|:-----------
-**change** | `{ item: Item, newValue: boolean, oldValue: boolean }` | Triggered when confirm state changed in **NUI**
-**confirm** | `{ item: Item }` | Triggered when confirm state is set to `true`
-**deny** | `{ item: Item }` | Triggered when confirm state is set to `false`
-
 ## Documentation
-**COMMING SOON**
+Read **[MenuV documentation](https://menuv.fivem.io/api/)**
 
 ## License
 Project is written by **[ThymonA](https://github.com/ThymonA/)** and published under
@@ -142,6 +96,6 @@ Project is written by **[ThymonA](https://github.com/ThymonA/)** and published u
 [Read License](https://github.com/ThymonA/menuv/blob/master/LICENSE)
 
 ## Screenshot
-[![N|CoreV](https://i.imgur.com/tgi7dss.png)](https://i.imgur.com/bhENCok.png)
+**How is this menu made?** see **[example.lua](https://github.com/ThymonA/menuv/blob/master/example.lua)**
 
-**[MenuV screenshot 1920x1080](https://i.imgur.com/bhENCok.png)**
+[![N|CoreV](https://i.imgur.com/ZuF5Ypp.png)](https://i.imgur.com/ZuF5Ypp.png)
