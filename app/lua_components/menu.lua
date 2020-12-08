@@ -800,8 +800,8 @@ function CreateMenu(info)
         --- Create child menu from properties of this object
         ---@param t Menu|string MenuV menu
         ---@param overrides table<string, string|number> Properties to override in menu object (ignore parent)
-        CreateChildMenu = function(t, overrides)
-            return MenuV:CreateChildMenu(t, overrides)
+        InheritMenu = function(t, overrides)
+            return MenuV:InheritMenu(t, overrides)
         end,
         --- Add control key for specific menu
         ---@param t Menu|string MenuV menu
