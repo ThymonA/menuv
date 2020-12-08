@@ -187,7 +187,7 @@ end
 --- Create a menu that inherits properties from another menu
 ---@param parent Menu|string Menu or UUID of menu
 ---@param overrides table<string, string|number> Properties to override in menu object (ignore parent)
-function MenuV:CreateChildMenu(parent, overrides)
+function MenuV:InheritMenu(parent, overrides)
     overrides = Utilities:Ensure(overrides, {})
 
     local uuid = Utilities:Typeof(parent) == 'Menu' and parent.UUID or Utilities:Typeof(parent) == 'string' and parent
