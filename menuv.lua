@@ -186,8 +186,9 @@ end
 
 --- Create a menu that inherits properties from another menu
 ---@param parent Menu|string Menu or UUID of menu
+---@param namespace string Namespace of menu
 ---@param overrides table<string, string|number> Properties to override in menu object (ignore parent)
-function MenuV:InheritMenu(parent, overrides)
+function MenuV:InheritMenu(parent, namespace, overrides)
     overrides = Utilities:Ensure(overrides, {})
 
     local uuid = Utilities:Typeof(parent) == 'Menu' and parent.UUID or Utilities:Typeof(parent) == 'string' and parent
@@ -208,7 +209,7 @@ function MenuV:InheritMenu(parent, overrides)
         Size = Utilities:Ensure(overrides.size or overrides.Size, parentMenu.Size),
         Texture = Utilities:Ensure(overrides.texture or overrides.Texture, parentMenu.Texture),
         Dictionary = Utilities:Ensure(overrides.dictionary or overrides.Dictionary, parentMenu.Dictionary),
-        Namespace = Utilities:Ensure(overrides.namespace or overrides.Namespace, parentMenu.Namespace)
+        Namespace = namespace
     })
 
     local index = #(self.Menus or {}) + 1
