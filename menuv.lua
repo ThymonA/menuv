@@ -194,7 +194,7 @@ function MenuV:CreateChildMenu(parent, overrides)
 
     if (uuid == nil) then return end
 
-    parentMenu = self:GetMenu(uuid)
+    local parentMenu = self:GetMenu(uuid)
 
     if (parentMenu == nil) then return end
 
