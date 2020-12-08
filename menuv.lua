@@ -187,8 +187,8 @@ end
 
 --- Create a menu that inherits properties from another menu
 ---@param parent Menu|string Menu or UUID of menu
----@param namespace string Namespace of menu
 ---@param overrides table<string, string|number> Properties to override in menu object (ignore parent)
+---@param namespace string Namespace of menu
 function MenuV:InheritMenu(parent, overrides, namespace)
     overrides = Utilities:Ensure(overrides, {})
 
