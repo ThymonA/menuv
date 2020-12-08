@@ -275,9 +275,16 @@ end
 function CreateMenu(info)
     info = U:Ensure(info, {})
 
+    local namespace = U:Ensure(info.Namespace or info.namespace, 'unknown')
+    local namespace_available = MenuV:IsNamespaceAvailable(namespace)
+
+    if (not namespace_available) then
+        error(("[MenuV] Namespace '%s' is already taken, make sure it is unique."):format(namespace))
+    end
+
     local item = {
         ---@type string
-        Namespace = U:Ensure(info.Namespace or info.namespace, 'unknown'),
+        Namespace = namespace,
         ---@type boolean
         IsOpen = false,
         ---@type string
@@ -801,7 +808,7 @@ function CreateMenu(info)
         ---@param t Menu|string MenuV menu
         ---@param namespace string Namespace of menu
         ---@param overrides table<string, string|number> Properties to override in menu object (ignore parent)
-        InheritMenu = function(t, namespace, overrides)
+        InheritMenu = function(t, overrides, namespace)
             return MenuV:InheritMenu(t, namespace, overrides)
         end,
         --- Add control key for specific menu

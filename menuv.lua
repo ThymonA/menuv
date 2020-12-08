@@ -18,6 +18,7 @@ local insert = assert(table.insert)
 local remove = assert(table.remove)
 local format = assert(string.format)
 local upper = assert(string.upper)
+local lower = assert(string.lower)
 local traceback = assert(debug.traceback)
 local setmetatable = assert(setmetatable)
 
@@ -188,7 +189,7 @@ end
 ---@param parent Menu|string Menu or UUID of menu
 ---@param namespace string Namespace of menu
 ---@param overrides table<string, string|number> Properties to override in menu object (ignore parent)
-function MenuV:InheritMenu(parent, namespace, overrides)
+function MenuV:InheritMenu(parent, overrides, namespace)
     overrides = Utilities:Ensure(overrides, {})
 
     local uuid = Utilities:Typeof(parent) == 'Menu' and parent.UUID or Utilities:Typeof(parent) == 'string' and parent
@@ -209,7 +210,7 @@ function MenuV:InheritMenu(parent, namespace, overrides)
         Size = Utilities:Ensure(overrides.size or overrides.Size, parentMenu.Size),
         Texture = Utilities:Ensure(overrides.texture or overrides.Texture, parentMenu.Texture),
         Dictionary = Utilities:Ensure(overrides.dictionary or overrides.Dictionary, parentMenu.Dictionary),
-        Namespace = namespace
+        Namespace = Utilities:Ensure(namespace, 'unknown')
     })
 
     local index = #(self.Menus or {}) + 1
@@ -416,6 +417,27 @@ function MenuV:AddControlKey(menu, action, func, description, defaultType, defau
     REGISTER_COMMAND(('+%s'):format(actionHax), function() MenuV.Keys[actionHax] = true end)
     REGISTER_COMMAND(('-%s'):format(actionHax), function() MenuV.Keys[actionHax] = false end)
 end
+
+--- Checks if namespace is available
+---@param namespace string Namespace
+---@return boolean Returns `true` if given namespace is available
+function MenuV:IsNamespaceAvailable(namespace)
+    namespace = lower(Utilities:Ensure(namespace, 'unknown'))
+
+    if (namespace == 'unknown') then return true end
+
+    ---@param v Menu
+    for k, v in pairs(self.Menus or {}) do
+        local v_namespace = Utilities:Ensure(v.Namespace, 'unknown')
+
+        if (namespace == lower(v_namespace)) then
+            return false
+        end
+    end
+
+    return true
+end
+
 
 --- Mark MenuV as loaded when `main` resource is loaded
 exports['menuv']:IsLoaded(function()
