@@ -103,4 +103,4 @@ Project is written by **[ThymonA](https://github.com/ThymonA/)** and published u
 Default | Native
 :-------|:--------
 ![MenuV Default](https://i.imgur.com/xGagIBm.png) | ![MenuV Native](https://i.imgur.com/KSkeiQm.png)
-[Default Theme](https://i.imgur.com/KSkeiQm.png) | [Native Theme](https://i.imgur.com/KSkeiQm.png)
+[Default Theme](https://i.imgur.com/xGagIBm.png) | [Native Theme](https://i.imgur.com/KSkeiQm.png)
