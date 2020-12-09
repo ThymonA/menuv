@@ -55,6 +55,7 @@ export interface Item {
 }
 
 export interface Menu {
+    theme: 'default' | 'native';
     resource: string;
     uuid: string;
     title: string;
@@ -80,6 +81,7 @@ export default VUE.extend({
     },
     data() {
         return {
+            theme: 'default',
             resource: 'menuv',
             uuid: '',
             menu: false,
@@ -122,6 +124,7 @@ export default VUE.extend({
         this.POST('https://menuv/loaded', {});
     },
     watch: {
+        theme() {},
         title() {},
         subtitle() {},
         position() {},
@@ -194,6 +197,7 @@ export default VUE.extend({
             this.POST(`https://menuv/open`, { uuid: this.uuid, r: this.resource });
             this.RESET_MENU();
 
+            this.theme = this.ENSURE(menu.theme, 'default');
             this.resource = this.ENSURE(menu.resource, 'menuv');
             this.uuid = this.ENSURE(menu.uuid, '00000000-0000-0000-0000-000000000000');
             this.title = this.ENSURE(menu.title, this.title);
@@ -308,6 +312,7 @@ export default VUE.extend({
             }
         },
         RESET_MENU() {
+            this.theme = 'default'
             this.resource = 'menuv';
             this.menu = false;
             this.show = false;

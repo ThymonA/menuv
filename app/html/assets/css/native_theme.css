@@ -9,12 +9,23 @@
 -- Description: FiveM menu library for creating menu's
 ----------------------- [ MenuV ] -----------------------
 */
-@import url('https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@font-face {
+    font-family: 'SignPainter';
+    font-style: normal;
+    font-weight: normal;
+    src: local('../fonts/SignPainter'), url('../fonts/SignPainterHouseScript.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'TTCommons';
+    font-style: normal;
+    font-weight: normal;
+    src: local('../fonts/TTCommons'), url('../fonts/TTCommons.woff') format('woff');
+}
 
 html,
 body {
     overflow: hidden;
-    font-family: 'Epilogue', sans-serif;
     color: white;
     background-color: transparent;
 }
@@ -23,216 +34,230 @@ body {
 html .hide,
 body .hide,
 div .hide,
-.menuv.default.hide {
+.menuv.native.hide {
     display: none !important;
     opacity: 0;
 }
 
-.menuv.default {
-    min-width: 20em;
-    max-width: 20em;
+.menuv.native {
+    min-width: 30em;
+    max-width: 30em;
     max-height: 90vh;
     margin-top: 1em;
     margin-left: 1em;
     font-size: 0.85em;
 }
 
-.menuv.default.topcenter {
+.menuv.native.topcenter {
     margin-left: auto;
     margin-right: auto;
 }
 
-.menuv.default.topright {
+.menuv.native.topright {
     margin-right: 1em;
     margin-left: auto;
 }
 
-.menuv.default.centerleft {
+.menuv.native.centerleft {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
 }
 
-.menuv.default.center {
+.menuv.native.center {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
 
-.menuv.default.centerright {
+.menuv.native.centerright {
     position: absolute;
     top: 50%;
     right: 1em;
     transform: translateY(-50%);
 }
 
-.menuv.default.bottomleft {
+.menuv.native.bottomleft {
     position: absolute;
     bottom: 1em;
 }
 
-.menuv.default.bottomcenter {
+.menuv.native.bottomcenter {
     position: absolute;
     bottom: 1em;
     left: 50%;
     transform: translateX(-50%);
 }
 
-.menuv.default.bottomright {
+.menuv.native.bottomright {
     position: absolute;
     bottom: 1em;
     right: 1em;
 }
 
-.menuv.default.size-100 {
+.menuv.native.size-100 {
     zoom: 1;
 }
-.menuv.default.size-110 {
+.menuv.native.size-110 {
     zoom: 1.1;
 }
-.menuv.default.size-125 {
+.menuv.native.size-125 {
     zoom: 1.25;
 }
-.menuv.default.size-150 {
+.menuv.native.size-150 {
     zoom: 1.50;
 }
-.menuv.default.size-175 {
+.menuv.native.size-175 {
     zoom: 1.75;
 }
-.menuv.default.size-200 {
+.menuv.native.size-200 {
     zoom: 2;
 }
 
-.menuv.default .menuv-header {
-    height: 3.5em;
-    max-height: 3.5em;
-    line-height: 3.5em;
+.menuv.native .menuv-header {
+    height: 2em;
+    max-height: 4.25em;
+    line-height: 2.25em;
     width: 100%;
     text-align: center;
-    letter-spacing: 0.25em;
-    font-size: 1.5em;
-    font-weight: 700;
+    letter-spacing: auto;
+    font-size: 3.5em;
+    font-weight: normal;
+    font-family: 'SignPainter';
     background-color: black;
     overflow: hidden;
 }
 
-.menuv.default .menuv-header strong {
+.menuv.native .menuv-header strong {
     position: relative;
     z-index: 1;
     color: white;
+    max-width: 1em;
+    font-weight: normal;
 }
 
-.menuv.default .menuv-header .menuv-bg-icon {
+.menuv.native .menuv-header .menuv-bg-icon {
     display: flex;
     position: fixed;
-    max-height: 3.5em;
-    max-width: 3.5em;
+    max-height: 4.25em;
+    max-width: 4.25em;
     overflow: hidden;
     top: 0.6em;
     margin-left: 9.8em;
 }
 
-.menuv.default .menuv-header .menuv-bg-icon i,
-.menuv.default .menuv-header .menuv-bg-icon svg {
+.menuv.native .menuv-header .menuv-bg-icon i,
+.menuv.native .menuv-header .menuv-bg-icon svg {
     font-size: 5em;
     opacity: 0.5;
     color: blue;
 }
 
-.menuv.default .menuv-subheader {
-    background-color: blue;
+.menuv.native .menuv-subheader {
+    background-color: black !important;
     text-align: left;
-    font-weight: 700;
-    font-size: 0.9em;
-    line-height: 2.5em;
+    font-weight: 500;
+    font-size: 1.125em;
+    line-height: auto;
     text-transform: uppercase;
-    padding-left: 1em;
-    height: 2.5em;
-    max-height: 2.5em;
+    padding-top: 0.125em;
+    padding-bottom: 0.375em;
+    padding-left: 0.5em;
+    height: auto;
+    color: #2e69bb !important;
 }
 
-.menuv.default .menuv-items {
+.menuv.native .menuv-items {
     background-color: rgba(0, 0, 0, 0.65);
-    padding-top: 0.5em;
     padding-bottom: 0.5em;
     max-height: 50.75vh;
     overflow: hidden;
     color: white;
 }
 
-.menuv.default.size-100 .menuv-items {
+.menuv.native.size-100 .menuv-items {
     max-height: 66.1vh;
 }
 
-.menuv.default.size-110 .menuv-items {
+.menuv.native.size-110 .menuv-items {
     max-height: 59.2vh;
 }
 
-.menuv.default.size-125 .menuv-items {
+.menuv.native.size-125 .menuv-items {
     max-height: 50.2vh;
 }
 
-.menuv.default.size-150 .menuv-items {
+.menuv.native.size-150 .menuv-items {
     max-height: 45.8vh;
 }
 
-.menuv.default.size-175 .menuv-items {
+.menuv.native.size-175 .menuv-items {
     max-height: 39vh;
 }
 
-.menuv.default.size-200 .menuv-items {
+.menuv.native.size-200 .menuv-items {
     max-height: 32.2vh;
 }
 
-.menuv.default .menuv-items .menuv-item {
+.menuv.native .menuv-items .menuv-item {
     padding: 0.25em 0.50em;
     margin: 0;
-    font-size: 0.9em;
+    font-size: 1em;
     max-height: auto;
     height: auto;
-    min-height: 2em;
-    vertical-align: middle;
-    line-height: normal;
+    line-height: 1.25em;
     color: white;
     width: 100%;
-    min-width: 20em;
+    min-width: 100%;
     max-width: 30em;
-    border-top: none !important;
 }
 
-.menuv.default .menuv-items .menuv-item i,
-.menuv.default .menuv-items .menuv-item svg {
+.menuv.native .menuv-items .flex-left {
+    justify-content: left;
+}
+
+.menuv.native .menuv-items .item-title {
+    font-family: 'TTCommons';
+    font-weight: 400;
+    font-size: 1.35em;
+    padding-top: 0.25em;
+    word-break: break-all;
+}
+
+.menuv.native .menuv-items .item-icon {
+    width: 2.5em;
+    max-width: 2.5em;
+    margin-right: 5px;
+}
+
+.menuv.native .menuv-items .menuv-item.disabled .item-icon {
+    text-decoration: none !important;
+}
+
+.menuv.native .menuv-items .menuv-item i,
+.menuv.native .menuv-items .menuv-item svg {
     float: right;
     margin-top: 0.125em;
     font-size: 1.2em;
 }
 
-.menuv.default .menuv-items .menuv-item.active {
+.menuv.native .menuv-items .menuv-item.active {
     padding-right: 0;
     padding-left: 0;
 }
 
-.menuv.default .menuv-items .menuv-item.disabled {
+.menuv.native .menuv-items .menuv-item.disabled {
     opacity: 0.75;
     background: #383838;
-    text-decoration: line-through;
 }
 
-.menuv.default .menuv-items .menuv-item.active i,
-.menuv.default .menuv-items .menuv-item.active svg {
+.menuv.native .menuv-items .menuv-item.active i,
+.menuv.native .menuv-items .menuv-item.active svg {
     color: black;
 }
 
-.menuv.default .menuv-items .item-title {
-    word-break: break-all;
-}
-
-.menuv.default .menuv-items .menuv-item.active .item-title {
-    font-weight: bold;
-}
-
-.menuv.default .menuv-items span.menuv-icon {
+.menuv.native .menuv-items span.menuv-icon {
     margin-left: 2.5px;
     margin-right: 5px;
     border-right: 1px solid white;
@@ -242,27 +267,24 @@ div .hide,
     text-align: center;
 }
 
-.menuv.default .menuv-items .flex-left {
-    justify-content: left;
-}
-
-.menuv.default .menuv-items span.menuv-title {
+.menuv.native .menuv-items span.menuv-title {
     word-break: break-all;
     display: inline-block;
     overflow: hidden;
-    max-height: 2em;
     white-space: nowrap;
     text-overflow: ellipsis;
-    max-width: 14em;
+    font-size: 1.25em;
+    font-weight: 600;
+    letter-spacing: normal;
+    padding: none;
+    margin: none;
 }
 
-.menuv.default .menuv-items .item-icon {
-    width: 2.5em;
-    max-width: 2.5em;
-    margin-right: 5px;
+.menuv.native .menuv-items .menuv-item.active span.menuv-icon {
+    border-right: 1px solid black;
 }
 
-.menuv.default .menuv-items .menuv-item {
+.menuv.native .menuv-items .menuv-item {
     display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
@@ -275,38 +297,34 @@ div .hide,
     border-top: none !important;
 }
 
-.menuv.default .menuv-items .menuv-item.active span.menuv-icon {
-    border-right: 1px solid black;
-}
-
-.menuv.default .menuv-items span.menuv-options {
+.menuv.native .menuv-items span.menuv-options {
     float: right;
     font-size: 0.9em;
-    line-height: 1.85em;
+    vertical-align: middle;
     text-transform: uppercase;
 }
 
-.menuv.default .menuv-items .menuv-item.active span.menuv-options {
+.menuv.native .menuv-items .menuv-item.active span.menuv-options {
     font-weight: 700;
 }
 
-.menuv.default .menuv-items span.menuv-options i,
-.menuv.default .menuv-items span.menuv-options svg {
+.menuv.native .menuv-items span.menuv-options i,
+.menuv.native .menuv-items span.menuv-options svg {
     float: unset;
     font-size: unset;
 }
 
-.menuv.default .menuv-items span.menuv-options i:first-child,
-.menuv.default .menuv-items span.menuv-options svg:first-child {
+.menuv.native .menuv-items span.menuv-options i:first-child,
+.menuv.native .menuv-items span.menuv-options svg:first-child {
     margin-right: 0.25em;
 }
 
-.menuv.default .menuv-items span.menuv-options i:last-child,
-.menuv.default .menuv-items span.menuv-options svg:last-child {
+.menuv.native .menuv-items span.menuv-options i:last-child,
+.menuv.native .menuv-items span.menuv-options svg:last-child {
     margin-left: 0.25em;
 }
 
-.menuv.default .menuv-items span.menuv-options span.menuv-btn {
+.menuv.native .menuv-items span.menuv-options span.menuv-btn {
     background-color: white;
     color: black;
     padding: 0.25em 0.5em;
@@ -316,39 +334,40 @@ div .hide,
     border-radius: 0.125em;
 }
 
-.menuv.default .menuv-items .menuv-item span.menuv-options span.menuv-btn {
+.menuv.native .menuv-items .menuv-item span.menuv-options span.menuv-btn {
     background-color: transparent;
     color: white;
 }
 
-.menuv.default .menuv-items .menuv-item.active span.menuv-options span.menuv-btn {
+.menuv.native .menuv-items .menuv-item.active span.menuv-options span.menuv-btn {
     background-color: black;
     color: white;
 }
 
-.menuv.default .menuv-items span.menuv-options span.menuv-btn.active {
+.menuv.native .menuv-items span.menuv-options span.menuv-btn.active {
     background-color: blue;
     color: white;
     font-weight: 700;
 }
 
-.menuv.default .menuv-items .menuv-item.active span.menuv-options span.menuv-btn.active {
+.menuv.native .menuv-items .menuv-item.active span.menuv-options span.menuv-btn.active {
     background-color: blue;
     color: white;
 }
 
-.menuv.default .menuv-items input[type="range"] {
+.menuv.native .menuv-items input[type="range"] {
     display: flex;
     float: right;
     -webkit-appearance: none;
     max-width: 6.5em;
+    margin-top: 0.15em;
 }
 
-.menuv.default .menuv-items input[type="range"]:focus {
+.menuv.native .menuv-items input[type="range"]:focus {
     outline: none;
 }
 
-.menuv.default .menuv-items input[type="range"]::-webkit-slider-runnable-track {
+.menuv.native .menuv-items input[type="range"]::-webkit-slider-runnable-track {
     width: 100%;
     height: 5px;
     cursor: pointer;
@@ -358,11 +377,11 @@ div .hide,
     border: 0px solid #000000;
 }
 
-.menuv.default .menuv-items .menuv-item.active input[type="range"]::-webkit-slider-runnable-track {
+.menuv.native .menuv-items .menuv-item.active input[type="range"]::-webkit-slider-runnable-track {
     background: black;
 }
 
-.menuv.default .menuv-items input[type="range"]::-webkit-slider-thumb {
+.menuv.native .menuv-items input[type="range"]::-webkit-slider-thumb {
     box-shadow: 0px 0px 0px #000000;
     height: 18px;
     width: 5px;
@@ -374,20 +393,20 @@ div .hide,
     margin-top: -7px;
 }
 
-.menuv.default .menuv-items .menuv-item.active input[type="range"]::-webkit-slider-thumb {
+.menuv.native .menuv-items .menuv-item.active input[type="range"]::-webkit-slider-thumb {
     background: blue;
     border: 1px solid rgba(0, 0, 255, 0.25);
 }
 
-.menuv.default .menuv-items input[type="range"]:focus::-webkit-slider-runnable-track {
+.menuv.native .menuv-items input[type="range"]:focus::-webkit-slider-runnable-track {
     background: blue;
 }
 
-.menuv.default .menuv-items .menuv-item.active input[type="range"]:focus::-webkit-slider-runnable-track {
+.menuv.native .menuv-items .menuv-item.active input[type="range"]:focus::-webkit-slider-runnable-track {
     background: black;
 }
 
-.menuv.default .menuv-items .menuv-desc {
+.menuv.native .menuv-items .menuv-desc {
     display: none;
     opacity: 0;
     background-color: rgba(0, 0, 0, 0.65);
@@ -404,36 +423,36 @@ div .hide,
     border-left: 0.375em solid blue;
 }
 
-.menuv.default .menuv-items .menuv-item.active .menuv-desc {
+.menuv.native .menuv-items .menuv-item.active .menuv-desc {
     display: initial;
     opacity: 1;
 }
 
-.menuv.default .menuv-items .menuv-desc strong {
+.menuv.native .menuv-items .menuv-desc strong {
     color: white;
 }
 
-.menuv.default .menuv-items .menuv-desc table {
+.menuv.native .menuv-items .menuv-desc table {
     margin-left: -0.75em;
     width: calc(100% + 0.75em);
 }
 
-.menuv.default .menuv-items .menuv-desc table th {
+.menuv.native .menuv-items .menuv-desc table th {
     color: white;
     padding: 2px 5px;
 }
 
-.menuv.default .menuv-items .menuv-desc table td {
+.menuv.native .menuv-items .menuv-desc table td {
     padding: 2px 5px;
 }
 
-.menuv.default .menuv-items .menuv-label {
+.menuv.native .menuv-items .menuv-label {
     float: right;
     font-size: 1.125em;
     font-weight: 800;
 }
 
-.menuv.default .menuv-pagination {
+.menuv.native .menuv-pagination {
     padding: 0.5em;
     max-width: 20em;
     width: 100%;
@@ -443,7 +462,7 @@ div .hide,
     margin-top: 1em;
 }
 
-.menuv.default .menuv-pagination .menu-pagination-option {
+.menuv.native .menuv-pagination .menu-pagination-option {
     display: inline-block;
     height: 1.5em;
     width: 3em;
@@ -456,12 +475,12 @@ div .hide,
     font-size: 0.8em;
 }
 
-.menuv.default .menuv-pagination .menu-pagination-option.active {
+.menuv.native .menuv-pagination .menu-pagination-option.active {
     background-color: red;
     color: white;
 }
 
-.menuv.default .menuv-pagination .menu-pagination-ellipsis {
+.menuv.native .menuv-pagination .menu-pagination-ellipsis {
     display: inline-block;
     height: 1.5em;
     width: 1.5em;
@@ -470,18 +489,19 @@ div .hide,
     text-align: center;
 }
 
-.menuv.default .menuv-description {
+.menuv.native .menuv-description {
+    border-top: 2px solid black;
     background-color: rgba(0, 0, 0, 0.65);
     width: 100%;
-    max-width: 20em;
+    max-width: 30em;
     padding: 0.5em 1em;
     margin-top: 0.5em;
-    text-align: center;
-    text-transform: uppercase;
+    text-align: left;
 }
 
-.menuv.default .menuv-description strong {
+.menuv.native .menuv-description strong {
     color: white;
-    font-size: 0.8em;
+    font-family: 'TTCommons';
     font-weight: 400;
+    font-size: 1.15em;
 }

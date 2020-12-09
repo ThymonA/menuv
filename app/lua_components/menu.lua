@@ -282,6 +282,17 @@ function CreateMenu(info)
         error(("[MenuV] Namespace '%s' is already taken, make sure it is unique."):format(namespace))
     end
 
+    local theme = lower(U:Ensure(info.Theme or info.theme, 'default'))
+
+    if (theme ~= 'default' and theme ~= 'native') then
+        theme = 'default'
+    end
+
+    if (theme == 'native') then
+        info.R, info.G, info.B = 255, 255, 255
+        info.r, info.g, info.b = 255, 255, 255
+    end
+
     local item = {
         ---@type string
         Namespace = namespace,
@@ -309,6 +320,8 @@ function CreateMenu(info)
         Texture = U:Ensure(info.Texture or info.texture, 'default'),
         ---@type table
         Events = U:Ensure(info.Events or info.events, {}),
+        ---@type string
+        Theme = theme,
         ---@type Item[]
         Items = CreateEmptyItemsTable({}),
         ---@param t Menu
@@ -883,6 +896,7 @@ function CreateMenu(info)
         ---@return table
         ToTable = function(t)
             local tempTable = {
+                theme = U:Ensure(t.Theme, 'default'),
                 uuid = U:Ensure(t.UUID, '00000000-0000-0000-0000-000000000000'),
                 title = U:Ensure(t.Title, 'MenuV'),
                 subtitle = U:Ensure(t.Subtitle, ''),
@@ -914,6 +928,10 @@ function CreateMenu(info)
             return tempTable
         end
     }
+
+    if (lower(item.Texture) == 'default' and lower(item.Dictionary) == 'menuv' and theme == 'native') then
+        item.Texture = 'default_native'
+    end
 
     item.Events.OnOpen = {}
     item.Events.OnClose = {}

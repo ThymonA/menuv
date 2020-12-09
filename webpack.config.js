@@ -40,7 +40,9 @@ module.exports = {
         }),
         new HTML_WEBPACK_INLINE_SOURCE_PLUGIN(),
         new COPY_PLUGIN([
-            { from: 'app/html/assets/css/main.css', to: 'assets/css/main.css' }
+            { from: 'app/html/assets/css/main.css', to: 'assets/css/main.css' },
+            { from: 'app/html/assets/css/native_theme.css', to: 'assets/css/native_theme.css' },
+            { from: 'app/html/assets/fonts/SignPainterHouseScript.woff', to: 'assets/fonts/SignPainterHouseScript.woff' }
         ])
     ],
     resolve: {

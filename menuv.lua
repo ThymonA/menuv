@@ -163,9 +163,11 @@ end
 ---@param texture string Name of texture example: "default"
 ---@param dictionary string Name of dictionary example: "menuv"
 ---@param namespace string Namespace of Menu
+---@param theme string Theme of Menu
 ---@return Menu
-function MenuV:CreateMenu(title, subtitle, position, r, g, b, size, texture, dictionary, namespace)
+function MenuV:CreateMenu(title, subtitle, position, r, g, b, size, texture, dictionary, namespace, theme)
     local menu = CreateMenu({
+        Theme = theme,
         Title = title,
         Subtitle = subtitle,
         Position = position,
@@ -201,6 +203,7 @@ function MenuV:InheritMenu(parent, overrides, namespace)
     if (parentMenu == nil) then return end
 
     local menu = CreateMenu({
+        Theme = Utilities:Ensure(overrides.theme or overrides.Theme, parentMenu.Theme),
         Title = Utilities:Ensure(overrides.title or overrides.Title, parentMenu.Title),
         Subtitle = Utilities:Ensure(overrides.subtitle or overrides.Subtitle, parentMenu.Subtitle),
         Position = Utilities:Ensure(overrides.position or overrides.Position, parentMenu.Position),

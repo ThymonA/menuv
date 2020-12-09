@@ -50,11 +50,11 @@ After the command is executed you will see a `dist` folder containing all the **
 ### Create a menu
 Create a menu by calling the **MenuV:CreateMenu** function.
 ```ts
-MenuV:CreateMenu(title: string, subtitle: string, position: string, red: number, green: number, blue: number, texture: string, disctionary: string, namespace: string)
+MenuV:CreateMenu(title: string, subtitle: string, position: string, red: number, green: number, blue: number, texture: string, disctionary: string, namespace: string, theme: string)
 ```
 **Example:**
 ```lua
-local menu = MenuV:CreateMenu('MenuV', 'Welcome to MenuV', 'topleft', 255, 0, 0, 'size-125', 'default', 'menuv', 'example_namespace')
+local menu = MenuV:CreateMenu('MenuV', 'Welcome to MenuV', 'topleft', 255, 0, 0, 'size-125', 'default', 'menuv', 'example_namespace', 'native')
 ```
 
 ### Create menu items
@@ -98,4 +98,8 @@ Project is written by **[ThymonA](https://github.com/ThymonA/)** and published u
 ## Screenshot
 **How is this menu made?** see **[example.lua](https://github.com/ThymonA/menuv/blob/master/example.lua)**
 
-[![N|CoreV](https://i.imgur.com/ZuF5Ypp.png)](https://i.imgur.com/ZuF5Ypp.png)
+
+Default | Native
+:-------|:--------
+![MenuV Default](https://i.imgur.com/xGagIBm.png) | ![MenuV Native](https://i.imgur.com/KSkeiQm.png)
+[Default Theme](https://i.imgur.com/KSkeiQm.png) | [Native Theme](https://i.imgur.com/KSkeiQm.png)

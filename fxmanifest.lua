@@ -24,6 +24,7 @@ files {
     'app/lua_components/*.lua',
     'dist/*.html',
     'dist/assets/css/*.css',
+    'dist/assets/fonts/*.woff',
     'languages/*.json'
 }
 

@@ -10,119 +10,123 @@
 ----------------------- [ MenuV ] -----------------------
 -->
 <template>
-  <div id="menuv" class="menuv" :class="[{'hide': !show || !menu}, position, size]" :data-uuid="uuid">
+  <div id="menuv" class="menuv" :class="[{'hide': !show || !menu}, position, size, theme]" :data-uuid="uuid">
     <v-style>
       html,
       body {
         color: {{TEXT_COLOR(color.r, color.g, color.b)}};
       }
 
-      .menuv .menuv-header {
+      .menuv.{{theme}} .menuv-header {
         background: url("https://nui-img/{{dictionary}}/{{texture}}") no-repeat;
         background-size: 100%;
       }
 
-      .menuv .menuv-header .menuv-bg-icon i,
-      .menuv .menuv-header .menuv-bg-icon svg {
+      .menuv.{{theme}} .menuv-header .menuv-bg-icon i,
+      .menuv.{{theme}} .menuv-header .menuv-bg-icon svg {
         color: rgb({{color.r}},{{color.g}},{{color.b}});
       }
 
-      .menuv .menuv-subheader {
+      .menuv.{{theme}} .menuv-subheader {
         background-color: rgb({{color.r}},{{color.g}},{{color.b}});
       }
 
-      .menuv .menuv-items .menuv-item.active {
+      .menuv.{{theme}} .menuv-items .menuv-item.active {
         border-left: 0.5em solid rgb({{color.r}},{{color.g}},{{color.b}});
         border-right: 0.5em solid rgb({{color.r}},{{color.g}},{{color.b}});
         background-color: rgb({{color.r}},{{color.g}},{{color.b}});
         color: {{TEXT_COLOR(color.r, color.g, color.b)}};
       }
 
-      .menuv .menuv-items .menuv-item.active i,
-      .menuv .menuv-items .menuv-item.active svg {
+      .menuv.{{theme}} .menuv-items .menuv-item.active i,
+      .menuv.{{theme}} .menuv-items .menuv-item.active svg {
         color: {{TEXT_COLOR(color.r, color.g, color.b)}};
       }
 
-      .menuv .menuv-items .menuv-item.active span.menuv-icon {
+      .menuv.{{theme}} .menuv-items .menuv-item.active span.menuv-icon {
         border-right: 1px solid {{TEXT_COLOR(color.r, color.g, color.b)}};
       }
 
-      .menuv .menuv-items span.menuv-options span.menuv-btn {
+      .menuv.{{theme}} .menuv-items span.menuv-options span.menuv-btn {
         color: {{TEXT_COLOR(color.r, color.g, color.b)}};
       }
 
-      .menuv .menuv-items span.menuv-options span.menuv-btn.active {
+      .menuv.{{theme}} .menuv-items span.menuv-options span.menuv-btn.active {
         background-color: rgb({{color.r}},{{color.g}},{{color.b}});
         color: {{TEXT_COLOR(color.r, color.g, color.b)}};
       }
 
-      .menuv .menuv-items .menuv-item.active span.menuv-options span.menuv-btn {
+      .menuv.{{theme}} .menuv-items .menuv-item.active span.menuv-options span.menuv-btn {
         background-color: rgb({{color.r}},{{color.g}},{{color.b}});
         color: {{TEXT_COLOR(color.r, color.g, color.b)}};
       }
 
-      .menuv .menuv-items .menuv-item.active span.menuv-options span.menuv-btn.active {
+      .menuv.{{theme}} .menuv-items .menuv-item.active span.menuv-options span.menuv-btn.active {
         background-color: black;
         color: white;
       }
 
-      .menuv .menuv-items input[type="range"]::-webkit-slider-runnable-track {
+      .menuv.{{theme}} .menuv-items input[type="range"]::-webkit-slider-runnable-track {
         background: rgba({{color.r}},{{color.g}},{{color.b}}, 0.50);
         box-shadow: 0px 0px 0px {{TEXT_COLOR(color.r, color.g, color.b, 0.50)}};
         border: 0px solid {{TEXT_COLOR(color.r, color.g, color.b, 0.50)}};
       }
 
-      .menuv .menuv-items input[type="range"]::-webkit-slider-thumb {
+      .menuv.{{theme}} .menuv-items input[type="range"]::-webkit-slider-thumb {
         border: 1px solid rgb({{color.r}},{{color.g}},{{color.b}});
         background: rgb({{color.r}},{{color.g}},{{color.b}});
         box-shadow: 0px 0px 0px {{TEXT_COLOR(color.r, color.g, color.b, 0.50)}};
       }
 
-      .menuv .menuv-items .menuv-item.active input[type="range"]::-webkit-slider-thumb {
+      .menuv.{{theme}} .menuv-items .menuv-item.active input[type="range"]::-webkit-slider-thumb {
         background: {{TEXT_COLOR(color.r, color.g, color.b)}} !important;
         border: 1px solid {{TEXT_COLOR(color.r, color.g, color.b, 0.50)}} !important;
       }
 
-      .menuv .menuv-items .menuv-item.active input[type="range"]::-webkit-slider-runnable-track,
-      .menuv .menuv-items .menuv-item.active input[type="range"]:focus::-webkit-slider-runnable-track {
+      .menuv.{{theme}} .menuv-items .menuv-item.active input[type="range"]::-webkit-slider-runnable-track,
+      .menuv.{{theme}} .menuv-items .menuv-item.active input[type="range"]:focus::-webkit-slider-runnable-track {
         background: {{TEXT_COLOR(color.r, color.g, color.b, 0.50)}} !important;
       }
 
-      .menuv .menuv-items input[type="range"]:focus::-webkit-slider-runnable-track {
+      .menuv.{{theme}} .menuv-items input[type="range"]:focus::-webkit-slider-runnable-track {
         background: rgba({{color.r}},{{color.g}},{{color.b}}, 0.50);
       }
 
-      .menuv .menuv-items .menuv-desc {
+      .menuv.{{theme}} .menuv-items .menuv-desc {
         border-left: 0.375em solid rgb({{color.r}},{{color.g}},{{color.b}});
       }
     </v-style>
     <header class="menuv-header">
       <strong>{{title}}</strong>
-        <span class="menuv-bg-icon">
-        </span>
     </header>
     <nav class="menuv-subheader">
       {{subtitle}}
     </nav>
     <ul class="menuv-items" ref="items">
-      <li class="menuv-item" v-for="item in items" :key="item.uuid" :class="[{'active': (index + 1) == item.index, 'hasIcon': ENSURE(item.icon, 'none') != 'none', 'disabled': item.disabled }, (`menuv-${item.type}`)]" :index="(item.index - 1)">
-        <span class="menuv-icon" v-if="ENSURE(item.icon, 'none') != 'none'">{{ENSURE(item.icon, 'none')}}</span>
-        <span class="menuv-title">{{item.label}}</span>
-        <i class="fas fa-arrow-right" v-if="item.type == 'menu'"></i>
-        <i v-if="item.type == 'checkbox'" :class="{'fas fa-check': item.value, 'far fa-square': !item.value}"></i>
-        <input type="range" :min="item.min" :max="item.max" :value="(item.value)" v-if="item.type == 'range'">
-        <span class="menuv-options" v-if="item.type == 'confirm'">
-          <span class="menuv-btn" :class="{'active': item.value}">YES</span>
-          <span class="menuv-btn" :class="{'active': !item.value}">NO</span>
-        </span>
-        <span class="menuv-label" v-if="item.type == 'label'">
-          {{item.value}}
-        </span>
-        <span class="menuv-options" v-if="item.type == 'slider'">
-          <i class="fas fa-chevron-left"></i>
-            {{GET_SLIDER_LABEL({ uuid: item.uuid })}}
-          <i class="fas fa-chevron-right"></i>
-        </span>
+      <li class="menuv-item media" v-for="item in items" :key="item.uuid" :class="[{'active': (index + 1) == item.index, 'hasIcon': ENSURE(item.icon, 'none') != 'none', 'disabled': item.disabled }, (`menuv-${item.type}`)]" :index="(item.index - 1)">
+        <div class="media-left item-icon" v-if="ENSURE(item.icon, 'none') != 'none'">
+          <span class="menuv-icon">{{ENSURE(item.icon, 'none')}}</span>
+        </div>
+        <div class="media-content flex-left item-title">
+          {{item.label}}
+        </div>
+        <div class="media-right">
+          <i class="fas fa-arrow-right" v-if="item.type == 'menu'"></i>
+          <i v-if="item.type == 'checkbox'" :class="{'fas fa-check': item.value, 'far fa-square': !item.value}"></i>
+          <input type="range" :min="item.min" :max="item.max" :value="(item.value)" v-if="item.type == 'range'">
+          <span class="menuv-options" v-if="item.type == 'confirm'">
+            <span class="menuv-btn" :class="{'active': item.value}">YES</span>
+            <span class="menuv-btn" :class="{'active': !item.value}">NO</span>
+          </span>
+          <span class="menuv-label" v-if="item.type == 'label'">
+            {{item.value}}
+          </span>
+          <span class="menuv-options" v-if="item.type == 'slider'">
+            <i class="fas fa-chevron-left"></i>
+              {{GET_SLIDER_LABEL({ uuid: item.uuid })}}
+            <i class="fas fa-chevron-right"></i>
+          </span>
+        </div>
       </li>
     </ul>
     <footer class="menuv-description" :class="{'hide': IS_DEFAULT(GET_CURRENT_DESCRIPTION())}">
