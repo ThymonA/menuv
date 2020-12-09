@@ -356,7 +356,7 @@ export default VUE.extend({
             const index = this.index || 0;
 
             if (index >= 0 && index < this.items.length) {
-                return this.ENSURE(this.items[index].description, '');
+                return this.NL2BR(this.ENSURE(this.items[index].description, ''), true, false);
             }
 
             return '';
@@ -719,6 +719,12 @@ export default VUE.extend({
             if (newIndex < 0) { return -1; }
 
             return newIndex;
+        },
+        NL2BR: function(text: string, replaceMode: boolean, isXhtml: boolean) {
+            var breakTag = (isXhtml) ? '<br />' : '<br>';
+            var replaceStr = (replaceMode) ? '$1'+ breakTag : '$1'+ breakTag +'$2';
+
+            return (text + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, replaceStr);
         }
     }
 });

@@ -20,6 +20,7 @@
 - Event-based callbacks
 - Uses `2 msec` while menu open and idle.
 - Documentation on [menuv.fivem.io/api/](https://menuv.fivem.io/api/)
+- Themes: **[default](https://i.imgur.com/KSkeiQm.png)** or **[native](https://i.imgur.com/KSkeiQm.png)**
 
 ## Compile files
 **[MenuV](https://github.com/ThymonA/menuv)** uses [VueJS 2.6.11 or newer](https://vuejs.org/v2/guide/installation.html#NPM) and [TypeScript 3.8.3 or newer](https://www.npmjs.com/package/typescript) with [NodeJS Package Manager](https://nodejs.org/en/). You need to have [NPM a.k.a NodeJS Package Manager](https://nodejs.org/en/download/) installed on your system in order to compile **[MenuV](https://github.com/ThymonA/menuv)** files.
