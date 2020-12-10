@@ -344,10 +344,10 @@ export default VUE.extend({
                     if (values.length == 0) { return ''; }
 
                     if (currentValue < 0 || currentValue >= values.length) {
-                        return values[0].label || 'Unknown';
+                        return this.FORMAT_TEXT(values[0].label || 'Unknown');
                     }
 
-                    return values[currentValue].label || 'Unknown';
+                    return this.FORMAT_TEXT(values[currentValue].label || 'Unknown');
                 }
             }
 
@@ -357,7 +357,7 @@ export default VUE.extend({
             const index = this.index || 0;
 
             if (index >= 0 && index < this.items.length) {
-                return this.NL2BR(this.ENSURE(this.items[index].description, ''), true, false);
+                return this.FORMAT_TEXT(this.NL2BR(this.ENSURE(this.items[index].description, ''), true, false));
             }
 
             return '';
@@ -428,7 +428,7 @@ export default VUE.extend({
             return false;
         },
         KEY_PRESSED({ key }: { key: string }) {
-            if (!this.menu) { return; }
+            if (!this.menu || !this.show) { return; }
 
             const k = key as 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'ENTER' | 'CLOSE'
 
@@ -726,6 +726,37 @@ export default VUE.extend({
             var replaceStr = (replaceMode) ? '$1'+ breakTag : '$1'+ breakTag +'$2';
 
             return (text + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, replaceStr);
+        },
+        FORMAT_TEXT: function(text: string) {
+            text = this.ENSURE(text, '');
+
+            text = text.replace(/\^0/g, '<span style="color: black !important;">');
+            text = text.replace(/\^1/g, '<span style="color: red !important;">');
+            text = text.replace(/\^2/g, '<span style="color: green !important;">');
+            text = text.replace(/\^3/g, '<span style="color: yellow !important;">');
+            text = text.replace(/\^4/g, '<span style="color: blue !important;">');
+            text = text.replace(/\^5/g, '<span style="color: cyan !important;">');
+            text = text.replace(/\^6/g, '<span style="color: purple !important;">');
+            text = text.replace(/\^7/g, '<span style="color: white !important;">');
+            text = text.replace(/\^8/g, '<span style="color: darkred !important;">');
+            text = text.replace(/\^9/g, '<span style="color: gray !important;">');
+            text = text.replace(/~r~/g, '<span style="color: red !important;">');
+            text = text.replace(/~g~/g, '<span style="color: green !important;">');
+            text = text.replace(/~b~/g, '<span style="color: blue !important;">');
+            text = text.replace(/~y~/g, '<span style="color: yellow !important;">');
+            text = text.replace(/~p~/g, '<span style="color: purple !important;">');
+            text = text.replace(/~c~/g, '<span style="color: gray !important;">');
+            text = text.replace(/~m~/g, '<span style="color: darkgray !important;">');
+            text = text.replace(/~u~/g, '<span style="color: black !important;">');
+            text = text.replace(/~o~/g, '<span style="color: orange !important;">');
+            text = text.replace(/~n~/g, '<br />');
+            text = text.replace(/~s~/g, '<span style="color: white !important;">');
+            text = text.replace(/~h~/g, '<strong>');
+
+            const d = new DOMParser();
+            const domObj = d.parseFromString(text || "", "text/html");
+            
+            return domObj.body.innerHTML;
         }
     }
 });

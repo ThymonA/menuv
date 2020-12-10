@@ -97,19 +97,15 @@
       }
     </v-style>
     <header class="menuv-header">
-      <strong>{{title}}</strong>
+      <strong v-html="FORMAT_TEXT(title)"></strong>
     </header>
-    <nav class="menuv-subheader">
-      {{subtitle}}
-    </nav>
+    <nav class="menuv-subheader" v-html="FORMAT_TEXT(subtitle)"></nav>
     <ul class="menuv-items" ref="items">
       <li class="menuv-item media" v-for="item in items" :key="item.uuid" :class="[{'active': (index + 1) == item.index, 'hasIcon': ENSURE(item.icon, 'none') != 'none', 'disabled': item.disabled }, (`menuv-${item.type}`)]" :index="(item.index - 1)">
         <div class="media-left item-icon" v-if="ENSURE(item.icon, 'none') != 'none'">
           <span class="menuv-icon">{{ENSURE(item.icon, 'none')}}</span>
         </div>
-        <div class="media-content flex-left item-title">
-          {{item.label}}
-        </div>
+        <div class="media-content flex-left item-title" v-html="FORMAT_TEXT(item.label)"></div>
         <div class="media-right">
           <i class="fas fa-arrow-right" v-if="item.type == 'menu'"></i>
           <i v-if="item.type == 'checkbox'" :class="{'fas fa-check': item.value, 'far fa-square': !item.value}"></i>
@@ -118,12 +114,10 @@
             <span class="menuv-btn" :class="{'active': item.value}">YES</span>
             <span class="menuv-btn" :class="{'active': !item.value}">NO</span>
           </span>
-          <span class="menuv-label" v-if="item.type == 'label'">
-            {{item.value}}
-          </span>
+          <span class="menuv-label" v-if="item.type == 'label'" v-html="FORMAT_TEXT(item.value)"></span>
           <span class="menuv-options" v-if="item.type == 'slider'">
             <i class="fas fa-chevron-left"></i>
-              {{GET_SLIDER_LABEL({ uuid: item.uuid })}}
+            <span v-html="GET_SLIDER_LABEL({ uuid: item.uuid })"></span>
             <i class="fas fa-chevron-right"></i>
           </span>
         </div>
