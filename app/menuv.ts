@@ -55,6 +55,7 @@ export interface Item {
 }
 
 export interface Menu {
+    hidden: boolean;
     theme: 'default' | 'native';
     resource: string;
     uuid: string;
@@ -208,7 +209,7 @@ export default VUE.extend({
             this.dictionary = this.ENSURE(menu.dictionary, 'none');
             this.color = menu.color || this.color;
             this.sounds = menu.defaultSounds || this.sounds;
-            this.show = true;
+            this.show = !(menu.hidden || false);
             this.menu = true;
 
             const _items = this.items = menu.items || [];

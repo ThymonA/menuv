@@ -42,7 +42,8 @@ module.exports = {
         new COPY_PLUGIN([
             { from: 'app/html/assets/css/main.css', to: 'assets/css/main.css' },
             { from: 'app/html/assets/css/native_theme.css', to: 'assets/css/native_theme.css' },
-            { from: 'app/html/assets/fonts/SignPainterHouseScript.woff', to: 'assets/fonts/SignPainterHouseScript.woff' }
+            { from: 'app/html/assets/fonts/SignPainterHouseScript.woff', to: 'assets/fonts/SignPainterHouseScript.woff' },
+            { from: 'app/html/assets/fonts/TTCommons.woff', to: 'assets/fonts/TTCommons.woff' }
         ])
     ],
     resolve: {

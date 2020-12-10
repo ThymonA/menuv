@@ -71,47 +71,49 @@ local MenuV = setmetatable({
     Translations = load_file('app/lua_components/translations.lua') or {},
     ---@type table<string, table>
     Sounds = Utilities:Ensure((Config or {}).Sounds, {}),
-    ---@class keys
-    Keys = setmetatable({ data = {}, __class = 'MenuVKeys', __type = 'keys' }, {
-        __index = function(t, k)
-            return rawget(t.data, k)
-        end,
-        __newindex = function(t, k, v)
-            k = Utilities:Ensure(k, 'unknown')
-
-            if (k == 'unknown') then return end
-
-            local rawKey = rawget(t.data, k)
-            local keyExists = rawKey ~= nil
-            local prevState = Utilities:Ensure((rawKey or {}).status, false)
-            local newState = Utilities:Ensure(v, false)
-
-            if (keyExists) then
-                rawset(t.data[k], 'status', newState)
-
-                if (prevState ~= newState) then
-                    local action = newState and not prevState and 'KEY_PRESSED' or 'KEY_RELEASED'
-                    local key = Utilities:Ensure(rawKey.action, 'UNKNOWN')
-
-                    SendNUIMessage({ action = action, key = key })
-                end
-            end
-        end,
-        __call = function(t, k, a)
-            k = Utilities:Ensure(k, 'unknown')
-            a = Utilities:Ensure(a, 'UNKNOWN')
-
-            if (k == 'unknown') then return end
-
-            local rawKey = rawget(t.data, k)
-            local keyExists = rawKey ~= nil
-
-            if (keyExists) then return end
-
-            rawset(t.data, k, { status = false, action = a })
-        end
-    })
+    ---@type boolean
+    Hidden = false
 }, {})
+
+MenuV.Keys = setmetatable({ data = {}, __class = 'MenuVKeys', __type = 'keys' }, {
+    __index = function(t, k)
+        return rawget(t.data, k)
+    end,
+    __newindex = function(t, k, v)
+        k = Utilities:Ensure(k, 'unknown')
+
+        if (k == 'unknown') then return end
+
+        local rawKey = rawget(t.data, k)
+        local keyExists = rawKey ~= nil
+        local prevState = Utilities:Ensure((rawKey or {}).status, false)
+        local newState = Utilities:Ensure(v, false)
+
+        if (keyExists and not MenuV.Hidden) then
+            rawset(t.data[k], 'status', newState)
+
+            if (prevState ~= newState) then
+                local action = newState and not prevState and 'KEY_PRESSED' or 'KEY_RELEASED'
+                local key = Utilities:Ensure(rawKey.action, 'UNKNOWN')
+
+                SendNUIMessage({ action = action, key = key })
+            end
+        end
+    end,
+    __call = function(t, k, a)
+        k = Utilities:Ensure(k, 'unknown')
+        a = Utilities:Ensure(a, 'UNKNOWN')
+
+        if (k == 'unknown') then return end
+
+        local rawKey = rawget(t.data, k)
+        local keyExists = rawKey ~= nil
+
+        if (keyExists) then return end
+
+        rawset(t.data, k, { status = false, action = a })
+    end
+})
 
 --- Register a `action` with custom keybind
 ---@param action string Action like: UP, DOWN, LEFT...
@@ -223,6 +225,7 @@ exports('SendNUIMessage', function(input)
         if (input.menu) then
             rawset(input.menu, 'resource', r)
             rawset(input.menu, 'defaultSounds', MenuV.Sounds)
+            rawset(input.menu, 'hidden', MenuV.Hidden)
         end
 
         SendNUIMessage(input)
@@ -240,18 +243,18 @@ MenuV:RegisterKey('CLOSE_ALL', T('keybind_key_close_all'), 'KEYBOARD', 'PLUS')
 
 --- Hide menu when screen is faded out or pause menu ia active
 CreateThread(function()
-    local prev_state = false
+    MenuV.Hidden = false
 
     while true do
         repeat Wait(0) until MenuV.Loaded
 
         local new_state = IsScreenFadedOut() or IsPauseMenuActive()
 
-        if (prev_state ~= new_state) then
+        if (MenuV.Hidden ~= new_state) then
             SendNUIMessage({ action = 'UPDATE_STATUS', status = not new_state })
         end
 
-        prev_state = new_state
+        MenuV.Hidden = new_state
 
         Wait(MenuV.ThreadWait)
     end
