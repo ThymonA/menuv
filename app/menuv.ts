@@ -195,7 +195,7 @@ export default VUE.extend({
             if (this.menu) { this.show = status; }
         },
         OPEN_MENU({ menu }: { menu: Menu }) {
-            this.POST(`https://menuv/open`, { uuid: this.uuid, r: this.resource });
+            this.POST(`https://menuv/open`, { uuid: this.uuid, new_uuid: menu.uuid, r: this.resource });
             this.RESET_MENU();
 
             this.theme = this.ENSURE(menu.theme, 'default');

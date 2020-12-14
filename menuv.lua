@@ -314,30 +314,16 @@ function MenuV:CloseMenu(menu, cb)
     if (uuid == nil) then cb() return end
 
     cb = Utilities:Ensure(cb, function() end)
-
-    if (not self.Loaded) then
-        CreateThread(function()
-            repeat Wait(0) until MenuV.Loaded
-
-            MenuV:CloseMenu(uuid, cb)
-        end)
-        return
-    end
-
     menu = self:GetMenu(uuid)
 
-    if (menu == nil or self.CurrentMenu == nil or self.CurrentMenu.UUID ~= menu.UUID) then cb() return end
+    if (menu == nil or self.CurrentMenu == nil or self.CurrentMenu.UUID ~= uuid) then cb() return end
 
     self.CurrentMenu:RemoveOnEvent('update', self.CurrentUpdateUUID)
     self.CurrentMenu:Trigger('close')
     self.CurrentMenu:DestroyThreads()
     self.CurrentMenu = nil
 
-    if (#self.ParentMenus <= 0) then
-        SEND_NUI_MESSAGE({ action = 'CLOSE_MENU', uuid = uuid })
-        cb()
-        return
-    end
+    if (#self.ParentMenus <= 0) then cb() return end
 
     local prev_index = #self.ParentMenus
     local prev_menu = self.ParentMenus[prev_index] or nil
@@ -346,7 +332,9 @@ function MenuV:CloseMenu(menu, cb)
 
     remove(self.ParentMenus, prev_index)
 
-    self:OpenMenu(prev_menu, cb)
+    self:OpenMenu(prev_menu, function()
+        cb()
+    end)
 end
 
 --- Close all menus
@@ -460,10 +448,11 @@ end)
 
 REGISTER_NUI_CALLBACK('open', function(info, cb)
     local uuid = Utilities:Ensure(info.uuid, '00000000-0000-0000-0000-000000000000')
+    local new_uuid = Utilities:Ensure(info.new_uuid, '00000000-0000-0000-0000-000000000000')
 
     cb('ok')
 
-    if (MenuV.CurrentMenu == nil or MenuV.CurrentMenu.UUID == uuid) then return end
+    if (MenuV.CurrentMenu == nil or MenuV.CurrentMenu.UUID == uuid or MenuV.CurrentMenu.UUID == new_uuid) then return end
 
     for _, v in pairs(MenuV.ParentMenus) do
         if (v.UUID == uuid) then
