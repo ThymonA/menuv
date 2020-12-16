@@ -957,7 +957,7 @@ function CreateMenu(info)
             MenuV:OpenMenu(t)
         end,
         __newindex = function(t, k, v)
-            local whitelisted = { 'Title', 'Subtitle', 'Position', 'Color', 'R', 'G', 'B', 'Size', 'Dictionary', 'Texture' }
+            local whitelisted = { 'Title', 'Subtitle', 'Position', 'Color', 'R', 'G', 'B', 'Size', 'Dictionary', 'Texture', 'Theme' }
             local key = U:Ensure(k, 'unknown')
             local oldValue = rawget(t.data, k)
 
@@ -985,6 +985,26 @@ function CreateMenu(info)
             end
 
             rawset(t.data, k, v)
+
+            if (key == 'Theme' or key == 'theme') then
+                local theme_value = string.lower(U:Ensure(v, 'default'))
+
+                if (theme_value == 'native') then
+                    rawset(t.data, 'color', { R = 255, G = 255, B = 255 })
+
+                    local texture = U:Ensure(rawget(t.data, 'Texture'), 'default')
+
+                    if (texture == 'default') then
+                        rawset(t.data, 'Texture', 'default_native')
+                    end
+                elseif (theme_value == 'default') then
+                    local texture = U:Ensure(rawget(t.data, 'Texture'), 'default')
+
+                    if (texture == 'default_native') then
+                        rawset(t.data, 'Texture', 'default')
+                    end
+                end
+            end
 
             if (updateIndexTrigger) then
                 t:NewIndex(key, v)
