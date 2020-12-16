@@ -305,6 +305,17 @@ function MenuV:OpenMenu(menu, cb)
     cb()
 end
 
+function MenuV:Refresh()
+    if (self.CurrentMenu == nil) then
+        return
+    end
+
+    SEND_NUI_MESSAGE({
+        action = 'REFRESH_MENU',
+        menu = self.CurrentMenu:ToTable()
+    })
+end
+
 --- Close a menu
 ---@param menu Menu|string Menu or UUID of Menu
 ---@param cb function Execute this callback when menu has is closed or parent menu has opened

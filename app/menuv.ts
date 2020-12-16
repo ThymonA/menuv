@@ -113,7 +113,7 @@ export default VUE.extend({
             
             if (!data || !data.action) { return; }
 
-            const typeRef = data.action as 'UPDATE_STATUS' | 'OPEN_MENU' | 'CLOSE_MENU' | 'UPDATE_TITLE' | 'UPDATE_SUBTITLE' | 'KEY_PRESSED' | 'RESOURCE_STOPPED' | 'UPDATE_ITEMS' | 'UPDATE_ITEM'
+            const typeRef = data.action as 'UPDATE_STATUS' | 'OPEN_MENU' | 'CLOSE_MENU' | 'UPDATE_TITLE' | 'UPDATE_SUBTITLE' | 'KEY_PRESSED' | 'RESOURCE_STOPPED' | 'UPDATE_ITEMS' | 'UPDATE_ITEM' | 'REFRESH_MENU'
         
             if (this[typeRef]) {
                 this[typeRef](data);
@@ -225,6 +225,38 @@ export default VUE.extend({
 
             this.index = prevIndex;
             this.POST(`https://menuv/opened`, { uuid: this.uuid, r: this.resource });
+        },
+        REFRESH_MENU({ menu }: { menu: Menu }) {
+            const current_index = this.index + 0;
+
+            this.RESET_MENU();
+
+            this.theme = this.ENSURE(menu.theme, 'default');
+            this.resource = this.ENSURE(menu.resource, 'menuv');
+            this.uuid = this.ENSURE(menu.uuid, '00000000-0000-0000-0000-000000000000');
+            this.title = this.ENSURE(menu.title, this.title);
+            this.subtitle = this.ENSURE(menu.subtitle, this.subtitle);
+            this.position = this.ENSURE(menu.position, 'topleft');
+            this.size = this.ENSURE(menu.size, 'size-110');
+            this.texture = this.ENSURE(menu.texture, 'none');
+            this.dictionary = this.ENSURE(menu.dictionary, 'none');
+            this.color = menu.color || this.color;
+            this.sounds = menu.defaultSounds || this.sounds;
+            this.show = !(menu.hidden || false);
+            this.menu = true;
+
+            const _items = this.items = menu.items || [];
+
+            for (var i = 0; i < _items.length; i++) {
+                _items[i].prev_value = _items[i].value;
+            }
+
+            this.items = _items;
+
+            const nextIndex = this.NEXT_INDEX(current_index);
+            const prevIndex = this.PREV_INDEX(nextIndex);
+
+            this.index = prevIndex;
         },
         CLOSE_MENU({ uuid }: { uuid: string }) {
             if (this.uuid == uuid) {
