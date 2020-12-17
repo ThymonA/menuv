@@ -23,19 +23,18 @@
 - Themes: **[default](https://i.imgur.com/KSkeiQm.png)** or **[native](https://i.imgur.com/KSkeiQm.png)**
 
 ## Compile files
-**[MenuV](https://github.com/ThymonA/menuv)** uses [VueJS 2.6.11 or newer](https://vuejs.org/v2/guide/installation.html#NPM) and [TypeScript 3.8.3 or newer](https://www.npmjs.com/package/typescript) with [NodeJS Package Manager](https://nodejs.org/en/). You need to have [NPM a.k.a NodeJS Package Manager](https://nodejs.org/en/download/) installed on your system in order to compile **[MenuV](https://github.com/ThymonA/menuv)** files.
+**[MenuV](https://github.com/ThymonA/menuv)** uses **[VueJS](https://vuejs.org/v2/guide/installation.html#NPM)** and **[TypeScript](https://www.npmjs.com/package/typescript)** with **[NodeJS](https://nodejs.org/en/)**. If you want to use the **`master`** files, you need to build the hole project by doing
 
-First download all dependencies by doing
 ```powershell
 npm install
 ```
-After you have downloaded/loaded all dependencies, you can compile **[MenuV](https://github.com/ThymonA/menuv)** files by doeing.
+After you have downloaded/loaded all dependencies, you can build **[MenuV](https://github.com/ThymonA/menuv)** files by executing the following command:
 ```powershell
-npx webpack
+npm run build
 ```
-After the command is executed you will see a `dist` folder containing all the **NUI** files needed for **[MenuV](https://github.com/ThymonA/menuv)**.
+After the command is executed you will see a `build` folder containing all the resource files. Copy those files to a resource folder called `menuv` and your ready to go.
 
-**When downloading a [release](https://github.com/ThymonA/menuv/releases), this step is not necessary.** Files are already compiled.
+**When your downloading a [release](https://github.com/ThymonA/menuv/releases), you don't have to follow this step, because all [release](https://github.com/ThymonA/menuv/releases) version are build version.**
 
 ## How to use?
 1. Add `start menuv` to your **server.cfg** before the resources that's uses **menuv**

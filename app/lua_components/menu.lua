@@ -1076,4 +1076,5 @@ function CreateMenu(info)
     return menu
 end
 
-return CreateMenu
+_ENV.CreateMenu = CreateMenu
+_G.CreateMenu = CreateMenu

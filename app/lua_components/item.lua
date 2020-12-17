@@ -269,4 +269,5 @@ function CreateMenuItem(info)
     return i
 end
 
-return CreateMenuItem
+_ENV.CreateMenuItem = CreateMenuItem
+_G.CreateMenuItem = CreateMenuItem

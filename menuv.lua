@@ -8,9 +8,6 @@
 -- Description: FiveM menu library for creating menu's
 ----------------------- [ MenuV ] -----------------------
 local assert = assert
-local type = assert(type)
-local load = assert(load)
-local xpcall = assert(xpcall)
 local pairs = assert(pairs)
 local rawget = assert(rawget)
 local rawset = assert(rawset)
@@ -19,11 +16,9 @@ local remove = assert(table.remove)
 local format = assert(string.format)
 local upper = assert(string.upper)
 local lower = assert(string.lower)
-local traceback = assert(debug.traceback)
 local setmetatable = assert(setmetatable)
 
 --- FiveM globals
-local LOAD_RESOURCE_FILE = assert(LoadResourceFile)
 local GET_CURRENT_RESOURCE_NAME = assert(GetCurrentResourceName)
 local HAS_STREAMED_TEXTURE_DICT_LOADED = assert(HasStreamedTextureDictLoaded)
 local REQUEST_STREAMED_TEXTURE_DICT = assert(RequestStreamedTextureDict)
@@ -33,34 +28,11 @@ local GET_HASH_KEY = assert(GetHashKey)
 local CreateThread = assert(Citizen.CreateThread)
 local Wait = assert(Citizen.Wait)
 
---- Load a file from `menuv`
----@param path string Path in `menuv`
----@return any|nil Results of nil
-local function load_file(path)
-    if (path == nil or type(path) ~= 'string') then return nil end
-
-    local raw_file = LOAD_RESOURCE_FILE('menuv', path)
-
-    if (raw_file) then
-        local raw_func, _ = load(raw_file, ('menuv/%s'):format(path), 't', _ENV)
-
-        if (raw_func) then
-            local ok, result = xpcall(raw_func, traceback)
-
-            if (ok) then
-                return result
-            end
-        end
-    end
-
-    return nil
-end
-
---- MenuV globals
-Config = assert(Config or load_file('config.lua'))
-Utilities = assert(Utilities or load_file('app/lua_components/utilities.lua'))
-CreateMenuItem = assert(CreateMenuItem or load_file('app/lua_components/item.lua'))
-CreateMenu = assert(CreateMenu or load_file('app/lua_components/menu.lua'))
+---@load 'config.lua'
+---@load 'app/lua_components/utilities.lua'
+---@load 'app/lua_components/item.lua'
+---@load 'app/lua_components/menu.lua'
+---@load 'app/lua_components/translations.lua'
 
 --- MenuV table
 local menuv_table = {
@@ -83,7 +55,7 @@ local menuv_table = {
     ---@type table<string, function>
     NUICallbacks = {},
     ---@type table<string, string>
-    Translations = load_file('app/lua_components/translations.lua') or {},
+    Translations = translations,
     ---@class keys
     Keys = setmetatable({ data = {}, __class = 'MenuVKeys', __type = 'keys' }, {
         __index = function(t, k)

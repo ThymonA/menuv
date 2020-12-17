@@ -31,4 +31,5 @@ if (translations_raw) then
     if (transFile) then translations = Utilities:Ensure(transFile.translations, {}) end
 end
 
-return translations
+_ENV.translations = translations
+_G.translations = translations

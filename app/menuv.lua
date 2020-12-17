@@ -68,7 +68,7 @@ local MenuV = setmetatable({
     ---@type number
     ThreadWait = Utilities:Ensure((Config or {}).HideInterval, 250),
     ---@type table<string, string>
-    Translations = load_file('app/lua_components/translations.lua') or {},
+    Translations = load_file('menuv/components/translations.lua') or {},
     ---@type table<string, table>
     Sounds = Utilities:Ensure((Config or {}).Sounds, {}),
     ---@type boolean

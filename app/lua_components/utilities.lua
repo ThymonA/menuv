@@ -383,10 +383,5 @@ function Utilities:Replace(str, this, that)
     end
 end
 
-if (GET_CURRENT_RESOURCE_NAME() == 'menuv') then
-    --- Make `Utilities` global accessible
-    _G.Utilities = Utilities
-    _ENV.Utilities = Utilities
-else
-    return Utilities
-end
+_G.Utilities = Utilities
+_ENV.Utilities = Utilities

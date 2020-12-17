@@ -7,11 +7,6 @@
 -- Version: 1.0.0
 -- Description: FiveM menu library for creating menu's
 ----------------------- [ MenuV ] -----------------------
-local assert = assert
-
---- FiveM globals
-local GetCurrentResourceName = assert(GetCurrentResourceName)
-
 Config = {
     Language = 'en',
     HideInterval = 250,
@@ -49,10 +44,5 @@ Config = {
     }
 }
 
-if (GetCurrentResourceName() == 'menuv') then
-    --- Make `Config` global accessible
-    _G.Config = Config
-    _ENV.Config = Config
-else
-    return Config
-end
+_G.Config = Config
+_ENV.Config = Config
