@@ -193,6 +193,7 @@ yarn-error.log
 !.yarn/plugins
 !.yarn/sdks
 !.yarn/versions
+.yarn.installed
 
 # if you are NOT using Zero-installs, then:
 # comment the following lines
