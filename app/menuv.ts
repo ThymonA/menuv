@@ -218,7 +218,12 @@ export default VUE.extend({
                 _items[i].prev_value = _items[i].value;
             }
 
-            this.items = _items;
+            this.items = _items.sort((item1, item2) => {
+                if (item1.index > item2.index) { return 1; }
+                if (item1.index < item2.index) { return -1; }
+
+                return 0;
+            });
 
             const nextIndex = this.NEXT_INDEX(0);
             const prevIndex = this.PREV_INDEX(nextIndex);
@@ -251,7 +256,12 @@ export default VUE.extend({
                 _items[i].prev_value = _items[i].value;
             }
 
-            this.items = _items;
+            this.items = this.items = _items.sort((item1, item2) => {
+                if (item1.index > item2.index) { return 1; }
+                if (item1.index < item2.index) { return -1; }
+
+                return 0;
+            });
 
             const nextIndex = this.NEXT_INDEX(current_index);
             const prevIndex = this.PREV_INDEX(nextIndex);
@@ -323,26 +333,44 @@ export default VUE.extend({
                 }
             }
 
-            if (typeof index == 'undefined' || index == null || index < 0 || index >= this.items.length) {
-                this.items.push(item);
+            const _items = this.items;
+
+            if (typeof index == 'undefined' || index == null || index < 0 || index >= _items.length) {
+                _items.push(item);
             } else {
-                this.items.splice(index, 0, item);
+                _items.splice(index, 0, item);
             }
+
+            this.items = _items.sort((item1, item2) => {
+                if (item1.index > item2.index) { return 1; }
+                if (item1.index < item2.index) { return -1; }
+
+                return 0;
+            });
 
             if (this.index < 0 && !item.disabled) { this.index = this.NEXT_INDEX(this.index); }
         },
         REMOVE_ITEM({ uuid, __uuid }: { uuid: string, __uuid: string }) {
             if (__uuid != this.uuid || typeof uuid != 'string' || uuid == '') { return }
 
-            for (var i = 0; i < this.items.length; i++) {
-                if (this.items[i].uuid == uuid) {
-                    this.items.splice(i, 1);
+            const _items = this.items;
+
+            for (var i = 0; i < _items.length; i++) {
+                if (_items[i].uuid == uuid) {
+                    _items.splice(i, 1);
                 }
 
                 if (i == this.index) {
                     this.index = this.PREV_INDEX(this.index);
                 }
             }
+
+            this.items = _items.sort((item1, item2) => {
+                if (item1.index > item2.index) { return 1; }
+                if (item1.index < item2.index) { return -1; }
+
+                return 0;
+            });
         },
         RESET_MENU() {
             this.theme = 'default'
