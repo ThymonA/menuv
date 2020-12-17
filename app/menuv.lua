@@ -58,6 +58,8 @@ local function load_file(path)
     return nil
 end
 
+load_file('menuv/components/translations.lua')
+
 local MenuV = setmetatable({
     ---@type string
     __class = 'MenuV',
@@ -68,7 +70,7 @@ local MenuV = setmetatable({
     ---@type number
     ThreadWait = Utilities:Ensure((Config or {}).HideInterval, 250),
     ---@type table<string, string>
-    Translations = load_file('menuv/components/translations.lua') or {},
+    Translations = translations or {},
     ---@type table<string, table>
     Sounds = Utilities:Ensure((Config or {}).Sounds, {}),
     ---@type boolean
