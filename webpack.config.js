@@ -15,7 +15,7 @@ const COPY_PLUGIN = require('copy-webpack-plugin');
 
 module.exports = {
     mode: 'production',
-    entry: './app/load.ts',
+    entry: './source/app/load.ts',
     module: {
         rules: [
             {
@@ -34,14 +34,14 @@ module.exports = {
         new VUE_LOADER_PLUGIN(),
         new HTML_WEBPACK_PLUGIN({
             inlineSource: '.(js|css)$',
-            template: './app/html/menuv.html',
+            template: './source/app/html/menuv.html',
             filename: 'menuv.html'
         }),
         new COPY_PLUGIN([
-            { from: 'app/html/assets/css/main.css', to: 'assets/css/main.css' },
-            { from: 'app/html/assets/css/native_theme.css', to: 'assets/css/native_theme.css' },
-            { from: 'app/html/assets/fonts/SignPainterHouseScript.woff', to: 'assets/fonts/SignPainterHouseScript.woff' },
-            { from: 'app/html/assets/fonts/TTCommons.woff', to: 'assets/fonts/TTCommons.woff' }
+            { from: 'source/app/html/assets/css/main.css', to: 'assets/css/main.css' },
+            { from: 'source/app/html/assets/css/native_theme.css', to: 'assets/css/native_theme.css' },
+            { from: 'source/app/html/assets/fonts/SignPainterHouseScript.woff', to: 'assets/fonts/SignPainterHouseScript.woff' },
+            { from: 'source/app/html/assets/fonts/TTCommons.woff', to: 'assets/fonts/TTCommons.woff' }
         ])
     ],
     resolve: {

@@ -27,24 +27,25 @@ const DEBUG = {
 }
 
 const PATHS = {
+    SOURCE: path.resolve(`${__dirname}/source`),
     BUILD: path.resolve(`${__dirname}/build`),
-    VERSION: path.resolve(`${__dirname}/VERSION`),
-    APP: path.resolve(`${__dirname}/app`),
-    MENUV: path.resolve(`${__dirname}/menuv.lua`)
+    VERSION: path.resolve(`${__dirname}/source/VERSION`),
+    APP: path.resolve(`${__dirname}/source/app`),
+    MENUV: path.resolve(`${__dirname}/source/menuv.lua`)
 }
 
 const version = fs.readFileSync(PATHS.VERSION, { encoding: 'utf8' });
 const COPY_FILES = [
-    { from: `${__dirname}/VERSION`, to: `${PATHS.BUILD}/VERSION`, type: 'file' },
+    { from: `${__dirname}/source/VERSION`, to: `${PATHS.BUILD}/VERSION`, type: 'file' },
     { from: `${__dirname}/README.md`, to: `${PATHS.BUILD}/README.md`, type: 'file' },
     { from: `${PATHS.APP}/menuv.lua`, to: `${PATHS.BUILD}/menuv/menuv.lua`, type: 'file' },
     { from: `${PATHS.APP}/fxmanifest.lua`, to: `${PATHS.BUILD}/fxmanifest.lua`, type: 'file' },
     { from: `${__dirname}/LICENSE`, to: `${PATHS.BUILD}/LICENSE`, type: 'file' },
     { from: `${__dirname}/example.lua`, to: `${PATHS.BUILD}/example.lua`, type: 'file' },
-    { from: `${__dirname}/config.lua`, to: `${PATHS.BUILD}/config.lua`, type: 'file' },
+    { from: `${__dirname}/source/config.lua`, to: `${PATHS.BUILD}/config.lua`, type: 'file' },
     { from: `${__dirname}/templates`, to: `${PATHS.BUILD}/templates`, type: 'dir' },
-    { from: `${__dirname}/stream`, to: `${PATHS.BUILD}/stream`, type: 'dir' },
-    { from: `${__dirname}/languages`, to: `${PATHS.BUILD}/languages`, type: 'dir' },
+    { from: `${__dirname}/templates/menuv.ytd`, to: `${PATHS.BUILD}/stream/menuv.ytd`, type: 'file' },
+    { from: `${__dirname}/source/languages`, to: `${PATHS.BUILD}/languages`, type: 'dir' },
     { from: `${__dirname}/dist`, to: `${PATHS.BUILD}/dist`, type: 'dir' },
     { from: `${PATHS.APP}/lua_components`, to: `${PATHS.BUILD}/menuv/components`, type: 'dir' }
 ];
@@ -100,7 +101,7 @@ exec('npx webpack', (err, stdout, stderr) => {
 
         m.forEach((match, groupIndex) => {
             if (groupIndex == 1) {
-                const content_path = path.resolve(`${__dirname}/${match}`);
+                const content_path = path.resolve(`${PATHS.SOURCE}/${match}`);
 
                 if (fs.existsSync(content_path)) {
                     const content = fs.readFileSync(content_path, { encoding: 'utf8' });
