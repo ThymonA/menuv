@@ -213,7 +213,7 @@ end
 --- Open a menu
 ---@param menu Menu|string Menu or UUID of Menu
 ---@param cb function Execute this callback when menu has opened
-function MenuV:OpenMenu(menu, cb)
+function MenuV:OpenMenu(menu, cb, reopen)
     local uuid = Utilities:Typeof(menu) == 'Menu' and menu.UUID or Utilities:Typeof(menu) == 'string' and menu
 
     if (uuid == nil) then return end
@@ -271,7 +271,8 @@ function MenuV:OpenMenu(menu, cb)
 
     SEND_NUI_MESSAGE({
         action = 'OPEN_MENU',
-        menu = menu:ToTable()
+        menu = menu:ToTable(),
+        reopen = Utilities:Ensure(reopen, false)
     })
 
     cb()
@@ -317,7 +318,7 @@ function MenuV:CloseMenu(menu, cb)
 
     self:OpenMenu(prev_menu, function()
         cb()
-    end)
+    end, true)
 end
 
 --- Close all menus
@@ -517,7 +518,7 @@ REGISTER_NUI_CALLBACK('close', function(info, cb)
 
     MenuV:OpenMenu(prev_menu, function()
         cb('ok')
-    end)
+    end, true)
 end)
 
 REGISTER_NUI_CALLBACK('close_all', function(info, cb)

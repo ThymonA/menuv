@@ -102,6 +102,7 @@ export default VUE.extend({
             listener: (event: MessageEvent) => {},
             index: 0,
             sounds: {} as Record<'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'ENTER' | 'CLOSE', Sounds>,
+            cached_indexes: {} as Record<string, number>
         }
     },
     destroyed() {
@@ -146,6 +147,7 @@ export default VUE.extend({
                 next_uuid = this.items[newValue].uuid;
             }
 
+            this.cached_indexes[this.uuid] = newValue;
             this.POST(`https://menuv/switch`, { prev: prev_uuid, next: next_uuid, r: this.resource });
         },
         items: {
@@ -194,7 +196,7 @@ export default VUE.extend({
         UPDATE_STATUS({ status }: { status: boolean }) {
             if (this.menu) { this.show = status; }
         },
-        OPEN_MENU({ menu }: { menu: Menu }) {
+        OPEN_MENU({ menu, reopen }: { menu: Menu, reopen: boolean }) {
             this.POST(`https://menuv/open`, { uuid: this.uuid, new_uuid: menu.uuid, r: this.resource });
             this.RESET_MENU();
 
@@ -225,10 +227,12 @@ export default VUE.extend({
                 return 0;
             });
 
-            const nextIndex = this.NEXT_INDEX(0);
+            const index = (reopen || false) ? (this.cached_indexes[this.uuid] || 0) : 0;
+            const nextIndex = this.NEXT_INDEX(index);
             const prevIndex = this.PREV_INDEX(nextIndex);
 
             this.index = prevIndex;
+            this.cached_indexes[this.uuid] = prevIndex;
             this.POST(`https://menuv/opened`, { uuid: this.uuid, r: this.resource });
         },
         REFRESH_MENU({ menu }: { menu: Menu }) {
