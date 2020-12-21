@@ -58,11 +58,11 @@ exec('npx webpack', (err, stdout, stderr) => {
         return;
     }
 
-    if (fs.existsSync(PATHS.BUILD)) {
-        fs.rmdirSync(PATHS.BUILD, { recursive: true });
+    if (!fs.existsSync(PATHS.BUILD)) {
+        fs.mkdirSync(PATHS.BUILD, { recursive: true });
     }
 
-    fs.mkdirSync(PATHS.BUILD, { recursive: true });
+    fse.emptyDirSync(PATHS.BUILD);
 
     for (var i = 0; i < COPY_FILES.length; i++) {
         const copy_file = COPY_FILES[i];
