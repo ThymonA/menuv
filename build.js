@@ -41,7 +41,7 @@ const COPY_FILES = [
     { from: `${PATHS.APP}/menuv.lua`, to: `${PATHS.BUILD}/menuv/menuv.lua`, type: 'file' },
     { from: `${PATHS.APP}/fxmanifest.lua`, to: `${PATHS.BUILD}/fxmanifest.lua`, type: 'file' },
     { from: `${__dirname}/LICENSE`, to: `${PATHS.BUILD}/LICENSE`, type: 'file' },
-    { from: `${__dirname}/example.lua`, to: `${PATHS.BUILD}/example.lua`, type: 'file' },
+    { from: `${__dirname}/example`, to: `${PATHS.BUILD}/menuv_example`, type: 'dir' },
     { from: `${__dirname}/source/config.lua`, to: `${PATHS.BUILD}/config.lua`, type: 'file' },
     { from: `${__dirname}/templates`, to: `${PATHS.BUILD}/templates`, type: 'dir' },
     { from: `${__dirname}/templates/menuv.ytd`, to: `${PATHS.BUILD}/stream/menuv.ytd`, type: 'file' },

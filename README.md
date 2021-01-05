@@ -37,6 +37,7 @@ After the command is executed you will see a `build` folder containing all the r
 **When your downloading a [release](https://github.com/ThymonA/menuv/releases), you don't have to follow this step, because all [release](https://github.com/ThymonA/menuv/releases) version are build version.**
 
 ## How to use?
+> ⚠️ **example.lua** can't be added in the **menuv** fxmanifest, you must make an seperate resource like: **[menuv_example](https://github.com/ThymonA/menuv/tree/master/example)**
 1. Add `start menuv` to your **server.cfg** before the resources that's uses **menuv**
 2. To use **[MenuV](https://github.com/ThymonA/menuv)** you must add **@menuv/menuv.lua** in your **fxmanifest.lua** file.
 
@@ -75,7 +76,7 @@ menu:AddCheckbox({ icon: string, label: string, description: string, value: bool
 /** CREATE A SLIDER */
 menu:AddSlider({ icon: string, label: string, description: string, value: number, values: [] { label: string, value: any, description: string }, disabled: boolean });
 ```
-To see example in practice, see [example.lua](https://github.com/ThymonA/menuv/blob/master/example.lua)
+To see example in practice, see [example.lua](https://github.com/ThymonA/menuv/blob/master/example/example.lua)
 
 ### Events
 In **[MenuV](https://github.com/ThymonA/menuv)** you can register event-based callbacks on menu and/or items.
@@ -96,7 +97,7 @@ Project is written by **[ThymonA](https://github.com/ThymonA/)** and published u
 [Read License](https://github.com/ThymonA/menuv/blob/master/LICENSE)
 
 ## Screenshot
-**How is this menu made?** see **[example.lua](https://github.com/ThymonA/menuv/blob/master/example.lua)**
+**How is this menu made?** see **[example.lua](https://github.com/ThymonA/menuv/blob/master/example/example.lua)**
 
 
 Default | Native
