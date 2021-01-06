@@ -5,6 +5,7 @@
 [![License](https://img.shields.io/github/license/ThymonA/menuv.svg?style=for-the-badge)](https://github.com/ThymonA/menuv/blob/master/LICENSE)
 [![Forks](https://img.shields.io/github/forks/ThymonA/menuv.svg?style=for-the-badge)](https://github.com/ThymonA/menuv)
 [![Stars](https://img.shields.io/github/stars/ThymonA/menuv.svg?style=for-the-badge)](https://github.com/ThymonA/menuv)
+[![Discord](https://img.shields.io/badge/discord-Tigo%239999-7289da?style=for-the-badge&logo=discord)](https://discordapp.com/users/733686533873467463)
 
 ---
 
