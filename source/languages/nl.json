@@ -3,10 +3,8 @@
     "translators": [
         {
             "name": "ThymonA",
-            "emails": ["contact@arens.io", "contact@thymonarens.nl", "me@tigodev.com"],
-            "github": "https://github.com/ThymonA",
-            "gitlab": "https://git.arens.io/ThymonA/",
-            "website": "https://git.arens.io/ThymonA/"
+            "emails": ["contact@thymonarens.nl"],
+            "github": "https://github.com/ThymonA"
         }
     ],
     "translations": {

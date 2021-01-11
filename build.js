@@ -10,12 +10,14 @@
 ----------------------- [ MenuV ] -----------------------
 */
 
+const process = require("process");
 const colors = require('colors/safe');
 const { exec } = require('child_process');
 const fs = require('fs');
 const fse = require('fs-extra');
 const path = require('path');
 const recursive = require('recursive-readdir');
+const args = process.argv.slice(2);
 
 const DEBUG = {
     PRINT: function(msg) {
@@ -52,7 +54,35 @@ const COPY_FILES = [
 
 DEBUG.PRINT(`Building ${colors.yellow('MenuV')} version ${colors.yellow(version)}...`)
 
-exec('npx webpack', (err, stdout, stderr) => {
+for (var i = 0; i < args.length; i++) {
+    if (args[i].startsWith("--mode=")) {
+        const configuration = args[i].substr(7).toLowerCase();
+
+        switch (configuration) {
+            case "production":
+            case "release":
+                args[i] = '--mode=production';
+                break;
+            case "development":
+            case "debug":
+                args[i] = '--mode=development';
+                break;
+            default:
+                args[i] = '--mode=none';
+                break;
+        }
+    }
+}
+
+let argumentString = args.join(" ");
+
+if (argumentString.length > 0) {
+    argumentString = ` ${argumentString}`;
+} else {
+    argumentString = ` --mode=production`;
+}
+
+exec(`npx webpack${argumentString}`, (err, stdout, stderr) => {
     if (err) {
         DEBUG.ERROR(err.stack);
         return;
@@ -84,7 +114,7 @@ exec('npx webpack', (err, stdout, stderr) => {
         }
 
         if (copy_file.deleteAfter)
-            fs.rmSync(from_file_path, { recursive: true });
+            fse.rmdirSync(from_file_path, { recursive: true });
     }
 
     let menuv_file = fs.readFileSync(PATHS.MENUV, { encoding: 'utf8' });

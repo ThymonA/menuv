@@ -266,7 +266,7 @@ MenuV:RegisterKey('LEFT', ('%s - %s'):format(T('controller'), T('keybind_key_lef
 MenuV:RegisterKey('RIGHT', ('%s - %s'):format(T('controller'), T('keybind_key_right')), 'PAD_ANALOGBUTTON', 'LRIGHT_INDEX')
 MenuV:RegisterKey('ENTER', ('%s - %s'):format(T('controller'), T('keybind_key_enter')), 'PAD_ANALOGBUTTON', 'RDOWN_INDEX')
 MenuV:RegisterKey('CLOSE', ('%s - %s'):format(T('controller'), T('keybind_key_close')), 'PAD_ANALOGBUTTON', 'RRIGHT_INDEX')
---MenuV:RegisterKey('CLOSE_ALL', ('%s - %s'):format(T('controller'), T('keybind_key_close_all')), 'PAD_ANALOGBUTTON', 'PLUS')
+MenuV:RegisterKey('CLOSE_ALL', ('%s - %s'):format(T('controller'), T('keybind_key_close_all')), 'PAD_ANALOGBUTTON', 'R3_INDEX')
 
 --- Hide menu when screen is faded out or pause menu ia active
 CreateThread(function()
