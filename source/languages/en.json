@@ -10,6 +10,8 @@
         }
     ],
     "translations": {
+        "keyboard": "Keyboard",
+        "controller": "Controller",
         "keybind_key_up": "Up in a menu",
         "keybind_key_down": "Down in a menu",
         "keybind_key_left": "Left in a menu",

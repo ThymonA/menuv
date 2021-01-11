@@ -102,18 +102,25 @@ MenuV.Keys = setmetatable({ data = {}, __class = 'MenuVKeys', __type = 'keys' },
             end
         end
     end,
-    __call = function(t, k, a)
+    __call = function(t, k, a, inputType)
         k = Utilities:Ensure(k, 'unknown')
         a = Utilities:Ensure(a, 'UNKNOWN')
+        inputType = Utilities:Ensure(inputType, 0)
 
         if (k == 'unknown') then return end
 
         local rawKey = rawget(t.data, k)
         local keyExists = rawKey ~= nil
 
-        if (keyExists) then return end
+        if (keyExists) then
+            if not rawKey.inputTypes[inputType] then
+                rawKey.inputTypes[inputType] = true
+            end
 
-        rawset(t.data, k, { status = false, action = a })
+            return
+        end
+
+        rawset(t.data, k, { status = false, action = a, inputTypes = { [inputType] = true } })
     end
 })
 
@@ -125,17 +132,27 @@ MenuV.Keys = setmetatable({ data = {}, __class = 'MenuVKeys', __type = 'keys' },
 function MenuV:RegisterKey(action, description, defaultType, defaultKey)
     action = Utilities:Ensure(action, 'UNKNOWN')
     description = Utilities:Ensure(description, 'unknown')
-    defaultType = Utilities:Ensure(defaultType, 'keyboard')
+    defaultType = Utilities:Ensure(defaultType, 'KEYBOARD')
+    defaultType = upper(defaultType)
     defaultKey = Utilities:Ensure(defaultKey, 'F12')
 
     action = Utilities:Replace(action, ' ', '_')
     action = upper(action)
 
-    if (self.Keys[action] ~= nil) then return end
+    local typeGroup = Utilities:GetInputTypeGroup(defaultType)
 
-    self.Keys(action, action)
+    if (self.Keys[action] and self.Keys[action].inputTypes[typeGroup]) then return end
 
-    local k = lower(('menuv_%s'):format(action))
+    self.Keys(action, action, typeGroup)
+
+    local k = lower(action)
+
+    if typeGroup > 0 then
+        local inputGroupName = Utilities:GetInputGroupName(typeGroup)
+        k = ('%s_%s'):format(lower(inputGroupName), k)
+    end
+
+    k = ('menuv_%s'):format(k)
 
     RegisterKeyMapping(('+%s'):format(k), description, defaultType, defaultKey)
     RegisterCommand(('+%s'):format(k), function() MenuV.Keys[action] = true end)
@@ -242,6 +259,14 @@ MenuV:RegisterKey('RIGHT', T('keybind_key_right'), 'KEYBOARD', 'RIGHT')
 MenuV:RegisterKey('ENTER', T('keybind_key_enter'), 'KEYBOARD', 'RETURN')
 MenuV:RegisterKey('CLOSE', T('keybind_key_close'), 'KEYBOARD', 'BACK')
 MenuV:RegisterKey('CLOSE_ALL', T('keybind_key_close_all'), 'KEYBOARD', 'PLUS')
+
+MenuV:RegisterKey('UP', ('%s - %s'):format(T('controller'), T('keybind_key_up')), 'PAD_ANALOGBUTTON', 'LUP_INDEX')
+MenuV:RegisterKey('DOWN', ('%s - %s'):format(T('controller'), T('keybind_key_down')), 'PAD_ANALOGBUTTON', 'LDOWN_INDEX')
+MenuV:RegisterKey('LEFT', ('%s - %s'):format(T('controller'), T('keybind_key_left')), 'PAD_ANALOGBUTTON', 'LLEFT_INDEX')
+MenuV:RegisterKey('RIGHT', ('%s - %s'):format(T('controller'), T('keybind_key_right')), 'PAD_ANALOGBUTTON', 'LRIGHT_INDEX')
+MenuV:RegisterKey('ENTER', ('%s - %s'):format(T('controller'), T('keybind_key_enter')), 'PAD_ANALOGBUTTON', 'RDOWN_INDEX')
+MenuV:RegisterKey('CLOSE', ('%s - %s'):format(T('controller'), T('keybind_key_close')), 'PAD_ANALOGBUTTON', 'RRIGHT_INDEX')
+--MenuV:RegisterKey('CLOSE_ALL', ('%s - %s'):format(T('controller'), T('keybind_key_close_all')), 'PAD_ANALOGBUTTON', 'PLUS')
 
 --- Hide menu when screen is faded out or pause menu ia active
 CreateThread(function()

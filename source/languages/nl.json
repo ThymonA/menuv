@@ -10,6 +10,8 @@
         }
     ],
     "translations": {
+        "keyboard": "Toetsenbord",
+        "controller": "Controller",
         "keybind_key_up": "Omhoog in een menu",
         "keybind_key_down": "Omlaag in een menu",
         "keybind_key_left": "Links in een menu",

@@ -81,6 +81,46 @@ function Utilities:Typeof(input)
     return rawType
 end
 
+local INPUT_GROUPS = {
+    [0] = "KEYBOARD",
+    [2] = "CONTROLLER"
+}
+
+local INPUT_TYPE_GROUPS = {
+    ["KEYBOARD"] = 0,
+    ["MOUSE_ABSOLUTEAXIS"] = 0,
+    ["MOUSE_CENTEREDAXIS"] = 0,
+    ["MOUSE_RELATIVEAXIS"] = 0,
+    ["MOUSE_SCALEDAXIS"] = 0,
+    ["MOUSE_NORMALIZED"] = 0,
+    ["MOUSE_WHEEL"] = 0,
+    ["MOUSE_BUTTON"] = 0,
+    ["MOUSE_BUTTONANY"] = 0,
+    ["MKB_AXIS"] = 0,
+    ["PAD_AXIS"] = 2,
+    ["PAD_DIGITALBUTTON"] = 2,
+    ["PAD_DIGITALBUTTONANY"] = 2,
+    ["PAD_ANALOGBUTTON"] = 2,
+    ["JOYSTICK_POV"] = 2,
+    ["JOYSTICK_POV_AXIS"] = 2,
+    ["JOYSTICK_BUTTON"] = 2,
+    ["JOYSTICK_AXIS"] = 2,
+    ["JOYSTICK_IAXIS"] = 2,
+    ["JOYSTICK_AXIS_NEGATIVE"] = 2,
+    ["JOYSTICK_AXIS_POSITIVE"] = 2,
+    ["PAD_DEBUGBUTTON"] = 2,
+    ["GAME_CONTROLLED"] = 2,
+    ["DIGITALBUTTON_AXIS"] = 2,
+}
+
+function Utilities:GetInputTypeGroup(inputType)
+    return INPUT_TYPE_GROUPS[inputType] or 0
+end
+
+function Utilities:GetInputGroupName(inputTypeGroup)
+    return INPUT_GROUPS[inputTypeGroup] or "KEYBOARD"
+end
+
 --- Transform any `input` to the same type as `defaultValue`
 ---@type function
 ---@param input any Transform this `input` to `defaultValue`'s type

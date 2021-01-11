@@ -8,6 +8,8 @@
         }
     ],
     "translations": {
+        "keyboard": "Clavier",
+        "controller": "Manette",
         "keybind_key_up": "Haut dans un menu",
         "keybind_key_down": "Bas dans un menu",
         "keybind_key_left": "Gauche dans un menu",
