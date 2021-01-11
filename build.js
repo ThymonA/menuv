@@ -46,7 +46,7 @@ const COPY_FILES = [
     { from: `${__dirname}/templates`, to: `${PATHS.BUILD}/templates`, type: 'dir' },
     { from: `${__dirname}/templates/menuv.ytd`, to: `${PATHS.BUILD}/stream/menuv.ytd`, type: 'file' },
     { from: `${__dirname}/source/languages`, to: `${PATHS.BUILD}/languages`, type: 'dir' },
-    { from: `${__dirname}/dist`, to: `${PATHS.BUILD}/dist`, type: 'dir' },
+    { from: `${__dirname}/dist`, to: `${PATHS.BUILD}/dist`, type: 'dir', deleteAfter: true },
     { from: `${PATHS.APP}/lua_components`, to: `${PATHS.BUILD}/menuv/components`, type: 'dir' }
 ];
 
@@ -66,27 +66,25 @@ exec('npx webpack', (err, stdout, stderr) => {
 
     for (var i = 0; i < COPY_FILES.length; i++) {
         const copy_file = COPY_FILES[i];
+        const from_file_path = path.resolve(copy_file.from);
+        const to_file_path = path.resolve(copy_file.to);
 
         if (copy_file.type == 'file') {
-            const from_file_path = path.resolve(copy_file.from);
-            const to_file_path = path.resolve(copy_file.to);
             const to_file_path_directory = path.dirname(to_file_path);
 
-            if (!fs.existsSync(to_file_path_directory)) {
+            if (!fs.existsSync(to_file_path_directory))
                 fs.mkdirSync(to_file_path_directory, { recursive: true });
-            }
 
             fs.copyFileSync(from_file_path, to_file_path)
         } else {
-            const from_file_path = path.resolve(copy_file.from);
-            const to_file_path = path.resolve(copy_file.to);
-            
-            if (!fs.existsSync(to_file_path)) {
+            if (!fs.existsSync(to_file_path))
                 fs.mkdirSync(to_file_path, { recursive: true });
-            }
 
             fse.copySync(from_file_path, to_file_path, { recursive: true });
         }
+
+        if (copy_file.deleteAfter)
+            fs.rmSync(from_file_path, { recursive: true });
     }
 
     let menuv_file = fs.readFileSync(PATHS.MENUV, { encoding: 'utf8' });
