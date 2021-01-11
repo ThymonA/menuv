@@ -24,16 +24,30 @@
 - Themes: **[default](https://i.imgur.com/KSkeiQm.png)** or **[native](https://i.imgur.com/KSkeiQm.png)**
 
 ## Compile files
-**[MenuV](https://github.com/ThymonA/menuv)** uses **[VueJS](https://vuejs.org/v2/guide/installation.html#NPM)** and **[TypeScript](https://www.npmjs.com/package/typescript)** with **[NodeJS](https://nodejs.org/en/)**. If you want to use the **`master`** files, you need to build the hole project by doing
+**[MenuV](https://github.com/ThymonA/menuv)** uses **[VueJS](https://vuejs.org/v2/guide/installation.html#NPM)** and **[TypeScript](https://www.npmjs.com/package/typescript)** with **[NodeJS](https://nodejs.org/en/)**. If you want to use the **`master`** files, you need to build the hole project by doing:
 
-```powershell
+```sh
 npm install
 ```
 After you have downloaded/loaded all dependencies, you can build **[MenuV](https://github.com/ThymonA/menuv)** files by executing the following command:
-```powershell
+```sh
 npm run build
 ```
-After the command is executed you will see a `build` folder containing all the resource files. Copy those files to a resource folder called `menuv` and your ready to go.
+
+After the command is executed you will see a `build` folder containing all the resource files.
+Copy those files to a resource folder called `menuv` or create a symbolic link like that:
+
+### Windows
+
+```batch
+mklink /D "fxResourcesPath\menuv" "repositoryPath\build"
+```
+
+### Linux
+
+```sh
+ln -s "repositoryPath\build" "fxResourcesPath\menuv"
+```
 
 **When your downloading a [release](https://github.com/ThymonA/menuv/releases), you don't have to follow this step, because all [release](https://github.com/ThymonA/menuv/releases) version are build version.**
 
@@ -42,12 +56,12 @@ After the command is executed you will see a `build` folder containing all the r
 1. Add `start menuv` to your **server.cfg** before the resources that's uses **menuv**
 2. To use **[MenuV](https://github.com/ThymonA/menuv)** you must add **@menuv/menuv.lua** in your **fxmanifest.lua** file.
 
-   ```lua
-   client_scripts {
-      '@menuv/menuv.lua',
-      'example.lua'
-   }
-   ```
+```lua
+client_scripts {
+    '@menuv/menuv.lua',
+    'example.lua'
+}
+```
 
 ### Create a menu
 Create a menu by calling the **MenuV:CreateMenu** function.

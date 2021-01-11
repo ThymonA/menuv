@@ -8,7 +8,7 @@
 -- Description: FiveM menu libarary for creating menu's
 ----------------------- [ MenuV ] -----------------------
 
-fx_version 'adamant'
+fx_version 'cerulean'
 game 'gta5'
 
 name 'MenuV'

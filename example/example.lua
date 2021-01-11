@@ -42,4 +42,4 @@ menu2:On('open', function(m)
     end
 end)
 
-menu:OpenWith('keyboard', 'F1') -- Press F1 to open Menu
+menu:OpenWith('KEYBOARD', 'F1') -- Press F1 to open Menu

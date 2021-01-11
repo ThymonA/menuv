@@ -79,19 +79,27 @@ local menuv_table = {
                 end
             end
         end,
-        __call = function(t, actionHax, m, actionFunc)
+        __call = function(t, actionHax, m, actionFunc, inputType)
             actionHax = Utilities:Ensure(actionHax, 'unknown')
             m = Utilities:Typeof(m) == 'Menu' and m or nil
             actionFunc = Utilities:Ensure(actionFunc, function() end)
+            inputType = Utilities:Ensure(inputType, 'KEYBOARD')
+            inputType = upper(inputType)
 
             if (actionHax == 'unknown') then return end
 
             local rawKey = rawget(t.data, actionHax)
             local keyExists = rawKey ~= nil
 
-            if (keyExists) then return end
+            if (keyExists) then
+                if not rawKey.inputTypes[inputType] then
+                    rawKey.inputTypes[inputType] = true
+                end
+    
+                return
+            end
 
-            rawset(t.data, actionHax, { status = false, menu = m, func = actionFunc })
+            rawset(t.data, actionHax, { status = false, menu = m, func = actionFunc, inputTypes = { [inputType] = true } })
         end
     })
 }
@@ -364,7 +372,8 @@ function MenuV:AddControlKey(menu, action, func, description, defaultType, defau
     action = Utilities:Ensure(action, 'UNKNOWN')
     func = Utilities:Ensure(func, function() end)
     description = Utilities:Ensure(description, 'unknown')
-    defaultType = Utilities:Ensure(defaultType, 'keyboard')
+    defaultType = Utilities:Ensure(defaultType, 'KEYBOARD')
+    defaultType = upper(defaultType)
     defaultKey = Utilities:Ensure(defaultKey, 'F12')
 
     local m = self:GetMenu(uuid)
@@ -384,13 +393,22 @@ function MenuV:AddControlKey(menu, action, func, description, defaultType, defau
     local actionHash = GET_HASH_KEY(('%s_%s_%s'):format(resourceName, namespace, action))
     local actionHax = format('%x', actionHash)
 
-    if (self.Keys[actionHax] ~= nil) then return end
+    local typeGroup = Utilities:GetInputTypeGroup(defaultType)
 
-    self.Keys(actionHax, m, func)
+    if (self.Keys[actionHax] and self.Keys[actionHax].inputTypes[typeGroup]) then return end
 
-    REGISTER_KEY_MAPPING(('+%s'):format(actionHax), description, defaultType, defaultKey)
-    REGISTER_COMMAND(('+%s'):format(actionHax), function() MenuV.Keys[actionHax] = true end)
-    REGISTER_COMMAND(('-%s'):format(actionHax), function() MenuV.Keys[actionHax] = false end)
+    self.Keys(actionHax, m, func, typeGroup)
+
+    local k = actionHax
+
+    if typeGroup > 0 then
+        local inputGroupName = Utilities:GetInputGroupName(typeGroup)
+        k = ('%s_%s'):format(lower(inputGroupName), k)
+    end
+
+    REGISTER_KEY_MAPPING(('+%s'):format(k), description, defaultType, defaultKey)
+    REGISTER_COMMAND(('+%s'):format(k), function() MenuV.Keys[actionHax] = true end)
+    REGISTER_COMMAND(('-%s'):format(k), function() MenuV.Keys[actionHax] = false end)
 end
 
 --- Checks if namespace is available
