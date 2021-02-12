@@ -36,8 +36,6 @@ npm run build
 
 After the command is executed you will see a `build` folder containing all the resource files.
 Copy those files to a resource folder called `menuv` or create a symbolic link like that:
-You can also check this tutorial on how to make a link:
-[https://www.howtogeek.com/howto/16226/complete-guide-to-symbolic-links-symlinks-on-windows-or-linux/](https://www.howtogeek.com/howto/16226/complete-guide-to-symbolic-links-symlinks-on-windows-or-linux/)
 
 ### Windows
 
@@ -50,6 +48,9 @@ mklink /J "repositoryPath\build" "fxResourcesPath\menuv"
 ```sh
 ln -s "repositoryPath\build" "fxResourcesPath\menuv"
 ```
+
+You can also check this tutorial on how to make a link:
+[https://www.howtogeek.com/howto/16226/complete-guide-to-symbolic-links-symlinks-on-windows-or-linux/](https://www.howtogeek.com/howto/16226/complete-guide-to-symbolic-links-symlinks-on-windows-or-linux/)
 
 **When your downloading a [release](https://github.com/ThymonA/menuv/releases), you don't have to follow this step, because all [release](https://github.com/ThymonA/menuv/releases) version are build version.**
 
