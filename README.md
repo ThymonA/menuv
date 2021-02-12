@@ -36,11 +36,13 @@ npm run build
 
 After the command is executed you will see a `build` folder containing all the resource files.
 Copy those files to a resource folder called `menuv` or create a symbolic link like that:
+You can also check this tutorial on how to make a link:
+[https://www.howtogeek.com/howto/16226/complete-guide-to-symbolic-links-symlinks-on-windows-or-linux/](https://www.howtogeek.com/howto/16226/complete-guide-to-symbolic-links-symlinks-on-windows-or-linux/)
 
 ### Windows
 
 ```batch
-mklink /D "fxResourcesPath\menuv" "repositoryPath\build"
+mklink /J "repositoryPath\build" "fxResourcesPath\menuv"
 ```
 
 ### Linux
