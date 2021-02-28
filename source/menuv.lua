@@ -315,6 +315,8 @@ function MenuV:CloseMenu(menu, cb)
     self.CurrentMenu:DestroyThreads()
     self.CurrentMenu = nil
 
+    SEND_NUI_MESSAGE({ action = 'CLOSE_MENU', uuid = uuid })
+
     if (#self.ParentMenus <= 0) then cb() return end
 
     local prev_index = #self.ParentMenus
