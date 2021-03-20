@@ -1,22 +1,21 @@
 {
-    "language": "es",
-    "translators": [
+    "language":"es",
+    "translators":[
         {
-            "name": "dlaV",
-            "emails": ["NOSmachienne"],
-            "github": "https://github.com/VladimirUE4"
+            "name":"Apolo",
+            "github":"https://github.com/apolo-sys"
         }
     ],
-    "translations": {
-        "keyboard": "Teclado",
-        "controller": "Controlador",
-        "keybind_key_up": "Arriba en un menú",
-        "keybind_key_down": "Abajo en un menú",
-        "keybind_key_left": "A la izquierda en un menú",
-        "keybind_key_right": "A la derecha en un menú",
-        "keybind_key_enter": "Confirmar en un menú",
-        "keybind_key_close": "Cerrar un menú",
-        "keybind_key_close_all": "Cerrar todos los menús (tambien los parentes)",
-        "open_menu": "Menú abierto '%s' con este key"
+    "translations":{
+        "keyboard":"Teclado",
+        "controller":"Mando",
+        "keybind_key_up":"Tecla para subir",
+        "keybind_key_down":"Tecla para bajar",
+        "keybind_key_left":"Tecla para mover a la izquierda",
+        "keybind_key_right":"Tecla para mover a la derecha",
+        "keybind_key_enter":"Tecla para confirmar (ENTER)",
+        "keybind_key_close":"Cerrar menú",
+        "keybind_key_close_all":"Cerrar todos los menús",
+        "open_menu":"El menú '%s' se abre con esta tecla"
     }
 }
