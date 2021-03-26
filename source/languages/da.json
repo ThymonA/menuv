@@ -1,0 +1,22 @@
+{
+    "language": "da",
+    "translators": [
+        {
+            "name": "Nylander",
+            "emails": ["hej@hjaltenylander.dk"],
+            "github": "https://github.com/NylanderrDK"
+        }
+    ],
+    "translations": {
+        "keyboard": "Tastatur",
+        "controller": "Controller",
+        "keybind_key_up": "Op i en menu",
+        "keybind_key_down": "Ned i en menu",
+        "keybind_key_left": "Venstre i en menu",
+        "keybind_key_right": "Højre i en menu",
+        "keybind_key_enter": "Bekræft valg i en menu",
+        "keybind_key_close": "Luk en menu",
+        "keybind_key_close_all": "Luk alle menuer (inklusiv forældre)",
+        "open_menu": "Åbn '%s' med denne tast"
+    }
+}
