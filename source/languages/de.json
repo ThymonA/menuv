@@ -1,0 +1,21 @@
+{
+    "language": "de",
+    "translators": [
+        {
+            "name": "NirosTen",
+            "github": "https://github.com/NirosTen"
+        }
+    ],
+    "translations": {
+        "keyboard": "Tastatur",
+        "controller": "Joystick",
+        "keybind_key_up": "Oben in einem Menü ",
+        "keybind_key_down": "Unten in einem Menü",
+        "keybind_key_left": "Links in einem Menü",
+        "keybind_key_right": "Rechts in einem Menü",
+        "keybind_key_enter": "Bestätigen Sie in einem Menü",
+        "keybind_key_close": "Schließen Sie ein Menü",
+        "keybind_key_close_all": "Schließen Sie alle Menüs",
+        "open_menu": "Öffnen Sie das '%s'Menü"
+    }
+}
