@@ -21,7 +21,7 @@
 - Event-based callbacks
 - Uses `2 msec` while menu open and idle.
 - Documentation on [menuv.fivem.io/api/](https://menuv.fivem.io/api/)
-- Themes: **[default](https://i.imgur.com/KSkeiQm.png)** or **[native](https://i.imgur.com/KSkeiQm.png)**
+- Themes: **[default](https://i.imgur.com/xGagIBm.png)** or **[native](https://i.imgur.com/KSkeiQm.png)**
 
 ## Compile files
 **[MenuV](https://github.com/ThymonA/menuv)** uses **[VueJS](https://vuejs.org/v2/guide/installation.html#NPM)** and **[TypeScript](https://www.npmjs.com/package/typescript)** with **[NodeJS](https://nodejs.org/en/)**. If you want to use the **`master`** files, you need to build the hole project by doing:
