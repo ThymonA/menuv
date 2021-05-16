@@ -1,4 +1,4 @@
---Example of line to put : MenuV.SubTitle("Press [E] to access the Store")
+--Example of line to put : MenuV.SubTitle("Press [E] to access the Store", 1)
 function MenuV.SubTitle(text, time)
     ClearPrints()
     BeginTextCommandPrint("STRING")
