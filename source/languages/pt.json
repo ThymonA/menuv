@@ -1,0 +1,22 @@
+{
+    "language": "pt",
+    "translators": [
+        {
+            "name": "ThymonA",
+            "emails": ["contact@thymonarens.nl"],
+            "github": "https://github.com/ThymonA"
+        }
+    ],
+    "translations": {
+        "keyboard": "Teclado",
+        "controller": "Controle",
+        "keybind_key_up": "Subir no Menu",
+        "keybind_key_down": "Descer no Menu",
+        "keybind_key_left": "Esqueda no Menu",
+        "keybind_key_right": "Direita no Menu",
+        "keybind_key_enter": "Confirmar item no menu",
+        "keybind_key_close": "Fechando um menu",
+        "keybind_key_close_all": "Feche todos os menus",
+        "open_menu": "Abrir menu com a tecla '%s'"
+    }
+}
