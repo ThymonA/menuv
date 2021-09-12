@@ -11,7 +11,7 @@
         "controller": "Controle",
         "keybind_key_up": "Subir no Menu",
         "keybind_key_down": "Descer no Menu",
-        "keybind_key_left": "Esqueda no Menu",
+        "keybind_key_left": "Esquerda no Menu",
         "keybind_key_right": "Direita no Menu",
         "keybind_key_enter": "Confirmar item no menu",
         "keybind_key_close": "Fechando um menu",
