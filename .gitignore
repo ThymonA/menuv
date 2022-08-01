@@ -167,6 +167,9 @@ dist
 !.vscode/extensions.json
 *.code-workspace
 
+### IntelliJ ###
+.idea
+
 ### Vue ###
 # gitignore template for Vue.js projects
 #
