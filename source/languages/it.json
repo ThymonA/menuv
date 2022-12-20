@@ -1,0 +1,22 @@
+{
+    "language": "it",
+    "translators": [
+        {
+            "name": "Shazuub",
+            "emails": ["Shazuu.offi@gmail.com"],
+            "github": "https://github.com/Shazuub"
+        }
+    ],
+    "translations": {
+        "keyboard": "Tastiera",
+        "controller": "Controller",
+        "keybind_key_up": "In alto in un menu",
+        "keybind_key_down": "In basso in un menu",
+        "keybind_key_left": "A sinistra in un menu",
+        "keybind_key_right": "Diritti in un menu",
+        "keybind_key_enter": "Conferma in un menu",
+        "keybind_key_close": "Chiudi un menu",
+        "keybind_key_close_all": "Chiudi tutti i menu",
+        "open_menu": "Apri menu '%s'"
+    }
+}
